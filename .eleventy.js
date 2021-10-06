@@ -4,6 +4,7 @@ const now = String(Date.now())
 module.exports = function (eleventyConfig) {
     eleventyConfig.setTemplateFormats(['njk', 'html']);
 
+    eleventyConfig.addPassthroughCopy('src/CNAME');
     eleventyConfig.addPassthroughCopy('src/styles');
     eleventyConfig.addPassthroughCopy('src/scripts');
     eleventyConfig.addPassthroughCopy('src/media');
