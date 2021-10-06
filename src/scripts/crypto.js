@@ -6,8 +6,8 @@ function base58d(S){var d=[],b=[],i,j,c,n;for(i in S){j=0,c='123456789ABCDEFGHJK
 
 async function encrypt(text, algorithm='SHA-1', double=false) {
     var buffer = Uint8Array.from(text, c => c.charCodeAt(0))
-    var bytes = await crypto.subtle.digest(algorithm, buffer)
-    if (double) bytes = await crypto.subtle.digest(algorithm, new Uint8Array(bytes))
+    var bytes = await window.crypto.subtle.digest(algorithm, buffer)
+    if (double) bytes = await window.crypto.subtle.digest(algorithm, new Uint8Array(bytes))
     return new Uint8Array(bytes)
 }
 
