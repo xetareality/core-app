@@ -1,0 +1,28 @@
+<script>function loadAddressDetails() {
+    return {
+        details: {},
+        init() {
+            var key = gup('address')
+            var self = this
+            ajax(API+'/balance?address='+key+'&asset='+Constants.xetaAddress, null, function(data) {
+                document.title = document.title+' '+key
+                var desc = key+' is a public address on the Xeta blockchain'
+                document.querySelector('meta[name="description"]').setAttribute('content', desc)
+
+                try {
+                    data = JSON.parse(data)
+                } catch(e) {
+                    self.details['Address'] = key
+                    self.details['Xeta Balance'] = 0
+                    self.details['Xeta Value'] = (0).toLocaleString('en', {style: 'currency', currency: 'USD'})
+                    return
+                }
+
+                Alpine.store('address', data)
+                self.details['Address'] = key
+                self.details['Xeta Balance'] = data.amount+' XETA'
+                self.details['Xeta Value'] = (parseFloat(data.amount) * 0.001).toLocaleString('en', {style: 'currency', currency: 'USD'})
+            })
+        }
+    }
+}</script><div x-data="loadAddressDetails()" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12"><p class="text-lg py-2 text-gray-100">Details</p><table class="w-full table-fixed font-light text-sm"><thead><tr><th></th><th></th></tr></thead><tbody><template x-for="[key, value] in Object.entries(details)"><tr><td class="py-2 text-gray-400 uppercase text-sm font-semibold py-2" x-text="key"></td><td class="text-right text-white truncate break-all py-2" x-html="value"></td></tr></template></tbody></table></div>
