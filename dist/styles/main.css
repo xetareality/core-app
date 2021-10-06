@@ -1,0 +1,18 @@
+[x-cloak] {
+    display: none !important;
+}
+
+select.no-arrow::-ms-expand {
+    display: none;
+}
+
+select.no-arrow {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-indent: 1px;
+    text-overflow: '';
+}
+
+.multiselect:hover .multiselect-options {
+    display: block;
+}

@@ -1,0 +1,67 @@
+<script>function lopadGlobalDetails() {
+    return {
+        details: {},
+        init() {
+            var path = window.location.pathname.slice(0, -1)
+            var mapping = MAPPING[path.slice(1)]
+            var key = gup('address') ? gup('address') : gup('signature')
+
+            var self = this
+            ajax(API+path+window.location.search+'&extended=true', null, function(data) {
+                data = JSON.parse(data)
+                Alpine.store(window.location.pathname.slice(1, -1), data)
+                var entries = Object.entries(data)
+
+                var mkeys = Object.keys(mapping)
+                entries.sort(function(a,b) {
+                    return mkeys.indexOf(a[0])-mkeys.indexOf(b[0])
+                })
+                
+                var out = {}
+                entries.forEach(function(d) {out[d[0]] = d[1]})
+
+                var desc = ''
+                if (path.slice(1) == 'transaction') {
+                    document.title = document.title+' '+key
+                    desc = 'Transaction '+key+' was registered on '+new Date(parseInt(out.created)).toLocaleString()
+                } else if (path.slice(1) == 'asset') {
+                    document.title = document.title+(out.name ? ' '+out.name : '')+(out.ticker ? ' '+out.ticker : '')
+                    desc = (out.name ? out.name : key)+(out.ticker ? ' '+out.ticker : '')+' was registered on '+new Date(parseInt(out.created)).toLocaleString()+' and has a supply of '+out.supply.replace('-', '')
+                } else if (path.slice(1) == 'pool') {
+                    document.title = document.title+' '+(out.name ? ' '+out.name : '')+' of type '+out.type[0].toUpperCase()+out.type.slice(1)
+                    desc = (out.name ? out.name : key)+' is a '+out.type[0].toUpperCase()+out.type.slice(1)+' pool registered on '+new Date(parseInt(out.created)).toLocaleString()
+                } else if (path.slice(1) == 'address') {
+                    document.title = document.title+' '+key
+                    desc = key+' is a public address on the Xeta blockchain'
+                }
+
+                document.querySelector('meta[name="description"]').setAttribute('content', desc)
+
+                var assetPreview = out.assetPreview ? out.assetPreview.ticker+(out.assetPreview.name ? ' ('+out.assetPreview.name+')' : '')+(out.assetPreview.icon ? '<img class="h-6 w-6 ml-2" src="'+out.assetPreview.icon+'" />' : '') : ''
+                var poolPreview = out.poolPreview ? (out.poolPreview.name ? out.poolPreview.name+' ' : '')+out.poolPreview.type : ''
+
+                for (var k in out) {
+                    if (!mapping[k]) continue
+                    var val;
+
+                    if (mapping[k][0] == 'timestamp') val = Date.now()-parseInt(out[k]) > 30*24*60*60*1000 ? new Date(parseInt(out[k])).toLocaleString() : timeSince(new Date(parseInt(out[k])))+' ago'+' ('+new Date(parseInt(out[k])).toLocaleString()+')'
+                    else if (mapping[k][0] == 'number') val = out[k]
+                    else if (mapping[k][0] == 'string') val = out[k]
+                    else if (mapping[k][0] == 'strings') val = String(out[k])
+                    else if (mapping[k][0] == 'text') val = out[k]
+                    else if (mapping[k][0] == 'boolean') val = String(out[k]).toUpperCase()
+                    else if (mapping[k][0] == 'transaction') val = '<a href="/transaction/?signature='+out[k]+'" class="underline hover:text-pink-400">'+out[k]+'</a>'
+                    else if (mapping[k][0] == 'asset') val = '<a href="/asset/?address='+out[k]+'" class="underline hover:text-pink-400">'+out[k]+'</a>'+(assetPreview ? '<span class="ml-2">'+assetPreview+'</span>' : '')
+                    else if (mapping[k][0] == 'address') val = '<a href="/address/?address='+out[k]+'" class="underline hover:text-pink-400">'+out[k]+'</a>'
+                    else if (mapping[k][0] == 'pool') val = '<a href="/pool/?address='+out[k]+'" class="underline hover:text-pink-400">'+out[k]+'</a>'+(poolPreview ? '<span class="ml-2">'+poolPreview+'</span>' : '')
+                    else if (mapping[k][0] == 'transactions') val = out[k].map(t => '<a href="'+t+'" class="underline hover:text-pink-400 w-full block truncate pb-1">'+t+'</a>').join('')
+                    else if (mapping[k][0] == 'links') val = out[k].map(l => '<a rel="nofollow" href="'+l+'" class="underline hover:text-pink-400 w-full block truncate pb-1">'+l+'</a>').join('')
+                    else if (mapping[k][0] == 'timedelta') val = timeSince(new Date(Date.now()-parseInt(out[k])))
+                    else val = String(out[k])
+
+                    self.details[k] = val
+                }
+            })
+        }
+    }
+}</script><div x-data="lopadGlobalDetails()" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12"><p class="text-lg py-2 text-gray-100">Details</p><table class="w-full table-fixed font-light text-sm"><thead><tr><th class="text-gray-400 text-left uppercase w-1/3"></th><th class="text-gray-400 text-left uppercase w-2/3"></th></tr></thead><tbody><template x-for="[key, value] in Object.entries(details)"><tr><td class="py-2 text-gray-400 uppercase text-sm font-semibold py-2" x-text="key"></td><td @click="$el.classList.toggle('truncate')" class="text-right text-white truncate break-all py-2" x-html="value"></td></tr></template></tbody></table></div>

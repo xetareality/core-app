@@ -81,6 +81,38 @@ function validForm(form) {
     return true
 }
 
+// function validateFields(form, fields) {
+//     var elements = form.elements;
+//     for (var i = 0; i < elements.length; i++) {
+//         var item = elements[i];
+//         if (item.name && fields.indexOf(item.name)) {
+//             var v = validate(item)
+//             if (!v) return false;
+//         }
+//     }
+//     return true
+// }
+
+// function validateEvent(e) {
+//     for (var i = 0; i < e.path.length; i++) {
+//         if (e.path[i].tagName == 'FORM') {
+//             return validateForm(e.path[i])
+//         }
+//     }
+//     return true
+// }
+
+// function validateAll(el) {
+//     var valid = true
+//     el.querySelectorAll('input, textarea').forEach(function(i) {
+//         if (i.getAttribute('data-rules')) {
+//             if (!validate(i)) valid = false
+//         }
+//     })
+//     return valid
+// }
+
+
 function timeSince(date) {
     var seconds = Math.floor((new Date() - date) / 1000);
     var interval = seconds / 31536000;

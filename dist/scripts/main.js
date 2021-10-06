@@ -31,9 +31,7 @@ document.addEventListener('alpine:init', () => {
     if (Alpine.lstore('publicKey')) connectWallet(Alpine.lstore('publicKey'))
 })
 
-// const API = 'http://127.0.0.1:8787'
-const API = 'https://testnet.xetareality.com'
-
+const API = 'http://127.0.0.1:8787'
 const Constants = {
     xetaAddress: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 }
