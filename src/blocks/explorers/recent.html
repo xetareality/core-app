@@ -1,0 +1,36 @@
+<script>
+function recentExplorer() {
+    return {
+        transactions: [],
+        depleted: {},
+        init() {
+            this.loadTransactions()
+        },
+        loadTransactions() {
+            if (this.depleted.transactions) return
+            var self = this
+            var last = this.transactions.length ? '&signature='+this.transactions.slice(-1)[0].signature+'&created='+this.transactions.slice(-1)[0].created : ''
+            
+            // ajax(API+'/transactions?period='+currentPeriod()+'&sort=DESC'+last, null, function(data) {
+            ajax(API+'/transactions?asset=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&sort=DESC'+last, null, function(data) {
+                data = JSON.parse(data)
+                if (!data.length) self.depleted.transactions = true
+                self.transactions = self.transactions.concat(data)
+            })
+        },
+    }
+}
+</script>
+
+<div x-data="recentExplorer()">
+    <div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
+        <p class="text-lg py-2 px-6 text-gray-100">Recent Transactions</p>
+
+        {% set transactionsCollection = 'transactions' %}
+        {% include "src/blocks/global/transactions.html" %}
+
+        <div x-show="!depleted.transactions" class="pt-6 flex justify-center text-sm">
+            <span @click="loadTransactions()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
+        </div>
+    </div>
+</div>

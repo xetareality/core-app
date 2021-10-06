@@ -1,0 +1,68 @@
+<script>
+function initSearch() {
+    return {
+        searchQuery: '',
+        searchLoading: false,
+        searchResults: [],
+        searchActive: false,
+        defaultIcons: {
+            transaction: 'https://raw.githubusercontent.com/xetareality/xetareality.github.io/main/img/favicon-32x32.png',
+            token: 'https://raw.githubusercontent.com/xetareality/xetareality.github.io/main/img/favicon-32x32.png',
+            pool: 'https://raw.githubusercontent.com/xetareality/xetareality.github.io/main/img/favicon-32x32.png',
+            address: 'https://raw.githubusercontent.com/xetareality/xetareality.github.io/main/img/favicon-32x32.png',
+        },
+        search: function() {
+            if (!this.searchQuery) this.searchResults = []
+            if (!this.searchQuery || this.searchLoading) return
+
+            this.searchLoading = true
+            var self = this
+
+            ajax(API+'/search?query='+this.searchQuery, null, function(data) {
+                self.searchResults = JSON.parse(data)
+                self.searchResults = self.searchResults.map(r => ({...r, ...{path: '/'+r.type+(r.type == 'transaction' ? '/?signature=' : '/?address=')+r.key}}))
+                console.log(self.searchResults)
+                self.searchLoading = false
+            }, function(status, self) {
+                self.searchLoading = false
+            })
+        },
+    }
+}
+</script>
+
+<div class="flex flex-wrap items-center mb-4 lg:mb-8">
+    <h1 class="text-2xl w-full md:w-1/3 pr-4 py-4 md:py-1 text-gray-100 tracking-wider">{% block title %}{% endblock %} Details</h1>
+    <div class="w-full md:w-2/3">
+        <div class="" x-data="initSearch()">
+            <div class="w-full flex w-full justify-end relative">
+                <input @keyup.debounce="search()" x-model.debounce="searchQuery" @focus="searchActive = true, searchQuery.length ? search() : null" @blur.outside="searchActive = false, searchResults = []" placeholder="Search (for Tokens, NFTs, Transactions, Pools, Addresses...)" type="input" class="font-light placeholder-gray-100 rounded-2xl shadow border-pink-500 focus:border-pink-400 border-2 transition-all px-4 py-2 bg-transparent text-lg text-gray-100 outline-none focus:outline-none overflow-hidden w-full">
+                
+                <div x-cloak x-show="focus && searchResults.length" class="absolute top-0 left-0 mt-12 w-full flex justify-center">
+                    <div class="z-50 bg-gray-800 shadow block w-full rounded-2xl">
+                        <ul class="w-full flex flex-wrap justify-between overflow-y-scroll" style="max-height: 300px;">
+                            <template x-for="result in searchResults">
+                                <li @click="window.location.href = result.path" class="w-full">
+                                    <div class="cursor-pointer rounded-2xl overflow-hidden w-full block hover:bg-pink-700 px-4 py-2 flex justify-start items-center">
+                                        <div class="mr-3">
+                                            <img class="w-8 h-8" :class="{'opacity-20': !result.icon}" :src="result.icon ? result.icon : '/media/empty-icon.png'" />
+                                        </div>
+
+                                        <div class="">
+                                            <p class="block">
+                                                <span class="text-xs text-gray-200 uppercase" x-text="result.type"></span>
+                                                <span class="text-xs text-white break-words" x-text="result.name ? '('+result.name.slice(0,50)+')' : ''"></span>
+                                            </p>
+                                            
+                                            <span class="block text-sm text-white break-words underline" x-text="result.key"></span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

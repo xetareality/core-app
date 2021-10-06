@@ -1,0 +1,51 @@
+<script>
+function actionsModal() {
+    return {
+        selection: null,
+        init() {
+        },
+    }
+}
+</script>
+
+<div x-cloak name="actionsModal" id="create-modal" x-show.transition.opacity="$store.modal == 'actionsModal'" x-data="actionsModal" class="z-50 fixed w-full h-full top-0 left-0">
+    <div @click="selection = null, hideModal()" class="backdrop absolute w-full h-full bg-black opacity-75"></div>
+
+    <div @click="selection = null, hideModal()" class="relative cursor-pointer flex w-full justify-center py-4 text-white text-sm z-50">
+        <svg class="fill-current text-white mt-0.5" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+            <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+        </svg>
+        <span class="ml-1">Close</span>
+    </div>
+
+
+    <div class="overflow-scroll h-full mx-auto w-full md:w-1/2 pb-32">
+        <div class="rounded-2xl shadow w-full relative bg-pink-900 px-2 lg:px-8 py-4 bg-top bg-cover" style="background-image: url(/media/background.jpg)">
+            
+            <div x-show="!selection" class="flex flex-wrap justify-center">
+                <p class="w-full px-4 py-4 text-2xl text-center text-white font-light">Select Wallet Action</p>
+                <ul class="list-none w-2/5 mr-2 text-center">
+                    <li @click="window.location.href = '/address/?address='+$lstore('publicKey')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">View my Pools & Balances</li>
+                    <li @click="disconnectWallet(), showModal('walletModal')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Change Wallet Address</li>
+                    <li @click="disconnectWallet(), hideModal()" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Disconnect Wallet</li>
+                </ul>
+                <ul class="list-none w-2/5 ml-2 text-center">
+                    <li @click="selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Create Transaction</li>
+                    <li @click="selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Create Asset (Token or NFT)</li>
+                    <li @click="selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Create Pool for Asset</li>
+                    <li @click="selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Create Allowance</li>
+                </ul>
+            </div>
+
+            <div x-cloak x-show="selection == 'transaction'">
+                {% include "src/blocks/modals/transaction.html" %}
+            </div>
+            <div x-cloak x-show="selection == 'asset'">
+            </div>
+            <div x-cloak x-show="selection == 'pool'">
+            </div>
+            <div x-cloak x-show="selection == 'allowance'">
+            </div>
+        </div>
+    </div>
+</div>
