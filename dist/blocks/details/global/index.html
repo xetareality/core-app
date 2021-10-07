@@ -51,10 +51,10 @@
                     else if (mapping[k][0] == 'text') val = out[k]
                     else if (mapping[k][0] == 'boolean') val = String(out[k]).toUpperCase()
                     else if (mapping[k][0] == 'transaction') val = '<a href="/transaction/?signature='+out[k]+'" class="underline hover:text-pink-400">'+out[k]+'</a>'
+                    else if (mapping[k][0] == 'transactions') val = out[k].map(t => '<a href="/transaction/?signature='+t+'" class="underline hover:text-pink-400 w-full block truncate pb-1">'+t+'</a>').join('')
                     else if (mapping[k][0] == 'asset') val = '<a href="/asset/?address='+out[k]+'" class="underline hover:text-pink-400">'+out[k]+'</a>'+(assetPreview ? '<span class="ml-2">'+assetPreview+'</span>' : '')
                     else if (mapping[k][0] == 'address') val = '<a href="/address/?address='+out[k]+'" class="underline hover:text-pink-400">'+out[k]+'</a>'
                     else if (mapping[k][0] == 'pool') val = '<a href="/pool/?address='+out[k]+'" class="underline hover:text-pink-400">'+out[k]+'</a>'+(poolPreview ? '<span class="ml-2">'+poolPreview+'</span>' : '')
-                    else if (mapping[k][0] == 'transactions') val = out[k].map(t => '<a href="'+t+'" class="underline hover:text-pink-400 w-full block truncate pb-1">'+t+'</a>').join('')
                     else if (mapping[k][0] == 'links') val = out[k].map(l => '<a rel="nofollow" href="'+l+'" class="underline hover:text-pink-400 w-full block truncate pb-1">'+l+'</a>').join('')
                     else if (mapping[k][0] == 'timedelta') val = timeSince(new Date(Date.now()-parseInt(out[k])))
                     else val = String(out[k])
