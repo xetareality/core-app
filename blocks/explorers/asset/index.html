@@ -1,4 +1,5 @@
-<script>function assetExplorer() {
+<script>
+function assetExplorer() {
     return {
         tab: 'transactions',
         transactions: [],
@@ -29,4 +30,108 @@
             })
         },
     }
-}</script><div x-data="assetExplorer()"><div class="bg-black rounded-2xl px-6 pt-2 mb-2 font-light text-gray-200"><div class="flex"><div @click="tab = 'transactions', !transactions.length ? loadTransactions() : ''" :class="{'border-pink-700': tab == 'transactions'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">transactions</div><div @click="tab = 'holders', !holders.length ? loadHolders() : ''" :class="{'border-pink-700': tab == 'holders'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Holders</div></div></div><div x-cloak x-show="tab == 'transactions'" class="bg-black rounded-2xl py-4 mb-4 lg:mb-12"><p class="text-lg py-2 px-6 text-gray-100">transactions</p><table class="w-full table-fixed font-light text-sm"><thead><tr class="text-gray-400"><th class="truncate py-2 pl-6 pr-4 text-left uppercase w-1/3 md:w-1/5">Signature</th><th class="truncate py-2 pr-4 text-left uppercase w-1/4 md:w-1/6">Amount</th><th class="hidden md:table-cell truncate truncate py-2 pr-4 text-left uppercase w-1/6">Function</th><th class="hidden md:table-cell truncate py-2 pr-4 text-left uppercase w-1/6">Created</th><th class="truncate py-2 pr-4 text-left uppercase w-1/4 md:w-1/6">From</th><th class="truncate py-2 pr-6 text-left uppercase w-1/4 md:w-1/6">To</th></tr></thead><tbody><template x-for="(tx, i) in transactions"><tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white"><td class="truncate pr-4 pl-6 py-2"><a x-text="tx.signature" :href="'/transaction/?signature='+tx.signature" class="underline hover:text-pink-400"></a></td><td class="truncate pr-4 py-2"><a :href="'/asset/?address='+tx.asset" x-html="Math.abs(tx.amount)+(tx.assetPreview ? (tx.assetPreview.ticker ? ' '+tx.assetPreview.ticker : '') : '')" class="hover:text-pink-400"></a></td><td x-text="tx.function ? tx.function : ''" class="hidden md:table-cell truncate pr-4 py-2 uppercase"></td><td x-text="timeSince(new Date(parseInt(tx.created)))+' ago'" class="hidden md:table-cell truncate pr-4 py-2"></td><td class="truncate pr-4 py-2"><a x-text="tx.from" :href="'/address/?address='+tx.from" class="underline hover:text-pink-400"></a></td><td class="truncate pr-6 py-2"><a x-text="tx.to" :href="'/'+(tx.function && !tx.function.toLowerCase().includes('transaction') ? tx.function.split('.')[0].toLowerCase() : 'address')+'/?address='+tx.to" class="underline hover:text-pink-400"></a></td></tr></template></tbody></table><div x-show="!depleted.transactions" class="pt-6 flex justify-center text-sm"><span @click="loadTransactions()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span></div></div><div x-cloak x-show="tab == 'holders'" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12"><p class="text-lg py-2 px-6 text-gray-100">Holder Distribution</p><table class="w-full table-fixed"><thead><tr><th class="py-2 text-gray-400 text-left uppercase text-sm w-1/3">Address</th><th class="py-2 text-gray-400 text-left uppercase text-sm w-1/3">Amount</th><th class="py-2 text-gray-400 text-right uppercase text-sm w-1/3 md:w-1/4">Percent</th></tr></thead><tbody><template x-for="balance in holders"><tr><td class="truncate pr-4 py-2"><a :href="'/address/?address='+balance.address" x-text="balance.address" class="underline hover:text-pink-400"></a></td><td x-text="balance.amount+(balance.assetPreview.ticker ? ' '+balance.assetPreview.ticker : '')" class="truncate py-2"></td><td x-text="$store.asset ? (balance.amount/$store.asset.supply*100).toFixed(2)+'%' : 0+'%'" class="truncate py-2 text-right"></td></tr></template></tbody></table><div x-show="!depleted.holders" class="pt-6 flex justify-center text-sm"><span @click="loadHolders()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span></div></div></div>
+}
+</script>
+
+<div x-data="assetExplorer()">
+    <div class="bg-black rounded-2xl px-6 pt-2 mb-2 font-light text-gray-200">
+        <div class="flex">
+            <div @click="tab = 'transactions', !transactions.length ? loadTransactions() : ''" :class="{'border-pink-700': tab == 'transactions'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">transactions</div>
+            <div @click="tab = 'holders', !holders.length ? loadHolders() : ''" :class="{'border-pink-700': tab == 'holders'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Holders</div>
+        </div>
+    </div>
+
+    <div x-cloak x-show="tab == 'transactions'" class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
+        <p class="text-lg py-2 px-6 text-gray-100">transactions</p>
+
+        
+        <table class="w-full table-fixed font-light text-sm">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pl-6 pr-4 text-left uppercase w-1/3 md:w-1/5">
+                Signature
+            </th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/4 md:w-1/6">
+                Amount
+            </th>
+            <th class="hidden md:table-cell truncate truncate py-2 pr-4 text-left uppercase w-1/6">
+                Function
+            </th>
+            <th class="hidden md:table-cell truncate py-2 pr-4 text-left uppercase w-1/6">
+                Created
+            </th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/4 md:w-1/6">
+                From
+            </th>
+            <th class="truncate py-2 pr-6 text-left uppercase w-1/4 md:w-1/6">
+                To
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="(tx, i) in transactions">
+            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 pl-6 py-2">
+                    <a x-text="tx.signature" :href="'/transaction/?signature='+tx.signature" class="underline hover:text-pink-400"></a>
+                </td>
+                <td class="truncate pr-4 py-2">
+                    <a :href="'/asset/?address='+tx.asset" x-html="Math.abs(tx.amount)+(tx.assetPreview ? (tx.assetPreview.ticker ? ' '+tx.assetPreview.ticker : '') : '')" class="hover:text-pink-400"></a>
+                </td>
+                                        
+                <td x-text="tx.function ? tx.function : ''" class="hidden md:table-cell truncate pr-4 py-2 uppercase">
+                </td>
+                <td x-text="timeSince(new Date(parseInt(tx.created)))+' ago'" class="hidden md:table-cell truncate pr-4 py-2">
+                </td>
+                <td class="truncate pr-4 py-2">
+                    <a x-text="tx.from" :href="'/address/?address='+tx.from" class="underline hover:text-pink-400"></a>
+                </td>
+                <td class="truncate pr-6 py-2">
+                    <a x-text="tx.to" :href="'/'+(tx.function && !tx.function.toLowerCase().includes('transaction') ? tx.function.split('.')[0].toLowerCase() : 'address')+'/?address='+tx.to" class="underline hover:text-pink-400"></a>
+                </td>
+            </tr>
+        </template>
+    </tbody>
+</table>
+        
+        <div x-show="!depleted.transactions" class="pt-6 flex justify-center text-sm">
+            <span @click="loadTransactions()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
+        </div>
+    </div>
+    
+    <div x-cloak x-show="tab == 'holders'" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12">
+        <p class="text-lg py-2 px-6 text-gray-100">Holder Distribution</p>
+
+        <table class="w-full table-fixed">
+            <thead>
+                <tr>
+                    <th class="py-2 text-gray-400 text-left uppercase text-sm w-1/3">
+                        Address
+                    </th>
+                    <th class="py-2 text-gray-400 text-left uppercase text-sm w-1/3">
+                        Amount
+                    </th>
+                    <th class="py-2 text-gray-400 text-right uppercase text-sm w-1/3 md:w-1/4">
+                        Percent
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <template x-for="balance in holders">
+                    <tr>
+                        <td class="truncate pr-4 py-2">
+                            <a :href="'/address/?address='+balance.address" x-text="balance.address" class="underline hover:text-pink-400"></a>
+                        </td>
+                        <td x-text="balance.amount+(balance.assetPreview.ticker ? ' '+balance.assetPreview.ticker : '')" class="truncate py-2">
+                        </td>
+                        <td x-text="$store.asset ? (balance.amount/$store.asset.supply*100).toFixed(2)+'%' : 0+'%'" class="truncate py-2 text-right">
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+
+        <div x-show="!depleted.holders" class="pt-6 flex justify-center text-sm">
+            <span @click="loadHolders()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
+        </div>
+    </div>
+</div>

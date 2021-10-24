@@ -31,11 +31,18 @@ document.addEventListener('alpine:init', () => {
     if (Alpine.lstore('publicKey')) connectWallet(Alpine.lstore('publicKey'))
 })
 
-// const API = 'http://127.0.0.1:8787'
-const API = 'https://testnet.xetareality.com'
+
+const INTERFACE = 'https://interface.xetareality.com'
+const NETWORK = 'https://testnet.xetareality.com'
 
 const Constants = {
-    xetaAddress: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+    zeroAddress: '11111111111111111111111111111zero',
+    xetaAddress: '11111111111111111111111111111xeta',
+    factoryAddress: '11111111111111111111111111factory',
+    xusdAddress: '11111111111111111111111111111xusd',
+    sponsoredAddress: '1111111111111111111111111sponsored',
+    consumedAddress: '11111111111111111111111111consumed',
+    batchAddress: '1111111111111111111111111111batch',
 }
 
 function connectWallet(publicKey) {
@@ -59,7 +66,7 @@ const MAPPING = {
         from: ['address', 1],
         to: ['address', 1],
         sender: ['address', 1],
-        asset: ['asset', 1],
+        token: ['token', 1],
         amount: ['number', 1],
         fee: ['number', 1],
         nonce: ['number', 1],
@@ -71,13 +78,19 @@ const MAPPING = {
         confirmed: ['timestamp', 1],
         input: ['transaction', 1],
         outputs: ['transactions', 1],
+        confirmed: ['timestamp', 1],
+        confirmations: ['number', 1],
+        payerBalance: ['number', 1],
+        fromBalance: ['number', 1],
+        toBalance: ['number', 1],
     },
-    asset: {
+    token: {
         address: ['string', 1],
         creator: ['address', 1],
         name: ['string', 1],
         ticker: ['string', 1],
         supply: ['number', 1],
+        reserve: ['number', 1],
         created: ['timestamp', 1],
 
         description: ['string', 1],
@@ -94,16 +107,17 @@ const MAPPING = {
     pool: {
         address: ['pool', 1],
         creator: ['address', 1],
-        asset: ['asset', 1],
+        token: ['token', 1],
         program: ['string', 1],
         created: ['timestamp', 1],
 
         name: ['string', 1],
         mechanism: ['string', 1],
-        choices: ['strings', 0],
+        candidates: ['strings', 0],
         rate: ['number', 1],
         percentage: ['number', 1],
         probability: ['number', 1],
+        answers: ['strings', 0],
 
         expires: ['timestamp', 1],
         minAmount: ['number', 1],
@@ -112,19 +126,19 @@ const MAPPING = {
         maxTime: ['timedelta', 1],
         transfersLimit: ['number', 1],
         claimsLimit: ['number', 1],
-        assetLimit: ['number', 1],
+        tokenLimit: ['number', 1],
         xetaLimit: ['number', 1],
-        assetTarget: ['number', 1],
+        tokenTarget: ['number', 1],
         xetaTarget: ['number', 1],
 
         xetaBalance: ['number', 1],
-        assetBalance: ['number', 1],
+        tokenBalance: ['number', 1],
         xetaTurnover: ['number', 1],
-        assetTurnover: ['number', 1],
+        tokenTurnover: ['number', 1],
         transfersCount: ['number', 1],
         claimsCount: ['number', 1],
         closed: ['boolean', 1],
         leader: ['address', 1],
-        answers: ['strings', 0],
+        meta: ['string', 1]
     }
 }

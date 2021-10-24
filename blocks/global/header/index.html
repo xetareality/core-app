@@ -17,7 +17,7 @@
             this.searchLoading = true
             var self = this
 
-            ajax(API+'/search?query='+this.searchQuery, null, function(data) {
+            ajax(INTERFACE+'/search?query='+this.searchQuery, null, function(data) {
                 self.searchResults = JSON.parse(data)
                 self.searchResults = self.searchResults.map(r => ({...r, ...{path: '/'+r.type+(r.type == 'transaction' ? '/?signature=' : '/?address=')+r.key}}))
                 console.log(self.searchResults)
