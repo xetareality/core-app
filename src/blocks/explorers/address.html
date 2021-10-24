@@ -19,7 +19,7 @@ function addressExplorer() {
             if (this.depleted.transactionsOut) return
             var self = this
             var last = this.transactionsOut.length ? '&signature='+this.transactionsOut.slice(-1)[0].signature+'&created='+this.transactionsOut.slice(-1)[0].created : ''
-            ajax(API+'/transactions?from='+this.address+'&extended=1&sort=DESC'+last, null, function(data) {
+            ajax(INTERFACE+'/transactions?from='+this.address+'&extended=1&sort=DESC'+last, null, function(data) {
                 data = JSON.parse(data)
                 if (!data.length) self.depleted.transactionsOut = true
                 self.transactionsOut = self.transactionsOut.concat(data)
@@ -29,7 +29,7 @@ function addressExplorer() {
             if (this.depleted.transactionsIn) return
             var self = this
             var last = this.transactionsIn.length ? '&signature='+this.transactionsIn.slice(-1)[0].signature+'&created='+this.transactionsIn.slice(-1)[0].created : ''
-            ajax(API+'/transactions?to='+this.address+'&extended=1&sort=DESC'+last, null, function(data) {
+            ajax(INTERFACE+'/transactions?to='+this.address+'&extended=1&sort=DESC'+last, null, function(data) {
                 data = JSON.parse(data)
                 if (!data.length) self.depleted.transactionsIn = true
                 self.transactionsIn = self.transactionsIn.concat(data)
@@ -38,25 +38,25 @@ function addressExplorer() {
         loadTokens() {
             if (this.depleted.tokens) return
             var self = this
-            var last = this.tokens.length ? '&asset='+this.tokens.slice(-1)[0].asset+'&amount='+this.tokens.slice(-1)[0].amount : ''
-            ajax(API+'/balances?address='+this.address+'&extended=1&sort=DESC'+last, null, function(data) {
+            var last = this.tokens.length ? '&token='+this.tokens.slice(-1)[0].token+'&amount='+this.tokens.slice(-1)[0].amount : ''
+            ajax(INTERFACE+'/balances?address='+this.address+'&extended=1&sort=DESC'+last, null, function(data) {
                 data = JSON.parse(data)
                 if (!data.length) self.depleted.tokens = true
-                self.tokens = self.tokens.concat(data.filter(d => d.amount >= 0 && !self.existing.includes(d.asset)))
-                self.objects = self.objects.concat(data.filter(d => d.amount == -1 && !self.existing.includes(d.asset)).reverse())
-                self.existing = self.existing.concat(data.map(d => d.asset))
+                self.tokens = self.tokens.concat(data.filter(d => d.amount >= 0 && !self.existing.includes(d.token)))
+                self.objects = self.objects.concat(data.filter(d => d.amount == -1 && !self.existing.includes(d.token)).reverse())
+                self.existing = self.existing.concat(data.map(d => d.token))
             })
         },
         loadObjects() {
             if (this.depleted.objects) return
             var self = this
-            var last = this.objects.length ? '&asset='+this.objects.slice(-1)[0].asset+'&amount='+this.objects.slice(-1)[0].amount : ''
-            ajax(API+'/balances?address='+this.address+'&extended=1&sort=ASC'+last, null, function(data) {
+            var last = this.objects.length ? '&token='+this.objects.slice(-1)[0].token+'&amount='+this.objects.slice(-1)[0].amount : ''
+            ajax(INTERFACE+'/balances?address='+this.address+'&extended=1&sort=ASC'+last, null, function(data) {
                 data = JSON.parse(data)
                 if (!data.length) self.depleted.objects = true
-                self.tokens = self.tokens.concat(data.filter(d => d.amount >= 0 && !self.existing.includes(d.asset)))
-                self.objects = self.objects.concat(data.filter(d => d.amount == -1 && !self.existing.includes(d.asset)).reverse())
-                self.existing = self.existing.concat(data.map(d => d.asset))
+                self.tokens = self.tokens.concat(data.filter(d => d.amount >= 0 && !self.existing.includes(d.token)))
+                self.objects = self.objects.concat(data.filter(d => d.amount == -1 && !self.existing.includes(d.token)).reverse())
+                self.existing = self.existing.concat(data.map(d => d.token))
             })
         },
         loadPools() {

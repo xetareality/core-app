@@ -1,5 +1,5 @@
 <script>
-function assetExplorer() {
+function tokenExplorer() {
     return {
         tab: 'transactions',
         transactions: [],
@@ -13,7 +13,7 @@ function assetExplorer() {
             if (this.depleted.transactions) return
             var self = this
             var last = this.transactions.length ? '&signature='+this.transactions.slice(-1)[0].signature+'&created='+this.transactions.slice(-1)[0].created : ''
-            ajax(API+'/transactions?asset='+this.address+'&extended=1&sort=DESC'+last, null, function(data) {
+            ajax(INTERFACE+'/transactions?token='+this.address+'&extended=1&sort=DESC'+last, null, function(data) {
                 data = JSON.parse(data)
                 if (!data.length) self.depleted.transactions = true
                 self.transactions = self.transactions.concat(data)
@@ -23,7 +23,7 @@ function assetExplorer() {
             if (this.depleted.holders) return
             var self = this
             var last = this.holders.length ? '&address='+this.holders.slice(-1)[0].address+'&amount='+this.holders.slice(-1)[0].amount : ''
-            ajax(API+'/balances?asset='+this.address+'&extended=1&sort=DESC'+last, null, function(data) {
+            ajax(INTERFACE+'/balances?token='+this.address+'&extended=1&sort=DESC'+last, null, function(data) {
                 data = JSON.parse(data)
                 if (!data.length) self.depleted.holders = true
                 self.holders = self.holders.concat(data)
@@ -33,7 +33,7 @@ function assetExplorer() {
 }
 </script>
 
-<div x-data="assetExplorer()">
+<div x-data="tokenExplorer()">
     <div class="bg-black rounded-2xl px-6 pt-2 mb-2 font-light text-gray-200">
         <div class="flex">
             <div @click="tab = 'transactions', !transactions.length ? loadTransactions() : ''" :class="{'border-pink-700': tab == 'transactions'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">transactions</div>
@@ -75,9 +75,9 @@ function assetExplorer() {
                         <td class="truncate pr-4 py-2">
                             <a :href="'/address/?address='+balance.address" x-text="balance.address" class="underline hover:text-pink-400"></a>
                         </td>
-                        <td x-text="balance.amount+(balance.assetPreview.ticker ? ' '+balance.assetPreview.ticker : '')" class="truncate py-2">
+                        <td x-text="balance.amount+(balance.tokenPreview.ticker ? ' '+balance.tokenPreview.ticker : '')" class="truncate py-2">
                         </td>
-                        <td x-text="$store.asset ? (balance.amount/$store.asset.supply*100).toFixed(2)+'%' : 0+'%'" class="truncate py-2 text-right">
+                        <td x-text="$store.token ? (balance.amount/$store.token.supply*100).toFixed(2)+'%' : 0+'%'" class="truncate py-2 text-right">
                         </td>
                     </tr>
                 </template>

@@ -11,8 +11,8 @@ function recentExplorer() {
             var self = this
             var last = this.transactions.length ? '&signature='+this.transactions.slice(-1)[0].signature+'&created='+this.transactions.slice(-1)[0].created : ''
             
-            // ajax(API+'/transactions?period='+currentPeriod()+'&sort=DESC'+last, null, function(data) {
-            ajax(API+'/transactions?asset=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&sort=DESC'+last, null, function(data) {
+            // ajax(INTERFACE+'/transactions?period='+currentPeriod()+'&sort=DESC'+last, null, function(data) {
+            ajax(INTERFACE+'/transactions?token='+Constants.xetaAddress+'&sort=DESC'+last, null, function(data) {
                 data = JSON.parse(data)
                 if (!data.length) self.depleted.transactions = true
                 self.transactions = self.transactions.concat(data)

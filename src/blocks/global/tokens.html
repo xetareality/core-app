@@ -2,7 +2,7 @@
     <thead>
         <tr class="text-gray-400">
             <th class="py-2 pl-6 pr-4 text-left uppercase text-sm w-1/2 md:w-1/4">
-                Asset
+                Token
             </th>
             <th class="hidden md:table-cell py-2 pr-4 text-left uppercase text-sm w-2/4">
                 Address
@@ -16,12 +16,12 @@
         <template x-for="(balance, i) in {{tokensCollection}}">
             <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
                 <td class="truncate pl-6 pr-4 py-2">
-                    <a :href="'/asset/?address='+balance.asset" x-text="(balance.assetPreview.name ? balance.assetPreview.name : '')+(balance.assetPreview.ticker ? ' ('+balance.assetPreview.ticker+')' : '')" class="underline hover:text-pink-400"></a>
+                    <a :href="'/token/?address='+balance.token" x-text="(balance.tokenPreview.name ? balance.tokenPreview.name : '')+(balance.tokenPreview.ticker ? ' ('+balance.tokenPreview.ticker+')' : '')" class="underline hover:text-pink-400"></a>
                 </td>
                 <td class="hidden md:table-cell truncate pr-4 py-2">
-                    <a :href="'/asset/?address='+balance.asset" x-text="balance.asset" class="underline hover:text-pink-400"></a>
+                    <a :href="'/token/?address='+balance.token" x-text="balance.token" class="underline hover:text-pink-400"></a>
                 </td>
-                <td x-text="balance.amount+(balance.assetPreview.ticker ? ' '+balance.assetPreview.ticker : '')" class="truncate py-2 pr-6 text-right">
+                <td x-text="balance.amount+(balance.tokenPreview.ticker ? ' '+balance.tokenPreview.ticker : '')" class="truncate py-2 pr-6 text-right">
                 </td>
             </tr>
         </template>

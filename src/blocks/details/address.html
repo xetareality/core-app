@@ -5,7 +5,7 @@ function loadAddressDetails() {
         init() {
             var key = gup('address')
             var self = this
-            ajax(API+'/balance?address='+key+'&asset='+Constants.xetaAddress, null, function(data) {
+            ajax(INTERFACE+'/balance?address='+key+'&token='+Constants.xetaAddress, null, function(data) {
                 document.title = document.title+' '+key
                 var desc = key+' is a public address on the Xeta blockchain'
                 document.querySelector('meta[name="description"]').setAttribute('content', desc)

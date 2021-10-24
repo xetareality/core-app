@@ -24,7 +24,7 @@ function walletModal() {
                 Alpine.lstore('seed', this.seed)
                 this.creating = true;
 
-                ajax(API+'/credentials', data, function(data) {
+                ajax(INTERFACE+'/credentials', data, function(data) {
                     data = JSON.parse(data)
                     self.selection = 'public'
                     self.publicKey = data.public
@@ -41,7 +41,7 @@ function walletModal() {
             var password = await hashString(this.password)
             Alpine.lstore('seed', this.seed)
 
-            ajax(API+'/credentials?seed='+this.seed+'&password='+password, null, function(data) {
+            ajax(INTERFACE+'/credentials?seed='+this.seed+'&password='+password, null, function(data) {
                 data = JSON.parse(data)
                 self.selection = 'public'
                 self.publicKey = data.public
@@ -71,7 +71,7 @@ function walletModal() {
                 <div class="w-1/2 mb-4">
                     <div @click="await generateKeys()" class="mx-4 cursor-pointer rounded-2xl bg-gray-900 bg-opacity-40 hover:bg-black shadow p-4 text-center">
                         <p class="text-lg mb-2">Create new wallet (manage keys yourself)</p>
-                        <p class="text-sm">You will receive a public and private key which you need to store securily.</p>
+                        <p class="text-sm">You will receive a public and private key which you need to store securely.</p>
                     </div>
                 </div>
                 <div class="w-1/2 mb-4">

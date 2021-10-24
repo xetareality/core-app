@@ -8,7 +8,7 @@ function lopadGlobalDetails() {
             var key = gup('address') ? gup('address') : gup('signature')
 
             var self = this
-            ajax(API+path+window.location.search+'&extended=true', null, function(data) {
+            ajax(INTERFACE+path+window.location.search+'&extended=true', null, function(data) {
                 data = JSON.parse(data)
                 Alpine.store(window.location.pathname.slice(1, -1), data)
                 var entries = Object.entries(data)
@@ -25,7 +25,7 @@ function lopadGlobalDetails() {
                 if (path.slice(1) == 'transaction') {
                     document.title = document.title+' '+key
                     desc = 'Transaction '+key+' was registered on '+new Date(parseInt(out.created)).toLocaleString()
-                } else if (path.slice(1) == 'asset') {
+                } else if (path.slice(1) == 'token') {
                     document.title = document.title+(out.name ? ' '+out.name : '')+(out.ticker ? ' '+out.ticker : '')
                     desc = (out.name ? out.name : key)+(out.ticker ? ' '+out.ticker : '')+' was registered on '+new Date(parseInt(out.created)).toLocaleString()+' and has a supply of '+out.supply.replace('-', '')
                 } else if (path.slice(1) == 'pool') {
@@ -38,7 +38,7 @@ function lopadGlobalDetails() {
 
                 document.querySelector('meta[name="description"]').setAttribute('content', desc)
 
-                var assetPreview = out.assetPreview ? out.assetPreview.ticker+(out.assetPreview.name ? ' ('+out.assetPreview.name+')' : '')+(out.assetPreview.icon ? '<img class="h-6 w-6 ml-2" src="'+out.assetPreview.icon+'" />' : '') : ''
+                var tokenPreview = out.tokenPreview ? out.tokenPreview.ticker+(out.tokenPreview.name ? ' ('+out.tokenPreview.name+')' : '')+(out.tokenPreview.icon ? '<img class="h-6 w-6 ml-2" src="'+out.tokenPreview.icon+'" />' : '') : ''
                 var poolPreview = out.poolPreview ? (out.poolPreview.name ? out.poolPreview.name+' ' : '')+out.poolPreview.type : ''
 
                 for (var k in out) {
@@ -53,7 +53,7 @@ function lopadGlobalDetails() {
                     else if (mapping[k][0] == 'boolean') val = String(out[k]).toUpperCase()
                     else if (mapping[k][0] == 'transaction') val = '<a href="/transaction/?signature='+out[k]+'" class="underline hover:text-pink-400">'+out[k]+'</a>'
                     else if (mapping[k][0] == 'transactions') val = out[k].map(t => '<a href="/transaction/?signature='+t+'" class="underline hover:text-pink-400 w-full block truncate pb-1">'+t+'</a>').join('')
-                    else if (mapping[k][0] == 'asset') val = '<a href="/asset/?address='+out[k]+'" class="underline hover:text-pink-400">'+out[k]+'</a>'+(assetPreview ? '<span class="ml-2">'+assetPreview+'</span>' : '')
+                    else if (mapping[k][0] == 'token') val = '<a href="/token/?address='+out[k]+'" class="underline hover:text-pink-400">'+out[k]+'</a>'+(tokenPreview ? '<span class="ml-2">'+tokenPreview+'</span>' : '')
                     else if (mapping[k][0] == 'address') val = '<a href="/address/?address='+out[k]+'" class="underline hover:text-pink-400">'+out[k]+'</a>'
                     else if (mapping[k][0] == 'pool') val = '<a href="/pool/?address='+out[k]+'" class="underline hover:text-pink-400">'+out[k]+'</a>'+(poolPreview ? '<span class="ml-2">'+poolPreview+'</span>' : '')
                     else if (mapping[k][0] == 'links') val = out[k].map(l => '<a rel="nofollow" href="'+l+'" class="underline hover:text-pink-400 w-full block truncate pb-1">'+l+'</a>').join('')

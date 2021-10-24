@@ -28,7 +28,7 @@
                     <a x-text="tx.signature" :href="'/transaction/?signature='+tx.signature" class="underline hover:text-pink-400"></a>
                 </td>
                 <td class="truncate pr-4 py-2">
-                    <a :href="'/asset/?address='+tx.asset" x-html="Math.abs(tx.amount)+(tx.assetPreview ? (tx.assetPreview.ticker ? ' '+tx.assetPreview.ticker : '') : '')" class="hover:text-pink-400"></a>
+                    <a :href="'/token/?address='+tx.token" x-html="Math.abs(tx.amount)+(tx.tokenPreview ? (tx.tokenPreview.ticker ? ' '+tx.tokenPreview.ticker : '') : '')" class="hover:text-pink-400"></a>
                 </td>
                                         
                 <td x-text="tx.function ? tx.function : ''" class="hidden md:table-cell truncate pr-4 py-2 uppercase">

@@ -110,8 +110,8 @@ function timeSince(date) {
         i = Math.floor(interval)
         return i + ' minute'+(i > 1 ? 's' : '');
     }
-    i = Math.floor(interval)
-    return i + ' second'+(i > 1 ? 's' : '');
+    i = Math.floor(seconds)
+    return i + ' second'+(i != 1 ? 's' : '');
 }
 
 function currentPeriod() {

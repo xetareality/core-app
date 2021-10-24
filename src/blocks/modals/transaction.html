@@ -5,7 +5,7 @@ function createTransaction(args) {
             sender: Alpine.store('wallet'),
             from: Alpine.store('wallet'),
             to: args && args.to ? args.to : null,
-            asset: args && args.asset ? args.asset : Constants.xetaAddress,
+            token: args && args.token ? args.token : Constants.xetaAddress,
             amount: args && args.amount ? args.amount : '0',
             function: args && args.function ? args.function : null,
             message: args && args.message ? args.message : null,
@@ -38,9 +38,9 @@ function createTransaction(args) {
         </div>
 
         <div class="mb-6">
-            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Transfer Asset</label>
+            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Transfer Token</label>
             <div x-data="{options: [['key', 'value'], ['key', 'value'], ['key', 'value']]}">
-                <select name="" @click.stop @select="validate($el)" @blur="validate($el)" x-model="transaction.asset" data-rules='["required"]' class="no-arrow rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden w-full">
+                <select name="" @click.stop @select="validate($el)" @blur="validate($el)" x-model="transaction.token" data-rules='["required"]' class="no-arrow rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden w-full">
                     <option :value="options[0][0]" x-text="options[0][1]" selected></option>
                     <template x-for="option in options.slice(1)">
                         <option :value="option[0]" x-text="option[1]" :selected="transaction.model == option[0]"></option>
