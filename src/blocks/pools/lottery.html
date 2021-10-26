@@ -16,22 +16,22 @@ function lotteryPool() {
             <p class="text-xl mb-4 text-gray-400 font-normal">Participate to win from a prize-pool with:</p>
             <a href="/token/?address=1">
                 <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
-                    <p class="text-3xl underline text-white py-4">
+                    <p class="text-3xl text-white py-4 tracking-wider">
                         <span x-text="formatNumber($store.pool.tokenBalance)"></span>
                         <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
                     </p>
                 </div>
             </a>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Number of Winners</span>
+                <span class="text-gray-400 font-normal mr-4">Number of Winners</span>
                 <span x-text="$store.pool.claimsLimit ? formatNumber($store.pool.claimsLimit) : 'Everyone Wins'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Current Participants</span>
+                <span class="text-gray-400 font-normal mr-4">Current Participants</span>
                 <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
-                <span class="text-gray-400 font-normal">Closing</span>
+                <span class="text-gray-400 font-normal mr-4">Closing</span>
                 <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
             </p>
         </div>

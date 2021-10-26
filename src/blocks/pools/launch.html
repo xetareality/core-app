@@ -15,7 +15,7 @@ function launchPool() {
         <div class="w-full mb-4 text-white">
             <a href="/token/?address=1">
                 <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
-                    <p class="text-3xl underline text-white py-4">
+                    <p class="text-3xl text-white py-4 tracking-wider">
                         <span x-text="formatNumber($store.pool.xetaBalance ? $store.pool.xetaBalance : 0)"></span>
                         <span x-text="' out of '+formatNumber($store.pool.xetaLimit ? $store.pool.xetaLimit : 0)+' XETA raised for'"></span>
                         <span x-text="formatNumber($store.pool.tokenBalance)"></span>
@@ -24,47 +24,47 @@ function launchPool() {
                 </div>
             </a>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Tokens for Distribution</span>
+                <span class="text-gray-400 font-normal mr-4">Tokens for Distribution</span>
                 <span x-text="$store.pool.tokenBalance ? formatNumber($store.pool.tokenBalance)+' XETA' : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Total Token Supply</span>
+                <span class="text-gray-400 font-normal mr-4">Total Token Supply</span>
                 <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.supply ? formatNumber($store.pool.tokenPreview.supply)+' XETA' : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Liquidity Percentage</span>
+                <span class="text-gray-400 font-normal mr-4">Liquidity Percentage</span>
                 <span x-text="(parseFloat($store.pool.percentage || 0)*100).toFixed(2)+'%'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Presale Rate</span>
+                <span class="text-gray-400 font-normal mr-4">Presale Rate</span>
                 <span x-text="$store.pool.rate ? formatNumber($store.pool.rate, 4)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : 'Tokens')+' per XETA' : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Listing Rate</span>
+                <span class="text-gray-400 font-normal mr-4">Listing Rate</span>
                 <span x-text="$store.pool.rate ? formatNumber($store.pool.rate, 4)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : 'Tokens')+' per XETA' : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Min/Max Contribution</span>
+                <span class="text-gray-400 font-normal mr-4">Min/Max Contribution</span>
                 <span x-text="formatNumber($store.pool.minAmount ? $store.pool.minAmount : 0)+' to '+($store.pool.maxAmount ? formatNumber($store.pool.maxAmount) : 'Unlimited')+' XETA'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Funds Raised</span>
+                <span class="text-gray-400 font-normal mr-4">Funds Raised</span>
                 <span x-text="$store.pool.xetaBalance ? formatNumber($store.pool.xetaBalance)+' XETA' : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Current Participants</span>
+                <span class="text-gray-400 font-normal mr-4">Current Participants</span>
                 <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">XETA Soft Cap</span>
+                <span class="text-gray-400 font-normal mr-4">XETA Soft Cap</span>
                 <span x-text="$store.pool.xetaTarget ? formatNumber(Math.min($store.pool.xetaTarget, ($store.pool.xetaLimit ? $store.pool.xetaLimit : 1e15)))+' XETA' : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">XETA Hard Cap</span>
+                <span class="text-gray-400 font-normal mr-4">XETA Hard Cap</span>
                 <span x-text="$store.pool.xetaLimit ? formatNumber($store.pool.xetaLimit)+' XETA' : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
-                <span class="text-gray-400 font-normal">Closing</span>
+                <span class="text-gray-400 font-normal mr-4">Closing</span>
                 <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
             </p>
         </div>

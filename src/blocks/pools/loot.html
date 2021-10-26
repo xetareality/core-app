@@ -1,0 +1,185 @@
+<script>
+function lootPool() {
+    return {
+        init() {
+        }
+    }
+}
+</script>
+<div x-cloak x-show="$store.pool.program == 'loot'" x-data="lootPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+    <div class="w-full flex flex-wrap justify-between items-center mb-4">
+        <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Loot Pool)' : 'Loot Pool'"></p>
+        <button @click="" class="cursor-pointer text-white py-2 px-8 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all w-full md:w-1/4">Participate</button>
+    </div>
+    <div class="flex flex-wrap">
+        <div class="w-full mb-4 text-white">
+            <p x-cloak x-show="$store.pool.name && $store.pool.tokenPreview && $store.pool.tokenPreview.name" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''" class="text-xl mb-4 text-gray-400 font-normal text-white"></p>
+            
+            <p class="text-xl mb-4 text-gray-400 font-normal">Participate to win a random NFT.</p>
+
+            <div class="flex flex-wrap mb-4">
+                <!-- <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
+                    <div class="mx-2">
+                        <img class="h-32 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
+                        <a class="text-sm text-white px-2 py-3 block text-center" href="">NFT Name</a>
+                    </div>
+                </div>
+
+                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
+                    <div class="mx-2">
+                        <img class="h-32 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
+                        <a class="text-sm text-white px-2 py-3 block text-center" href="">NFT Name</a>
+                    </div>
+                </div>
+
+                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
+                    <div class="mx-2">
+                        <img class="h-32 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
+                        <a class="text-sm text-white px-2 py-3 block text-center" href="">NFT Name</a>
+                    </div>
+                </div>
+
+                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
+                    <div class="mx-2">
+                        <img class="h-32 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
+                        <a class="text-sm text-white px-2 py-3 block text-center" href="">NFT Name</a>
+                    </div>
+                </div>
+
+                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
+                    <div class="mx-2">
+                        <img class="h-32 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
+                        <a class="text-sm text-white px-2 py-3 block text-center" href="">NFT Name</a>
+                    </div>
+                </div> -->
+
+                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
+                    <div class="mx-2">
+                        <a href="/">
+                            <div class="border-2 rounded-2xl border-gray-800 px-2 py-2 bg-gray-900 hover:bg-black transition-all">
+                                <img class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
+                                <p class="text-sm text-white px-2 py-1 text-center tracking-wider">NFT Name</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
+                    <div class="mx-2">
+                        <a href="/">
+                            <div class="border-2 rounded-2xl border-gray-800 px-2 py-2 bg-gray-900 hover:bg-black transition-all">
+                                <img class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
+                                <p class="text-sm text-white px-2 py-1 text-center tracking-wider">NFT Name</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
+                    <div class="mx-2">
+                        <a href="/">
+                            <div class="border-2 rounded-2xl border-gray-800 px-2 py-2 bg-gray-900 hover:bg-black transition-all">
+                                <img class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
+                                <p class="text-sm text-white px-2 py-1 text-center tracking-wider">NFT Name</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
+                    <div class="mx-2">
+                        <a href="/">
+                            <div class="border-2 rounded-2xl border-gray-800 px-2 py-2 bg-gray-900 hover:bg-black transition-all">
+                                <img class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
+                                <p class="text-sm text-white px-2 py-1 text-center tracking-wider">NFT Name</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
+                    <div class="mx-2">
+                        <a href="/">
+                            <div class="border-2 rounded-2xl border-gray-800 px-2 py-2 bg-gray-900 hover:bg-black transition-all">
+                                <img class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
+                                <p class="text-sm text-white px-2 py-1 text-center tracking-wider">NFT Name</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
+                    <div class="mx-2">
+                        <div class="border rounded-2xl border-gray-800 px-4 py-4">
+                            <img class="h-32 mb-2 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
+                            <a class="text-sm text-white px-2" href="">NFT Name</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
+                    <div class="mx-2">
+                        <div class="border rounded-2xl border-gray-800 px-4 py-4">
+                            <img class="h-32 mb-2 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
+                            <a class="text-sm text-white px-2" href="">NFT Name</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
+                    <div class="mx-2">
+                        <div class="border rounded-2xl border-gray-800 px-4 py-4">
+                            <img class="h-32 mb-2 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
+                            <a class="text-sm text-white px-2" href="">NFT Name</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
+                    <div class="mx-2">
+                        <div class="border rounded-2xl border-gray-800 px-4 py-4">
+                            <img class="h-32 mb-2 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
+                            <a class="text-sm text-white px-2" href="">NFT Name</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
+                    <div class="mx-2">
+                        <div class="border rounded-2xl border-gray-800 px-4 py-4">
+                            <img class="h-32 mb-2 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
+                            <a class="text-sm text-white px-2" href="">NFT Name</a>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Cost to Participate</span>
+                <span x-cloak x-show="$store.pool.minAmount != $store.pool.maxAmount">
+                    <span x-text="$store.pool.minAmount ? formatNumber($store.pool.minAmount, 8) : 0"></span>
+                    <span>to</span>
+                    <span x-text="$store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited'"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
+                </span>
+                <span x-cloak x-show="$store.pool.minAmount == $store.pool.maxAmount">
+                    <span x-text="$store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 0"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
+                </span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Win Probability</span>
+                <span x-text="(parseFloat($store.pool.percentage || 1)*100).toFixed(2)+'%'"></span>
+            </p>
+        </div>
+    </div>
+
+    <div x-data="{details: false}">
+        <div class="flex flex-wrap justify-center">
+            <span @click="details = !details" class="cursor-pointer underline text-gray-200 px-4 text-sm font-light"><span x-text="details ? 'Close' : 'Open'">Open</span> Details</span>
+        </div>
+        <div x-cloak x-show="details">
+            {% include "src/blocks/details/global.html" %}
+        </div>
+    </div>
+</div>

@@ -17,14 +17,14 @@ function stakingPool() {
             <p class="text-xl mb-4 text-gray-400 font-normal">Stake and receive rewards with an APY of:</p>
             <a href="/token/?address=1">
                 <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
-                    <p class="text-3xl underline text-white py-4">
+                    <p class="text-3xl text-white py-4 tracking-wider">
                         <span x-text="((parseFloat($store.pool.rate || 0)+parseFloat($store.pool.percentage || 0))*100).toFixed(2)"></span>
                         <span>% APY</span>
                     </p>
                 </div>
             </a>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Min/Max Lock-Amount</span>
+                <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Amount</span>
                 <span>
                     <span x-text="$store.pool.minAmount ? formatNumber($store.pool.minAmount, 8) : 0"></span>
                     <span>to</span>
@@ -33,7 +33,7 @@ function stakingPool() {
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Min/Max Lock-Time</span>
+                <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Time</span>
                 <span>
                     <span x-text="$store.pool.minTime ? formatTime(parseInt($store.pool.minTime)+Date.now(), false) : '1 day'"></span>
                     <span>to</span>
@@ -41,15 +41,15 @@ function stakingPool() {
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">APY Rate</span>
+                <span class="text-gray-400 font-normal mr-4">APY Rate</span>
                 <span x-text="(parseFloat($store.pool.rate || 0)*100).toFixed(2)+'%'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Bonus APY Rate</span>
+                <span class="text-gray-400 font-normal mr-4">Bonus APY Rate</span>
                 <span x-text="(parseFloat($store.pool.percentage || 0)*100).toFixed(2)+'%'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Total Value Locked</span>
+                <span class="text-gray-400 font-normal mr-4">Total Value Locked</span>
                 <span>
                     <span x-text="formatNumber((parseFloat($store.pool.tokenBalance) || 0), 8)"></span>
                     <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
@@ -57,7 +57,7 @@ function stakingPool() {
             </p>
             
             <p class="text-xl font-light mb-2 flex justify-between">
-                <span class="text-gray-400 font-normal">Closing</span><span></span>
+                <span class="text-gray-400 font-normal mr-4">Closing</span><span></span>
                 <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
             </p>
         </div>

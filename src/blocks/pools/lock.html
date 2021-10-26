@@ -16,8 +16,8 @@ function lockPool() {
             <p x-cloak x-show="$store.pool.name && $store.pool.tokenPreview && $store.pool.tokenPreview.name" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''" class="text-xl mb-4 text-gray-400 font-normal text-white"></p>
             
             <a href="/token/?address=1">
-                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 bg-gray-900">
-                    <p class="text-3xl underline text-white py-4">
+                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                    <p class="text-3xl text-white py-4 tracking-wider">
                         <span x-text="formatNumber($store.pool.tokenBalance)"></span>
                         <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
                         <span>Locked</span>
@@ -25,7 +25,7 @@ function lockPool() {
                 </div>
             </a>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Min/Max Lock-Amount</span>
+                <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Amount</span>
                 <span>
                     <span x-text="$store.pool.minAmount ? formatNumber($store.pool.minAmount, 8) : 0"></span>
                     <span>to</span>
@@ -34,7 +34,7 @@ function lockPool() {
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Min/Max Lock-Time</span>
+                <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Time</span>
                 <span>
                     <span x-text="$store.pool.minTime ? formatTime(parseInt($store.pool.minTime)+Date.now(), false) : '1 day'"></span>
                     <span>to</span>
@@ -42,7 +42,7 @@ function lockPool() {
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Total Locks</span>
+                <span class="text-gray-400 font-normal mr-4">Total Locks</span>
                 <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span>
             </p>
         </div>

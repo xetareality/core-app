@@ -18,9 +18,9 @@ function auctionPool() {
             <a href="/token/?address=1">
                 <div class="text-center mb-8 rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative" style="background-image: url(/media/pattern01.jpeg)">
                     <div class="w-full md:w-1/2 md:py-8 z-50">
-                        <img class="rounded-2xl w-full object-center object-cover" src="https://i.redd.it/tpxvny1fbdv61.png">
+                        <img class="rounded-2xl w-full object-center object-cover shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
                     </div>
-                    <div class="bg-black opacity-50 w-full h-full absolute rounded-2xl z-10 shadow-2xl"></div>
+                    <div class="bg-black opacity-50 w-full h-full absolute rounded-2xl z-10"></div>
                 </div>
             </a>
             <!-- <a href="/token/?address=1">
@@ -39,32 +39,32 @@ function auctionPool() {
                 </div>
             </a> -->
             <!-- <a href="/token/?address=1">
-                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 bg-gray-900">
-                    <p class="text-3xl underline text-white py-4">
+                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                    <p class="text-3xl text-white py-4 tracking-wider">
                         <span x-text="formatNumber($store.pool.tokenBalance)"></span>
                         <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
                     </p>
                 </div>
             </a> -->
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Target Bid</span>
+                <span class="text-gray-400 font-normal mr-4">Target Bid</span>
                 <span x-text="$store.pool.xetaTarget ? formatNumber($store.pool.xetaTarget)+' XETA' : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Instant-Buy Bid</span>
+                <span class="text-gray-400 font-normal mr-4">Instant-Buy Bid</span>
                 <span x-text="$store.pool.xetaLimit ? formatNumber($store.pool.xetaLimit)+' XETA' : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Highest Bid</span>
+                <span class="text-gray-400 font-normal mr-4">Highest Bid</span>
                 <span x-text="$store.pool.xetaBalance ? formatNumber($store.pool.xetaBalance)+' XETA' : '0'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal">Highest Bidder</span>
-                <a x-cloak x-show="$store.pool.leader" x-text="$store.pool.leader" :href="'/address/?address='+$store.pool.leader" class="underline hover:text-pink-400"></a>
+                <span class="text-gray-400 font-normal mr-4">Highest Bidder</span>
+                <a x-cloak x-show="$store.pool.leader" x-text="$store.pool.leader" :href="'/address/?address='+$store.pool.leader" class="underline truncate hover:text-pink-400"></a>
                 <span x-cloak x-show="!$store.pool.leader">None</span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
-                <span class="text-gray-400 font-normal">Closing</span>
+                <span class="text-gray-400 font-normal mr-4">Closing</span>
                 <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
             </p>
         </div>
