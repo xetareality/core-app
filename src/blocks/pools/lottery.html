@@ -1,0 +1,39 @@
+<script>
+function lotteryPool() {
+    return {
+        init() {
+        }
+    }
+}
+</script>
+<div x-cloak x-show="$store.pool.program == 'lottery'" x-data="lotteryPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+    <div class="w-full flex flex-wrap justify-between items-center mb-4">
+        <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Lottery Pool)' : 'Lottery Pool'"></p>
+        <button @click="" class="cursor-pointer text-white py-2 px-8 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all w-full md:w-1/4">Participate</button>
+    </div>
+    <div class="flex flex-wrap">
+        <div class="w-full mb-4 text-white">
+            <p class="text-xl mb-4 text-gray-400 font-normal">Participate to win from a prize-pool with:</p>
+            <a href="/token/?address=1">
+                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                    <p class="text-3xl underline text-white py-4">
+                        <span x-text="formatNumber($store.pool.tokenBalance)"></span>
+                        <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
+                    </p>
+                </div>
+            </a>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal">Number of Winners</span>
+                <span x-text="$store.pool.claimsLimit ? formatNumber($store.pool.claimsLimit) : 'Everyone Wins'"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal">Current Participants</span>
+                <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span>
+            </p>
+            <p class="text-xl font-light mb-2 flex justify-between">
+                <span class="text-gray-400 font-normal">Closing</span>
+                <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
+            </p>
+        </div>
+    </div>
+</div>

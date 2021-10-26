@@ -1,0 +1,31 @@
+<script>
+function loadPool() {
+    return {
+        init() {
+            Alpine.store('pool', {})
+            var path = window.location.pathname.slice(0, -1)
+
+            ajax(INTERFACE+path+window.location.search, null, function(data) {
+                var pool = JSON.parse(data)
+                Alpine.store('pool', pool)
+
+                if (pool.expires) setInterval(function() {
+                    Alpine.store('pool').timer = timer(Alpine.store('pool').expires)
+                }, 1000)
+            })
+        }
+    }
+}
+</script>
+
+<div x-data="loadPool">
+{% include "src/blocks/pools/auction.html" %}
+{% include "src/blocks/pools/launch.html" %}
+{% include "src/blocks/pools/lock.html" %}
+{% include "src/blocks/pools/loot.html" %}
+{% include "src/blocks/pools/lottery.html" %}
+{% include "src/blocks/pools/royalty.html" %}
+{% include "src/blocks/pools/staking.html" %}
+{% include "src/blocks/pools/swap.html" %}
+{% include "src/blocks/pools/vote.html" %}
+</div>
