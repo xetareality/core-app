@@ -3,6 +3,8 @@ function loadAddressDetails() {
     return {
         details: {},
         init() {
+            // TODO: Account+balance, OR redirect to pool
+
             var key = gup('address')
             var self = this
             ajax(INTERFACE+'/balance?address='+key+'&token='+Constants.xetaAddress, null, function(data) {
@@ -29,7 +31,7 @@ function loadAddressDetails() {
 }
 </script>
 
-<div x-data="loadAddressDetails()" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12">
+<div x-data="loadAddressDetails()" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <p class="text-lg py-2 text-gray-100">Details</p>
     <table class="w-full table-fixed font-light text-sm">
         <thead>
