@@ -2,14 +2,87 @@
 function lootPool() {
     return {
         init() {
-        }
+        },
+        transfer() {
+            var inputs = {amount: {required: true, default: 0, type: 'number'},}
+
+            var values = {}
+            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
+
+            var data = {
+                title: 'Participate in Loot Pool',
+                description: 'Participate by sending the minimum entry amount to the pool and receiving an NFT with a certain probability.',
+                pool: Alpine.store('loot'),
+                function: 'transfer',
+            }
+
+            setData('input-modal', {inputs: inputs, values: values, data: data})
+            showModal('inputModal')
+        },
+        deposit() {
+            var inputs = {token: {required: true, type: 'hash'}}
+
+            var values = {}
+            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
+
+            var data = {
+                title: 'Deposit NFT',
+                description: 'Deposit an NFT to the loot pool.',
+                pool: Alpine.store('loot'),
+                function: 'deposit',
+            }
+
+            setData('input-modal', {inputs: inputs, values: values, data: data})
+            showModal('inputModal')
+        },
+        withdraw() {
+            var inputs = {token: {required: true, type: 'hash'}}
+
+            var values = {}
+            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
+
+            var data = {
+                title: 'Withdraw NFT',
+                description: 'Withdraw a previously deposited NFT from the loot pool.',
+                pool: Alpine.store('loot'),
+                function: 'withdraw',
+            }
+
+            setData('input-modal', {inputs: inputs, values: values, data: data})
+            showModal('inputModal')
+        },
+        clear() {
+            var data = {
+                title: 'Clear Loot Pool',
+                description: 'Clear all XETA earnings from loot pool.',
+                pool: Alpine.store('loot'),
+                function: 'clear',
+            }
+
+            setData('input-modal', {inputs: {}, values: {}, data: data})
+            showModal('inputModal')
+        },
     }
 }
 </script>
 <div x-cloak x-show="$store.pool.program == 'loot'" x-data="lootPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Loot Pool)' : 'Loot Pool'"></p>
-        <button @click="" class="cursor-pointer text-white py-2 px-8 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all w-full md:w-1/4">Participate</button>
+        <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
+            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Participate</span>
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-gray-900 text-lg font-medium transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                </svg>
+            </span>
+            <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
+                <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="deposit(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="withdraw(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="clear(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Clear</li>
+                </ul>
+            </div>
+        </div>
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
@@ -171,15 +244,6 @@ function lootPool() {
                 <span class="text-gray-400 font-normal mr-4">Win Probability</span>
                 <span x-text="(parseFloat($store.pool.percentage || 1)*100).toFixed(2)+'%'"></span>
             </p>
-        </div>
-    </div>
-
-    <div x-data="{details: false}">
-        <div class="flex flex-wrap justify-center">
-            <span @click="details = !details" class="cursor-pointer underline text-gray-200 px-4 text-sm font-light"><span x-text="details ? 'Close' : 'Open'">Open</span> Details</span>
-        </div>
-        <div x-cloak x-show="details">
-            {% include "src/blocks/details/global.html" %}
         </div>
     </div>
 </div>
