@@ -2,6 +2,7 @@ document.addEventListener('alpine:init', () => {
     // Init
     Alpine.store('pool', {})
     Alpine.store('transaction', {})
+    Alpine.store('transfer', {})
     Alpine.store('token', {})
     Alpine.store('address', {})
     Alpine.store('allowance', {})
