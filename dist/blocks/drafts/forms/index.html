@@ -1,1 +1,100 @@
-<div class="bg-black rounded-2xl px-6 py-4"><form x-data="{transaction: {media: {}}}"><div class="mb-6 w-full"><label for="" class="text-gray-200 text-sm uppercase mb-2 block">Your Address</label> <input x-model="transaction.address" data-rules='["required", "minLength:2"]' @input="validate($el)" @blur="validate($el)" name="" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full"><p class="text-gray-200 text-xs mt-2 hidden"></p></div><div class="mb-6 w-full"><div x-data="Media.component(transaction.media)" class="relative"><label class="text-gray-200 text-sm uppercase mb-2 block">Media Upload <span @click="urlUpload = !urlUpload" class="underline cursor-pointer">(Or paste from URL)</span></label> <input x-cloak x-show="urlUpload" name="url" class="mb-4 bg-transparent border-b-2 m-auto block border-pink-700 focus:border-pink-500 w-full text-gray-100 font-light pb-2 outline-none" type="text" placeholder="https://website.com/media.jpg"> <span x-show="false" @click.prevent="" class="z-10 cursor-pointer absolute right-0 top-0 -mr-1 -mt-1 rounded-full p-1-full bg-pink-700"><svg class="fill-current text-white w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path></svg></span><div class="relative p-3 border-pink-700 border-2 rounded-2xl max-w-md"><div class="h-48 bg-cover bg-center relative border-pink-700 border-dashed border-2 rounded-md"><img x-cloak x-show="media.type == 'image'" :src="media.blob" class="w-full h-full object-contain object-center" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" title=""><video x-cloak x-show="media.type == 'video'" :src="media.blob" class="w-full h-full object-contain object-center" title="" muted autoplay loop playsinline></video><div x-show="!media.type" class="h-full justify-center items-center flex px-8"><svg class="mr-4 fill-current text-gray-300" height="32" width="32" viewBox="0 0 24 24" aria-label="Upload" role="img"><path d="M24 12c0-6.627-5.372-12-12-12C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12zm-10.767 3.75a1.25 1.25 0 0 1-2.5 0v-3.948l-1.031 1.031a1.25 1.25 0 0 1-1.768-1.768L12 7l4.066 4.065a1.25 1.25 0 0 1-1.768 1.768l-1.065-1.065v3.982z"></path></svg><div class="text-gray-100 text-xs">Drag and drop or click to upload (image or video)</div></div></div><input name="media" class="cursor-pointer h-full opacity-0 absolute w-full left-0 top-0" style="font-size: 0px;" type="file" accept="image/bmp,image/gif,image/jpeg,image/png,image/tiff,image/webp,video/mp4,video/x-m4v,video/quicktime"></div></div></div><div class="mb-6 w-full"><label for="" class="text-gray-200 text-sm uppercase mb-2 block">Transfer Asset</label><div x-data="{options: [['key1', 'value1'], ['key2', 'value2'], ['key3', 'value3']]}"><select name="" @click.stop @select="validate($el)" @blur="validate($el)" x-model="transaction.asset" data-rules='["required"]' class="no-arrow rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full"><option :value="options[0][0]" x-text="options[0][1]" selected="selected"></option><template x-for="option in options.slice(1)"><option :value="option[0]" x-text="option[1]" :selected="transaction.model == option[0]"></option></template></select></div><p class="text-gray-200 text-xs mt-2 hidden"></p></div><div class="mb-6 w-full"><label for="" class="text-gray-200 text-sm uppercase mb-2 block">Groupselect</label><div x-data="{groups: {'Group 1': [['key1', 'value1'], ['key2', 'value2'], ['key3', 'value3']], 'Group 2': [['key1', 'value1'], ['key2', 'value2'], ['key3', 'value3']]}}"><select name="" @click.stop @select="validate($el)" @blur="validate($el)" x-model="transaction.model" data-rules='["required"]' class="no-arrow rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-3 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full"><template x-for="[group, options] in Object.entries(groups)"><optgroup :value="group" :label="group"><template x-for="option in options"><option :value="option[0]" x-text="option[1]" :selected="transaction.model == option[0]"></option></template></optgroup></template></select></div><p class="text-gray-200 text-xs mt-2 hidden"></p></div><div class="mb-6 w-full"><label for="" class="text-gray-200 text-sm uppercase mb-2 block">Multiselect</label><div x-data="{options: [['key1', 'value1'], ['key2', 'value2'], ['key3', 'value3']]}" x-bind="transaction.multi && transaction.multi instanceof Array ? '' : transaction.multi = []" class="relative multiselect"><input name="" disabled="disabled" @click.stop @input="validate($el)" @blur="validate($el)" x-model="transaction.multi" data-rules='["required"]' type="text" placeholder="Select" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-3 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full"><div class="multiselect-options hidden absolute z-20 bg-black rounded-2xl overflow-y-scroll max-h-32 w-full top-0 border-pink-700 border-2"><template x-for="option in options"><label class="block py-2 rounded-2xl hover:bg-gray-900 px-4 cursor-pointer items-center flex font-light"><input :checked="transaction.multi.indexOf(option[0]) > -1" @change="$el.checked ? (transaction.multi.indexOf(option[0]) == -1 ? transaction.multi.push(option[0]) : '') : (transaction.multi.indexOf(option[0]) > -1 ? transaction.multi.splice(transaction.multi.indexOf(option[0]), 1) : '')" type="checkbox" :value="option[0]" class="w-4 h-4 mr-2"> <span x-text="option[1]"></span></label></template></div></div><p class="text-gray-200 text-xs mt-2 hidden"></p></div><div class="mb-6 w-full"><label for="" class="text-gray-200 text-sm uppercase mb-2 block">Label</label> <textarea x-model="transaction.address" data-rules='["required", "minLength:2"]' @input="validate($el)" @blur="validate($el)" name="" type="text" rows="3" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full"></textarea><p class="text-gray-200 text-xs mt-2 hidden"></p></div><div class="mb-6 w-full"><label class="text-gray-200 text-sm uppercase mb-2 block cursor-pointer items-center flex select-none"><input :checked="true" x-model="transaction.checked" type="checkbox" class="mr-2 h-6 w-6"> <span>Checkbox</span></label></div><div><button @click.prevent="validForm($root) ? '' : ''" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full">Submit</button></div></form></div>
+<div class="bg-black rounded-2xl px-6 py-4">
+    <form x-data="{transaction: {media: {}}}">
+        <div class="mb-6 w-full">
+            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your Address</label>
+            <input x-model="transaction.address" data-rules='["required", "minLength:2"]' @input="validate($el)" @blur="validate($el)" name="" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
+            <p class="text-gray-200 text-xs mt-2 hidden"></p>
+        </div>
+
+        <div class="mb-6 w-full">
+            <div x-data="Media.component(transaction.media)" class="relative">
+                <label class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Media Upload <span @click="urlUpload = !urlUpload" class="underline cursor-pointer">(Or paste from URL)</span></label>
+                <input x-cloak x-show="urlUpload" name="url" class="mb-4 bg-transparent border-b-2 m-auto block border-pink-700 focus:border-pink-500 w-full text-gray-100 font-light pb-2 outline-none" type="text" placeholder="https://website.com/media.jpg"/>
+
+
+                <span x-show="false" @click.prevent="" class="z-10 cursor-pointer absolute right-0 top-0 -mr-1 -mt-1 rounded-full p-1-full bg-pink-700"><svg class="fill-current text-white w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path></svg></span>   
+
+                <div class="relative p-3 border-pink-700 border-2 rounded-2xl max-w-md">
+                    <div class="h-48 bg-cover bg-center relative border-pink-700 border-dashed border-2 rounded-md">
+                        <img x-cloak x-show="media.type == 'image'" :src="media.blob" class="w-full h-full object-contain object-center" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" title="" />
+                        <video x-cloak x-show="media.type == 'video'" :src="media.blob" class="w-full h-full object-contain object-center" title="" muted autoplay loop playsinline></video>
+
+
+                        <div x-show="!media.type" class="h-full justify-center items-center flex px-8">
+                            <svg class="mr-4 fill-current text-gray-300" height="32" width="32" viewBox="0 0 24 24" aria-label="Upload" role="img">
+                                <path d="M24 12c0-6.627-5.372-12-12-12C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12zm-10.767 3.75a1.25 1.25 0 0 1-2.5 0v-3.948l-1.031 1.031a1.25 1.25 0 0 1-1.768-1.768L12 7l4.066 4.065a1.25 1.25 0 0 1-1.768 1.768l-1.065-1.065v3.982z"></path>
+                            </svg>
+                            <div class="text-gray-100 text-xs">Drag and drop or click to upload (image or video)</div>
+                        </div>
+                    </div>
+
+                    <input name="media" class="cursor-pointer h-full opacity-0 absolute w-full left-0 top-0" style="font-size: 0px;" type="file" accept="image/bmp,image/gif,image/jpeg,image/png,image/tiff,image/webp,video/mp4,video/x-m4v,video/quicktime">
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="mb-6 w-full">
+            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Transfer Asset</label>
+            <div x-data="{options: [['key1', 'value1'], ['key2', 'value2'], ['key3', 'value3']]}">
+                <select name="" @click.stop @select="validate($el)" @blur="validate($el)" x-model="transaction.asset" data-rules='["required"]' class="no-arrow rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full">
+                    <option :value="options[0][0]" x-text="options[0][1]" selected></option>
+                    <template x-for="option in options.slice(1)">
+                        <option :value="option[0]" x-text="option[1]" :selected="transaction.model == option[0]"></option>
+                    </template>
+                </select>
+            </div>
+            <p class="text-gray-200 text-xs mt-2 hidden"></p>
+        </div>
+
+        <div class="mb-6 w-full">
+            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Groupselect</label>
+            <div x-data="{groups: {'Group 1': [['key1', 'value1'], ['key2', 'value2'], ['key3', 'value3']], 'Group 2': [['key1', 'value1'], ['key2', 'value2'], ['key3', 'value3']]}}">
+                <select name="" @click.stop @select="validate($el)" @blur="validate($el)" x-model="transaction.model" data-rules='["required"]' class="no-arrow rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-3 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full">
+                    <template x-for="[group, options] in Object.entries(groups)">
+                        <optgroup :value="group" :label="group">
+                            <template x-for="option in options">
+                                <option :value="option[0]" x-text="option[1]" :selected="transaction.model == option[0]"></option>
+                            </template>
+                        </optgroup>
+                    </template>
+                </select>
+            </div>
+            <p class="text-gray-200 text-xs mt-2 hidden"></p>
+        </div>
+
+        <div class="mb-6 w-full">
+            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Multiselect</label>
+            <div x-data="{options: [['key1', 'value1'], ['key2', 'value2'], ['key3', 'value3']]}" x-bind="transaction.multi && transaction.multi instanceof Array ? '' : transaction.multi = []" class="relative multiselect">
+                <input name="" disabled @click.stop @input="validate($el)" @blur="validate($el)" x-model="transaction.multi" data-rules='["required"]' type="text" placeholder="Select" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-3 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
+
+                <div class="multiselect-options hidden absolute z-20 bg-black rounded-2xl overflow-y-scroll max-h-32 w-full top-0 border-pink-700 border-2">
+                    <template x-for="option in options">
+                        <label class="block py-2 rounded-2xl hover:bg-gray-900 px-4 cursor-pointer items-center flex font-light">
+                            <input :checked="transaction.multi.indexOf(option[0]) > -1" @change="$el.checked ? (transaction.multi.indexOf(option[0]) == -1 ? transaction.multi.push(option[0]) : '') : (transaction.multi.indexOf(option[0]) > -1 ? transaction.multi.splice(transaction.multi.indexOf(option[0]), 1) : '')" type="checkbox" :value="option[0]" class="w-4 h-4 mr-2">
+                            <span x-text="option[1]"></span>
+                        </label>
+                    </template>
+                </div>
+            </div>
+            <p class="text-gray-200 text-xs mt-2 hidden"></p>
+        </div>
+
+        <div class="mb-6 w-full">
+            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Label</label>
+            <textarea x-model="transaction.address" data-rules='["required", "minLength:2"]' @input="validate($el)" @blur="validate($el)" name="" type="text" rows="3" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full"></textarea>
+            <p class="text-gray-200 text-xs mt-2 hidden"></p>
+        </div>
+
+        <div class="mb-6 w-full">
+            <label class="text-gray-200 text-xs font-semibold uppercase mb-2 block cursor-pointer items-center flex select-none">
+                <input :checked="true" x-model="transaction.checked" type="checkbox" class="mr-2 h-6 w-6">
+                <span>Checkbox</span>
+            </label>
+        </div>
+
+        <div>
+            <button @click.prevent="validForm($root) ? '' : ''" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full">Submit</button>
+        </div>
+    </form>
+</div>

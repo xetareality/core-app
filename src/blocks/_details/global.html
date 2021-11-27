@@ -5,12 +5,14 @@ function loadGlobalDetails() {
         active: window.location.pathname.slice(1, -1) != 'pool',
         init() {
             var self = this
-            var resource = window.location.pathname.slice(1, -1)
-            var key = resource == 'transaction' ? gup('signature') : gup('address')
-            Xeta[resource].get({[resource == 'transaction' ? 'signature' : 'address']: key, extended: true}).then(function(data) {
-                Alpine.store(resource, data)
-                if (resource == 'pool') Alpine.store(data.program, new Xeta[data.program](data))
-                setPageMeta(resource, data)
+            document.addEventListener('resourceLoaded', function (e) {
+                var resource = window.location.pathname.slice(1, -1)
+                var data = Alpine.store(resource)
+                
+                if (resource == 'address') {
+                    if (data.pool) window.location.href = '/pools/?address='+data.pool.address
+                    data = Object.assign({}, data.account, data.balance)
+                }
 
                 var tokenPreview = data.tokenPreview ? data.tokenPreview.ticker+(data.tokenPreview.name ? ' ('+data.tokenPreview.name+')' : '')+(data.tokenPreview.icon ? '<img class="h-6 w-6 ml-2" src="'+data.tokenPreview.icon+'" />' : '') : ''
                 var poolPreview = data.poolPreview ? (data.poolPreview.name ? data.poolPreview.name+' ' : '')+data.poolPreview.type : ''

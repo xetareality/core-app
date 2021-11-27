@@ -1,14 +1,14 @@
 <div class="bg-black rounded-2xl px-6 py-4">
     <form x-data="{transaction: {media: {}}}">
         <div class="mb-6 w-full">
-            <label for="" class="text-gray-200 text-sm uppercase mb-2 block">Your Address</label>
+            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your Address</label>
             <input x-model="transaction.address" data-rules='["required", "minLength:2"]' @input="validate($el)" @blur="validate($el)" name="" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
             <p class="text-gray-200 text-xs mt-2 hidden"></p>
         </div>
 
         <div class="mb-6 w-full">
             <div x-data="Media.component(transaction.media)" class="relative">
-                <label class="text-gray-200 text-sm uppercase mb-2 block">Media Upload <span @click="urlUpload = !urlUpload" class="underline cursor-pointer">(Or paste from URL)</span></label>
+                <label class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Media Upload <span @click="urlUpload = !urlUpload" class="underline cursor-pointer">(Or paste from URL)</span></label>
                 <input x-cloak x-show="urlUpload" name="url" class="mb-4 bg-transparent border-b-2 m-auto block border-pink-700 focus:border-pink-500 w-full text-gray-100 font-light pb-2 outline-none" type="text" placeholder="https://website.com/media.jpg"/>
 
 
@@ -35,7 +35,7 @@
 
         
         <div class="mb-6 w-full">
-            <label for="" class="text-gray-200 text-sm uppercase mb-2 block">Transfer Asset</label>
+            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Transfer Asset</label>
             <div x-data="{options: [['key1', 'value1'], ['key2', 'value2'], ['key3', 'value3']]}">
                 <select name="" @click.stop @select="validate($el)" @blur="validate($el)" x-model="transaction.asset" data-rules='["required"]' class="no-arrow rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full">
                     <option :value="options[0][0]" x-text="options[0][1]" selected></option>
@@ -48,7 +48,7 @@
         </div>
 
         <div class="mb-6 w-full">
-            <label for="" class="text-gray-200 text-sm uppercase mb-2 block">Groupselect</label>
+            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Groupselect</label>
             <div x-data="{groups: {'Group 1': [['key1', 'value1'], ['key2', 'value2'], ['key3', 'value3']], 'Group 2': [['key1', 'value1'], ['key2', 'value2'], ['key3', 'value3']]}}">
                 <select name="" @click.stop @select="validate($el)" @blur="validate($el)" x-model="transaction.model" data-rules='["required"]' class="no-arrow rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-3 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full">
                     <template x-for="[group, options] in Object.entries(groups)">
@@ -64,7 +64,7 @@
         </div>
 
         <div class="mb-6 w-full">
-            <label for="" class="text-gray-200 text-sm uppercase mb-2 block">Multiselect</label>
+            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Multiselect</label>
             <div x-data="{options: [['key1', 'value1'], ['key2', 'value2'], ['key3', 'value3']]}" x-bind="transaction.multi && transaction.multi instanceof Array ? '' : transaction.multi = []" class="relative multiselect">
                 <input name="" disabled @click.stop @input="validate($el)" @blur="validate($el)" x-model="transaction.multi" data-rules='["required"]' type="text" placeholder="Select" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-3 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
 
@@ -81,13 +81,13 @@
         </div>
 
         <div class="mb-6 w-full">
-            <label for="" class="text-gray-200 text-sm uppercase mb-2 block">Label</label>
+            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Label</label>
             <textarea x-model="transaction.address" data-rules='["required", "minLength:2"]' @input="validate($el)" @blur="validate($el)" name="" type="text" rows="3" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full"></textarea>
             <p class="text-gray-200 text-xs mt-2 hidden"></p>
         </div>
 
         <div class="mb-6 w-full">
-            <label class="text-gray-200 text-sm uppercase mb-2 block cursor-pointer items-center flex select-none">
+            <label class="text-gray-200 text-xs font-semibold uppercase mb-2 block cursor-pointer items-center flex select-none">
                 <input :checked="true" x-model="transaction.checked" type="checkbox" class="mr-2 h-6 w-6">
                 <span>Checkbox</span>
             </label>

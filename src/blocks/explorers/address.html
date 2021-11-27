@@ -73,8 +73,8 @@ function addressExplorer() {
 </script>
 
 <div x-data="addressExplorer()">
-    <div class="bg-black rounded-2xl px-6 pt-2 mb-2 text-sm font-light text-gray-200">
-        <div class="flex">
+    <div class="bg-black rounded-2xl px-2 pt-2 mb-2 text-sm font-light text-gray-200 section">
+        <div class="flex flex-wrap">
             <div @click="tab = 'transactions-out', !transactionsOut.length ? loadTransactionsOut() : ''" :class="{'border-pink-700': tab == 'transactions-out'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Transactions Out</div>
             <div @click="tab = 'transactions-in', !transactionsIn.length ? loadTransactionsIn() : ''" :class="{'border-pink-700': tab == 'transactions-in'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Transactions In</div>
             <div @click="tab = 'tokens', !tokens.length ? loadTokens() : ''" :class="{'border-pink-700': tab == 'tokens'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Tokens</div>
@@ -89,7 +89,7 @@ function addressExplorer() {
         <p class="text-lg py-2 px-6 text-gray-100">Transactions Out</p>
 
         {% set transactionsCollection = 'transactionsOut' %}
-        {% include "src/blocks/global/transactions.html" %}
+        {% include "src/blocks/lists/transactions.html" %}
 
         <div x-show="!depleted.transactionsOut" class="pt-6 flex justify-center text-sm">
             <span @click="loadTransactionsOut()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
@@ -100,7 +100,7 @@ function addressExplorer() {
         <p class="text-lg py-2 px-6 text-gray-100">Transactions In</p>
 
         {% set transactionsCollection = 'transactionsIn' %}
-        {% include "src/blocks/global/transactions.html" %}
+        {% include "src/blocks/lists/transactions.html" %}
 
         <div x-show="!depleted.transactionsIn" class="pt-6 flex justify-center text-sm">
             <span @click="loadTransactionsIn()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
@@ -112,7 +112,7 @@ function addressExplorer() {
         <p class="text-lg py-2 px-6 text-gray-100">Token Balances</p>
 
         {% set tokensCollection = 'tokens' %}
-        {% include "src/blocks/global/tokens.html" %}        
+        {% include "src/blocks/lists/tokens.html" %}        
 
         <div x-show="!depleted.tokens" class="pt-6 flex justify-center text-sm">
             <span @click="loadTokens()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
@@ -123,7 +123,7 @@ function addressExplorer() {
         <p class="text-lg py-2 px-6 text-gray-100">NFT Balances</p>
 
         {% set objectsCollection = 'objects' %}
-        {% include "src/blocks/global/objects.html" %}
+        {% include "src/blocks/lists/nfts.html" %}
         
 
         <div x-show="!depleted.objects" class="pt-6 flex justify-center text-sm">

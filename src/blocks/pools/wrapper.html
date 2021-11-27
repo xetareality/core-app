@@ -2,17 +2,14 @@
 function loadPool() {
     return {
         init() {
-            Alpine.store('pool', {})
-            var path = window.location.pathname.slice(0, -1)
+            // Xeta.pool.instance({address: gup('address'), extended: true}).then(function(data) {
+            //     // Alpine.store('pool', data.pool) // Raw pool
+            //     // Alpine.store(data.pool.program, data) // Instance
 
-            ajax(INTERFACE+path+window.location.search, null, function(data) {
-                var pool = JSON.parse(data)
-                Alpine.store('pool', pool)
-
-                if (pool.expires) setInterval(function() {
-                    Alpine.store('pool').timer = timer(Alpine.store('pool').expires)
-                }, 1000)
-            })
+            //     if (data.pool.expires) setInterval(function() {
+            //         Alpine.store('pool').timer = timer(Alpine.store('pool').expires)
+            //     }, 1000)
+            // })
         }
     }
 }

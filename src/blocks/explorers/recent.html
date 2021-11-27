@@ -12,22 +12,22 @@ function recentExplorer() {
             var last = this.transactions.length ? '&signature='+this.transactions.slice(-1)[0].signature+'&created='+this.transactions.slice(-1)[0].created : ''
             
             // ajax(INTERFACE+'/transactions?period='+currentPeriod()+'&sort=DESC'+last, null, function(data) {
-            ajax(INTERFACE+'/transactions?token='+Constants.xetaAddress+'&sort=DESC'+last, null, function(data) {
-                data = JSON.parse(data)
-                if (!data.length) self.depleted.transactions = true
-                self.transactions = self.transactions.concat(data)
-            })
+            // ajax(INTERFACE+'/transactions?token='+Constants.xetaAddress+'&sort=DESC'+last, null, function(data) {
+            //     data = JSON.parse(data)
+            //     if (!data.length) self.depleted.transactions = true
+            //     self.transactions = self.transactions.concat(data)
+            // })
         },
     }
 }
 </script>
 
 <div x-data="recentExplorer()">
-    <div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
+    <div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12 section">
         <p class="text-lg py-2 px-6 text-gray-100">Recent Transactions</p>
 
         {% set transactionsCollection = 'transactions' %}
-        {% include "src/blocks/global/transactions.html" %}
+        {% include "src/blocks/lists/transactions.html" %}
 
         <div x-show="!depleted.transactions" class="pt-6 flex justify-center text-sm">
             <span @click="loadTransactions()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>

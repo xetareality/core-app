@@ -1,0 +1,197 @@
+<script>
+function poolExplorer() {
+    return {
+        tab: 'transactionsIn',
+        transactionsIn: [],
+        transactionsOut: [],
+        transactions: [], // Filtered transactions
+        claims: [],
+        transactionsFilter: 'in',
+        claimsFilter: 'all',
+        existing: [],
+        address: gup('address'),
+        depleted: {},
+        init() {
+            this.loadTransactions()
+        },
+        loadTransactions() {
+            if (this.transactionsFilter == 'in') this.loadTransactionsIn()
+            else if (this.transactionsFilter == 'out') this.loadTransactionsOut()
+        },
+        loadTransactionsOut() {
+            this.transactions = this.transactionsOut
+            if (this.depleted.transactionsOut) return
+            var last = this.transactionsOut.length ? {signature: this.transactionsOut.slice(-1)[0].signature, created: this.transactionsOut.slice(-1)[0].created} : {}
+    
+            var self = this
+            Xeta.transaction.scanByFrom({from: this.address, signature: last.signature, created: last.created, extended: true}).then(function(data) {
+                if (!data.length) self.depleted.transactionsOut = true
+                self.transactionsOut = self.transactionsOut.concat(data)
+                self.transactions = self.transactionsOut
+            }).catch(function(e) {})
+        },
+        loadTransactionsIn() {
+            this.transactions = this.transactionsIn
+            if (this.depleted.transactionsIn) return
+            var last = this.transactionsIn.length ? {signature: this.transactionsIn.slice(-1)[0].signature, created: this.transactionsIn.slice(-1)[0].created} : {}
+    
+            var self = this
+            Xeta.transaction.scanByTo({to: this.address, signature: last.signature, created: last.created, extended: true}).then(function(data) {
+                if (!data.length) self.depleted.transactionsIn = true
+                self.transactionsIn = self.transactionsIn.concat(data)
+                self.transactions = self.transactionsIn
+            }).catch(function(e) {})
+        },
+        loadClaims() {
+            if (this.depleted.claims) return
+            var last = this.claims.length ? {hash: this.claims.slice(-1)[0].hash, created: this.claims.slice(-1)[0].created} : {}
+    
+            var self = this
+            Xeta.claim.scanByCreated({owner: this.address, hash: last.hash, created: last.created, extended: true}).then(function(data) {
+                if (!data.length) self.depleted.claims = true
+                self.claims = self.claims.concat(data)
+            }).catch(function(e) {})
+        },
+    }
+}
+</script>
+
+<div x-data="poolExplorer()">
+    <div class="bg-black rounded-2xl px-2 pt-2 mb-2 text-sm font-light text-gray-200 section">
+        <div class="flex flex-wrap">
+            <div @click="tab = 'transactionsIn', loadTransactions()" :class="{'border-pink-700': tab == 'transactionsIn' || tab == 'transactionsOut'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Transactions</div>
+            <div @click="tab = 'claims', loadClaims()" :class="{'border-pink-700': tab == 'claims'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Claims</div>
+        </div>
+    </div>
+
+    <div x-cloak x-show="tab == 'transactionsIn' || tab == 'transationsOut'" class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
+        <div class="flex justify-between items-center px-6">
+            <p class="text-lg py-2 text-gray-100">Transactions</p>
+            <div x-data="{active: false}" class="relative text-white text-sm">
+                <span @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900" x-text="{'in': 'Incoming', 'out': 'Outgoing'}[transactionsFilter]"></span>
+                <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
+                    <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                        <li @click="transactionsFilter = 'in', loadTransactions(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Incoming</li>
+                        <li @click="transactionsFilter = 'out', loadTransactions(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Outgoing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        
+        <table class="w-full table-fixed font-light text-sm">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pl-6 pr-4 text-left uppercase w-1/3 md:w-1/5">
+                Signature
+            </th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/4 md:w-1/6">
+                Value
+            </th>
+            <th class="hidden md:table-cell truncate truncate py-2 pr-4 text-left uppercase w-1/6">
+                Function
+            </th>
+            <th class="hidden md:table-cell truncate py-2 pr-4 text-left uppercase w-1/6">
+                Created
+            </th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/4 md:w-1/6">
+                From
+            </th>
+            <th class="truncate py-2 pr-6 text-left uppercase w-1/4 md:w-1/6">
+                To
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="(tx, i) in transactions">
+            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 pl-6 py-2">
+                    <a x-text="tx.signature" :href="'/transaction/?signature='+tx.signature" class="underline hover:text-pink-400"></a>
+                </td>
+                <td class="truncate pr-4 py-2">
+                    <a :href="'/token/?address='+tx.token" x-html="tx.amount.toString()+(tx.tokenPreview ? (tx.tokenPreview.ticker ? ' '+tx.tokenPreview.ticker : '') : '')" class="hover:text-pink-400"></a>
+                </td>
+                                        
+                <td x-text="tx.function ? tx.function : ''" class="hidden md:table-cell truncate pr-4 py-2 uppercase">
+                </td>
+                <td x-text="formatTime(tx.created)" class="hidden md:table-cell truncate pr-4 py-2">
+                </td>
+                <td class="truncate pr-4 py-2">
+                    <a x-text="tx.from" :href="'/address/?address='+tx.from" class="underline hover:text-pink-400"></a>
+                </td>
+                <td class="truncate pr-4 py-2">
+                    <a x-text="tx.to" :href="'/address/?address='+tx.to" class="underline hover:text-pink-400"></a>
+                </td>
+            </tr>
+        </template>
+    </tbody>
+</table>
+
+        <div x-show="(transactionsFilter == 'in' && !depleted.transactionsIn) || (transactionsFilter == 'out' && !depleted.transactionsOut)" class="pt-6 flex justify-center text-sm">
+            <span @click="loadTransactions()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
+        </div>
+    </div>
+
+    <div x-cloak x-show="tab == 'claims'" class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
+        <p class="text-lg py-2 px-6 text-gray-100">Claims</p>
+
+        <table class="w-full table-fixed font-light text-sm">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pl-6 pr-4 text-left uppercase w-1/3 md:w-1/5">
+                Hash
+            </th>
+            <th class="hidden md:table-cell truncate py-2 pr-4 text-left uppercase w-1/4 md:w-1/6">
+                Owner
+            </th>
+            <th class="hidden md:table-cell truncate truncate py-2 pr-4 text-left uppercase w-1/6">
+                Address
+            </th>
+            <th class="hidden md:table-cell truncate py-2 pr-4 text-left uppercase w-1/6">
+                Value
+            </th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/4 md:w-1/6">
+                Unlocks
+            </th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/4 md:w-1/6">
+                Answer
+            </th>
+            <th class="truncate py-2 pr-6 text-left uppercase w-1/4 md:w-1/6">
+                Created
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="(claim, i) in claims">
+            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 pl-6 py-2">
+                    <a x-text="claim.hash" :href="'/claim/?hash='+claim.hash" class="underline hover:text-pink-400"></a>
+                </td>                     
+                <td class="truncate pr-4 py-2">
+                    <a x-text="claim.owner" :href="'/address/?address='+claim.owner" class="underline hover:text-pink-400"></a>
+                </td>
+                <td class="truncate pr-4 py-2">
+                    <a x-text="claim.address" :href="'/address/?address='+claim.address" class="underline hover:text-pink-400"></a>
+                </td>
+                <td class="truncate pr-4 py-2">
+                    <a :href="'/token/?address='+claim.token" x-html="claim.amount.toString()+(claim.tokenPreview ? (claim.tokenPreview.ticker ? ' '+claim.tokenPreview.ticker : '') : '')" class="hover:text-pink-400"></a>
+                </td>
+                <td class="truncate pr-4 py-2">
+                    <span x-text="formatTime(claim.unlocks)"></span>
+                </td>
+                <td class="truncate pr-4 py-2">
+                    <span x-cloak x-show="claim.answer" x-text="claim.answer"></span>
+                    <span x-cloak x-show="claim.number" x-text="claim.number"></span>
+                </td>
+                <td x-text="formatTime(claim.created)" class="truncate pr-6 py-2">
+                </td>
+            </tr>
+        </template>
+    </tbody>
+</table>
+
+        <div x-show="!depleted.claims" class="pt-6 flex justify-center text-sm">
+            <span @click="loadClaims()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
+        </div>
+    </div>
+</div>

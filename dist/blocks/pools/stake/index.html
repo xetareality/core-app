@@ -1,0 +1,32 @@
+<script>
+function stakePool() {
+    return {
+        init() {
+
+        }
+    }
+}
+</script>
+<div x-cloak x-show="$store.pool.program == 'stake'" x-data="stakePool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12">
+    <div class="w-full flex flex-wrap justify-between items-center mb-4">
+        <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Staking Pool)' : 'Staking Pool'"></p>
+        <button class="cursor-pointer text-white py-2 px-8 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all w-full md:w-1/4">Stake</button>
+    </div>
+    <div class="flex flex-wrap">
+        <div class="w-full mb-4 text-white">
+            <p class="text-xl mb-4 text-gray-400 font-normal">Stake and receive rewards with an APY of:</p>
+            <a href="/token/?address=1">
+                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 bg-gray-900">
+                    <p class="text-3xl underline text-white py-4"><span x-text="($store.pool.rate || 0)+($store.pool.percentage || 0)"></span>% <span>APY</span></p>
+                </div>
+            </a>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between"><span class="text-gray-400 font-normal">Minimum Stake</span><span>10,000 XETA</span></p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between"><span class="text-gray-400 font-normal">Minimum Lock</span><span>7 Days</span></p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between"><span class="text-gray-400 font-normal">APY Rate</span><span>125%</span></p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between"><span class="text-gray-400 font-normal">Bonus APY Rate</span><span>25%</span></p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between"><span class="text-gray-400 font-normal">Total Value Locked</span><span>150,000,000 XETA</span></p>
+            
+            <p class="text-xl font-light mb-2 flex justify-between"><span class="text-gray-400 font-normal">Closing in</span><span></span></p>
+        </div>
+    </div>
+</div>
