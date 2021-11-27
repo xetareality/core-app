@@ -1,1 +1,34 @@
-<header id="page-header" class="flex flex-none items-center bg-black"><div class="flex flex-wrap justify-between container xl:max-w-6xl mx-auto px-4 lg:px-8 py-2"><div class="hidden md:flex w-full justify-center mb-2 md:mb-0 md:justify-start md:w-2/5 flex items-center"><a href="/" class="flex text tracking-wide text-gray-100 hover:text-pink-400"><img class="w-6 h-6 mr-2" src="/media/favicon.png"> <span class="inline">Xeta Blockchain Explorer</span></a></div><div class="w-full justify-center md:justify-end md:w-3/5 flex flex items-center font-light"><nav class="flex text-sm"><a href="/" class="cursor-pointer px-3 py-2 rounded text-gray-200 hover:bg-gray-800"><span>Network Stats</span> </a><a href="javascript:void(0), alert('Coming soon')" class="cursor-pointer px-3 py-2 rounded text-gray-200 hover:bg-gray-800"><span>Tokens</span> </a><a href="javascript:void(0), alert('Coming soon')" class="cursor-pointer px-3 py-2 rounded text-gray-200 hover:bg-gray-800"><span>NFTs</span> </a><a href="https://xetareality.com" class="cursor-pointer px-3 py-2 rounded text-gray-200 hover:bg-gray-800"><span>About Xeta</span> </a><a @click="showModal('walletModal')" x-show="!Alpine.lstore('publicKey')" class="cursor-pointer font-medium px-4 py-2 rounded bg-pink-700 hover:bg-pink-600 text-white"><span>Connect Wallet</span></a><div x-cloak x-show="Alpine.lstore('publicKey')" @click="showModal('actionsModal')" class="cursor-pointer font-medium px-4 py-2 rounded bg-pink-700 hover:bg-pink-600 text-white"><span x-text="'Wallet: '+String(Alpine.lstore('publicKey')).slice(0, 10)+'...'"></span></div></nav></div></div></header>
+<header x-data id="page-header" class="flex flex-none items-center bg-black">
+    <div class="flex flex-wrap justify-between container xl:max-w-6xl mx-auto px-4 lg:px-8 py-2">
+        <div class="hidden md:flex w-full justify-center mb-2 md:mb-0 md:justify-start md:w-2/5 flex items-center">
+            <a href="/" class="flex text tracking-wide text-gray-100 hover:text-pink-400">
+                <img class="w-6 h-6 mr-2" src="/media/favicon.png" />
+                <span class="inline">Xeta Blockchain Explorer</span>
+            </a>
+        </div>
+        <div class="w-full justify-center md:justify-end md:w-3/5 flex flex items-center font-light">
+            <nav class="flex text-sm">
+                <a href="/" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800">
+                    <span>Network Stats</span>
+                </a>
+                <a href="javascript:void(0), alert('Coming soon')" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800">
+                    <span>Tokens</span>
+                </a>
+                <a href="javascript:void(0), alert('Coming soon')" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800">
+                    <span>NFTs</span>
+                </a>
+                <a href="https://xetareality.com" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800">
+                    <span>About Xeta</span>
+                </a>
+
+                <span @click="showModal('walletModal')" x-show="!Alpine.sstore('publicKey')" class="cursor-pointer font-medium px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white">
+                    <span>Connect Wallet</span>
+                </span>
+
+                <div x-cloak x-show="Alpine.sstore('publicKey')" @click="showModal('actionsModal')" class="cursor-pointer font-medium px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white">
+                    <span x-text="'Wallet: '+String(Alpine.sstore('publicKey')).slice(0, 10)+'...'"></span>
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
