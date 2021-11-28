@@ -1,22 +1,45 @@
 <table class="w-full table-fixed font-light text-sm">
     <thead>
         <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase w-2/12 pl-6">Hash</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">From</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">To</th>
-            <th class="truncate py-2 pr-4 text-right uppercase w-2/12">Created</th>
+            <th class="truncate py-2 pr-4 text-left uppercase md:w-2/12 pl-6">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase md:w-2/12">Created</th>
+            <th class="truncate py-2 pr-4 text-left uppercase md:w-2/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase md:w-3/12">From</th>
+            <th class="truncate py-2 pr-6 text-left uppercase md:w-3/12">To</th>
         </tr>
     </thead>
     <tbody>
         <template x-for="(transfer, i) in transfers">
             <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
                 <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.transfer(transfer.hash)"></td>
+                <td class="truncate pr-4 py-2" x-text="formatTime(transfer.created)"></td>
                 <td class="truncate pr-4 py-2" x-html="Wrap.amount(transfer.amount, transfer.token, transfer.tokenPreview)"></td>
                 <td class="truncate pr-4 py-2" x-html="Wrap.address(transfer.from)"></td>
-                <td class="truncate pr-4 py-2" x-html="Wrap.address(transfer.to)"></td>
-                <td class="truncate pr-4 py-2 text-right" x-text="formatTime(transfer.created)"></td>
+                <td class="truncate pr-6 py-2" x-html="Wrap.address(transfer.to)"></td>
             </tr>
         </template>
     </tbody>
 </table>
+
+<!-- <table class="w-full table-fixed font-light text-sm">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-2/12 pl-6">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-3/12">From</th>
+            <th class="truncate py-2 pr-6 md:pr-4 text-left uppercase w-1/3 md:w-3/12">To</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w.0 md:w-2/12 hidden md:table-cell">Created</th>
+            <th class="truncate py-2 pr-6 text-left uppercase w-0 md:w-2/12 hidden md:table-cell">Hash</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="(transfer, i) in transfers">
+            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.amount(transfer.amount, transfer.token, transfer.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.address(transfer.from)"></td>
+                <td class="truncate pr-6 md:pr-4 py-2" x-html="Wrap.address(transfer.to)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="formatTime(transfer.created)"></td>
+                <td class="truncate pr-6 py-2 hidden md:table-cell" x-html="Wrap.transfer(transfer.hash)"></td>
+            </tr>
+        </template>
+    </tbody>
+</table> -->

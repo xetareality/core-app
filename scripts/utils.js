@@ -41,10 +41,10 @@ var Wrap = {
         return '<a href="/token/?address='+address+'" class="hover:text-pink-400">'+Wrap.tokenPreview(tokenPreview, address)+'</a>'
     },
     amount: function(amount, token, tokenPreview) {
-        return '<a href="/token/?address='+token+'" class="hover:text-pink-400">'+amount+'<span>'+Wrap.tokenPreview(tokenPreview, token)+'</span></a>'
+        return '<a href="/token/?address='+token+'" class="hover:text-pink-400">'+(amount ? amount : 0)+'<span>'+Wrap.tokenPreview(tokenPreview, token)+'</span></a>'
     },
     xeta: function(amount) {
-        return '<a href="/token/?address='+Xeta.config.xetaAddress+'" class="hover:text-pink-400">'+amount+'<span>'+Wrap.xetaPreview()+'</span></a>'
+        return '<a href="/token/?address='+Xeta.config.xetaAddress+'" class="hover:text-pink-400">'+(amount ? amount : 0)+'<span>'+Wrap.xetaPreview()+'</span></a>'
     },
     pool: function(address) {
         return '<a href="/pool/?address='+address+'" class="underline hover:text-pink-400">'+address+'</a>'
@@ -60,7 +60,10 @@ var Wrap = {
     },
     link: function(link) {
         return '<a rel="nofollow noopener" href="'+link+'" class="underline hover:text-pink-400 w-full block truncate pb-1">'+link.split('?')[0].slice(0, 50)+(link.split('?')[0].length > 50 ? '...' : '')+'</a>'
-    }
+    },
+    label: function(text, color) {
+        return '<span class="bg-'+color+'-500 bg-opacity-75 rounded-2xl px-3 py-1 ml-2 text-xs font-normal uppercase">'+text+'</span>'
+    },
 }
 
 

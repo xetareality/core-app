@@ -1,28 +1,21 @@
 <table class="w-full table-fixed font-light text-sm">
     <thead>
         <tr class="text-gray-400">
-            <th class="truncate py-2 pl-6 pr-4 text-left uppercase text-sm w-1/2 md:w-1/4">
-                Token
-            </th>
-            <th class="hidden md:table-cell truncate py-2 pr-4 text-left uppercase text-sm w-2/4">
-                Address
-            </th>
-            <th class="truncate py-2 pr-6 text-right uppercase text-sm w-1/2 md:w-1/4">
-                Amount
-            </th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/5 md:w-4/12 pl-6">Address</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-0 md:w-3/12 hidden md:table-cell">Name</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/5 md:w-2/12">TokenBalance</th>
+            <th class="truncate py-2 pr-6 md:pr-4 text-left uppercase w-1/5 md:w-1/12">Program</th>
+            <th class="truncate py-2 pr-6 text-left uppercase w-0 md:w-2/12 hidden md:table-cell">Expires</th>
         </tr>
     </thead>
     <tbody>
         <template x-for="(pool, i) in pools">
             <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pl-6 pr-4 py-2">
-                    <a :href="'/token/?address='+pool.token" x-text="(pool.tokenPreview.name ? pool.tokenPreview.name : '')+(pool.tokenPreview.ticker ? ' ('+pool.tokenPreview.ticker+')' : '')" class="underline hover:text-pink-400"></a>
-                </td>
-                <td class="hidden md:table-cell truncate pr-4 py-2">
-                    <a :href="'/token/?address='+pool.token" x-text="pool.token" class="underline hover:text-pink-400"></a>
-                </td>
-                <td x-text="1+(pool.tokenPreview.ticker ? ' '+pool.tokenPreview.ticker : '')" class="truncate py-2 pr-6 text-right">
-                </td>
+                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.pool(pool.address)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="pool.name ? pool.name : 'Unnamed'"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(pool.tokenBalance, pool.token, pool.tokenPreview)"></td>
+                <td class="truncate pr-6 md:pr-4 py-2" x-html="pool.program.toUpperCase()"></td>
+                <td class="truncate pr-6 py-2 hidden md:table-cell" x-text="pool.expires ? formatTime(pool.expires) : 'Never'"></td>
             </tr>
         </template>
     </tbody>
