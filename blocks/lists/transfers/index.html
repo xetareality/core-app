@@ -1,46 +1,21 @@
 <table class="w-full table-fixed font-light text-sm">
     <thead>
         <tr class="text-gray-400">
-            <th class="truncate py-2 pl-6 pr-4 text-left uppercase w-1/3 md:w-1/5">
-                Signature
-            </th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/4 md:w-1/6">
-                Value
-            </th>
-            <th class="hidden md:table-cell truncate truncate py-2 pr-4 text-left uppercase w-1/6">
-                Function
-            </th>
-            <th class="hidden md:table-cell truncate py-2 pr-4 text-left uppercase w-1/6">
-                Created
-            </th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/4 md:w-1/6">
-                From
-            </th>
-            <th class="truncate py-2 pr-6 text-left uppercase w-1/4 md:w-1/6">
-                To
-            </th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12 pl-6">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">From</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">To</th>
+            <th class="truncate py-2 pr-4 text-right uppercase w-2/12">Created</th>
         </tr>
     </thead>
     <tbody>
-        <template x-for="(transfer, i) in ">
+        <template x-for="(transfer, i) in transfers">
             <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 pl-6 py-2">
-                    <a x-text="tx.signature" :href="'/transfer/?signature='+tx.signature" class="underline hover:text-pink-400"></a>
-                </td>
-                <td class="truncate pr-4 py-2">
-                    <a :href="'/token/?address='+tx.token" x-html="tx.amount.toString()+(tx.tokenPreview ? (tx.tokenPreview.ticker ? ' '+tx.tokenPreview.ticker : '') : '')" class="hover:text-pink-400"></a>
-                </td>
-                                        
-                <td x-text="tx.function ? tx.function : ''" class="hidden md:table-cell truncate pr-4 py-2 uppercase">
-                </td>
-                <td x-text="formatTime(tx.created)" class="hidden md:table-cell truncate pr-4 py-2">
-                </td>
-                <td class="truncate pr-4 py-2">
-                    <a x-text="tx.from" :href="'/address/?address='+tx.from" class="underline hover:text-pink-400"></a>
-                </td>
-                <td class="truncate pr-4 py-2">
-                    <a x-text="tx.to" :href="'/address/?address='+tx.to" class="underline hover:text-pink-400"></a>
-                </td>
+                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.transfer(transfer.hash)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(transfer.amount, transfer.token, transfer.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.address(transfer.from)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.address(transfer.to)"></td>
+                <td class="truncate pr-4 py-2 text-right" x-text="formatTime(transfer.created)"></td>
             </tr>
         </template>
     </tbody>
