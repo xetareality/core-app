@@ -1,45 +1,45 @@
 <script>
 function poolExplorer() {
     return {
-        tab: 'transactionsIn',
-        transactionsIn: [],
-        transactionsOut: [],
-        transactions: [], // Filtered transactions
+        tab: 'transfersIn',
+        transfersIn: [],
+        transfersOut: [],
+        transfers: [], // Filtered transfers
         claims: [],
-        transactionsFilter: 'in',
-        claimsFilter: 'all',
+        transfersFilter: 'in', // in, out
+        claimsFilter: 'issued', // issued, holding
         existing: [],
         address: gup('address'),
         depleted: {},
         init() {
-            this.loadTransactions()
+            this.loadTransfers()
         },
-        loadTransactions() {
-            if (this.transactionsFilter == 'in') this.loadTransactionsIn()
-            else if (this.transactionsFilter == 'out') this.loadTransactionsOut()
+        loadTransfers() {
+            if (this.transfersFilter == 'in') this.loadTransfersIn()
+            else if (this.transfersFilter == 'out') this.loadTransfersOut()
         },
-        loadTransactionsOut() {
-            this.transactions = this.transactionsOut
-            if (this.depleted.transactionsOut) return
-            var last = this.transactionsOut.length ? {signature: this.transactionsOut.slice(-1)[0].signature, created: this.transactionsOut.slice(-1)[0].created} : {}
+        loadTransfersOut() {
+            this.transfers = this.transfersOut
+            if (this.depleted.transfersOut) return
+            var last = this.transfersOut.length ? {signature: this.transfersOut.slice(-1)[0].signature, created: this.transfersOut.slice(-1)[0].created} : {}
     
             var self = this
-            Xeta.transaction.scanByFrom({from: this.address, signature: last.signature, created: last.created, extended: true}).then(function(data) {
-                if (!data.length) self.depleted.transactionsOut = true
-                self.transactionsOut = self.transactionsOut.concat(data)
-                self.transactions = self.transactionsOut
+            Xeta.transfer.scanFromCreated({from: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
+                if (!data.length) self.depleted.transfersOut = true
+                self.transfersOut = self.transfersOut.concat(data)
+                self.transfers = self.transfersOut
             }).catch(function(e) {})
         },
-        loadTransactionsIn() {
-            this.transactions = this.transactionsIn
-            if (this.depleted.transactionsIn) return
-            var last = this.transactionsIn.length ? {signature: this.transactionsIn.slice(-1)[0].signature, created: this.transactionsIn.slice(-1)[0].created} : {}
+        loadTransfersIn() {
+            this.transfers = this.transfersIn
+            if (this.depleted.transfersIn) return
+            var last = this.transfersIn.length ? {signature: this.transfersIn.slice(-1)[0].signature, created: this.transfersIn.slice(-1)[0].created} : {}
     
             var self = this
-            Xeta.transaction.scanByTo({to: this.address, signature: last.signature, created: last.created, extended: true}).then(function(data) {
-                if (!data.length) self.depleted.transactionsIn = true
-                self.transactionsIn = self.transactionsIn.concat(data)
-                self.transactions = self.transactionsIn
+            Xeta.transfer.scanToCreated({to: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
+                if (!data.length) self.depleted.transfersIn = true
+                self.transfersIn = self.transfersIn.concat(data)
+                self.transfers = self.transfersIn
             }).catch(function(e) {})
         },
         loadClaims() {
@@ -47,7 +47,7 @@ function poolExplorer() {
             var last = this.claims.length ? {hash: this.claims.slice(-1)[0].hash, created: this.claims.slice(-1)[0].created} : {}
     
             var self = this
-            Xeta.claim.scanByCreated({owner: this.address, hash: last.hash, created: last.created, extended: true}).then(function(data) {
+            Xeta.claim.scanIssuerCreated({issuer: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
                 if (!data.length) self.depleted.claims = true
                 self.claims = self.claims.concat(data)
             }).catch(function(e) {})
@@ -59,20 +59,20 @@ function poolExplorer() {
 <div x-data="poolExplorer()">
     <div class="bg-black rounded-2xl px-2 pt-2 mb-2 text-sm font-light text-gray-200 section">
         <div class="flex flex-wrap">
-            <div @click="tab = 'transactionsIn', loadTransactions()" :class="{'border-pink-700': tab == 'transactionsIn' || tab == 'transactionsOut'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Transactions</div>
+            <div @click="tab = 'transfersIn', loadTransfers()" :class="{'border-pink-700': tab == 'transfersIn' || tab == 'transfersOut'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Transfers</div>
             <div @click="tab = 'claims', loadClaims()" :class="{'border-pink-700': tab == 'claims'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Claims</div>
         </div>
     </div>
 
-    <div x-cloak x-show="tab == 'transactionsIn' || tab == 'transationsOut'" class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
+    <div x-cloak x-show="tab == 'transfersIn' || tab == 'transationsOut'" class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
         <div class="flex justify-between items-center px-6">
             <p class="text-lg py-2 text-gray-100">Transactions</p>
             <div x-data="{active: false}" class="relative text-white text-sm">
-                <span @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900" x-text="{'in': 'Incoming', 'out': 'Outgoing'}[transactionsFilter]"></span>
+                <span @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900" x-text="{'in': 'Incoming', 'out': 'Outgoing'}[transfersFilter]"></span>
                 <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
                     <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                        <li @click="transactionsFilter = 'in', loadTransactions(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Incoming</li>
-                        <li @click="transactionsFilter = 'out', loadTransactions(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Outgoing</li>
+                        <li @click="transfersFilter = 'in', loadTransfers(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Incoming</li>
+                        <li @click="transfersFilter = 'out', loadTransfers(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Outgoing</li>
                     </ul>
                 </div>
             </div>
@@ -103,10 +103,10 @@ function poolExplorer() {
         </tr>
     </thead>
     <tbody>
-        <template x-for="(tx, i) in transactions">
+        <template x-for="(transfer, i) in transfers">
             <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
                 <td class="truncate pr-4 pl-6 py-2">
-                    <a x-text="tx.signature" :href="'/transaction/?signature='+tx.signature" class="underline hover:text-pink-400"></a>
+                    <a x-text="tx.signature" :href="'/transfer/?signature='+tx.signature" class="underline hover:text-pink-400"></a>
                 </td>
                 <td class="truncate pr-4 py-2">
                     <a :href="'/token/?address='+tx.token" x-html="tx.amount.toString()+(tx.tokenPreview ? (tx.tokenPreview.ticker ? ' '+tx.tokenPreview.ticker : '') : '')" class="hover:text-pink-400"></a>
@@ -127,8 +127,8 @@ function poolExplorer() {
     </tbody>
 </table>
 
-        <div x-show="(transactionsFilter == 'in' && !depleted.transactionsIn) || (transactionsFilter == 'out' && !depleted.transactionsOut)" class="pt-6 flex justify-center text-sm">
-            <span @click="loadTransactions()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
+        <div x-show="(transfersFilter == 'in' && !depleted.transfersIn) || (transfersFilter == 'out' && !depleted.transfersOut)" class="pt-6 flex justify-center text-sm">
+            <span @click="loadTransfers()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
         </div>
     </div>
 

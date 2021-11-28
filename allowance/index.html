@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Xeta </title>
+        <title>Xeta Allowance</title>
         <meta name="description" content="">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
@@ -90,6 +90,164 @@
                 <div class="container xl:max-w-6xl mx-auto p-4 lg:p-8">
                     <div id="inner-width" class="block"></div>
                     
+    <script>
+function initSearch() {
+    return {
+        searchQuery: '',
+        searchLoading: false,
+        searchResults: [],
+        searchActive: false,
+        defaultIcons: {
+            transaction: 'https://raw.githubusercontent.com/xetareality/xetareality.github.io/main/img/favicon-32x32.png',
+            token: 'https://raw.githubusercontent.com/xetareality/xetareality.github.io/main/img/favicon-32x32.png',
+            pool: 'https://raw.githubusercontent.com/xetareality/xetareality.github.io/main/img/favicon-32x32.png',
+            address: 'https://raw.githubusercontent.com/xetareality/xetareality.github.io/main/img/favicon-32x32.png',
+        },
+        search: function() {
+            if (!this.searchQuery) this.searchResults = []
+            if (!this.searchQuery || this.searchLoading) return
+
+            this.searchLoading = true
+            var self = this
+
+            ajax(INTERFACE+'/search?query='+this.searchQuery, null, function(data) {
+                self.searchResults = JSON.parse(data)
+                self.searchResults = self.searchResults.map(r => ({...r, ...{path: '/'+r.type+(r.type == 'transaction' ? '/?signature=' : '/?address=')+r.key}}))
+                console.log(self.searchResults)
+                self.searchLoading = false
+            }, function(status, self) {
+                self.searchLoading = false
+            })
+        },
+    }
+}
+</script>
+
+<div class="flex flex-wrap items-center mb-4 lg:mb-8">
+    <h1 class="text-2xl w-full md:w-1/3 pr-4 py-4 md:py-1 text-gray-100 tracking-wider"> Details</h1>
+    <div class="w-full md:w-2/3">
+        <div class="" x-data="initSearch()">
+            <div class="w-full flex w-full justify-end relative">
+                <input @keyup.debounce="search()" x-model.debounce="searchQuery" @focus="searchActive = true, searchQuery.length ? search() : null" @blur.outside="searchActive = false, searchResults = []" placeholder="Search (for Tokens, NFTs, Transactions, Pools, Addresses...)" type="input" class="font-light placeholder-gray-100 rounded-2xl shadow border-pink-500 focus:border-pink-400 border-2 transition-all px-4 py-2 bg-transparent text-lg text-gray-100 outline-none focus:outline-none overflow-hidden w-full">
+                
+                <div x-cloak x-show="focus && searchResults.length" class="absolute top-0 left-0 mt-12 w-full flex justify-center">
+                    <div class="z-50 bg-gray-800 shadow block w-full rounded-2xl">
+                        <ul class="w-full flex flex-wrap justify-between overflow-y-scroll" style="max-height: 300px;">
+                            <template x-for="result in searchResults">
+                                <li @click="window.location.href = result.path" class="w-full">
+                                    <div class="cursor-pointer rounded-2xl overflow-hidden w-full block hover:bg-pink-700 px-4 py-2 flex justify-start items-center">
+                                        <div class="mr-3">
+                                            <img class="w-8 h-8" :class="{'opacity-20': !result.icon}" :src="result.icon ? result.icon : '/media/empty-icon.png'" />
+                                        </div>
+
+                                        <div class="">
+                                            <p class="block">
+                                                <span class="text-xs text-gray-200 uppercase" x-text="result.type"></span>
+                                                <span class="text-xs text-white break-words" x-text="result.name ? '('+result.name.slice(0,50)+')' : ''"></span>
+                                            </p>
+                                            
+                                            <span class="block text-sm text-white break-words underline" x-text="result.key"></span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script>
+function loadDetails() {
+    return {
+        details: {},
+        active: !['pool', 'address', 'token'].includes(window.location.pathname.slice(1, -1)),
+        init() {
+            var self = this
+            document.addEventListener('resourceLoaded', function (e) {
+                var resource = window.location.pathname.slice(1, -1)
+                var data = Alpine.store(resource)
+                
+                if (resource == 'address') {
+                    if (data.pool) window.location.href = '/pools/?address='+data.pool.address
+                    data = Object.assign({}, data.token, data.balance)
+                }
+
+                for (var k in data) {
+                    if (['amount', 'maxAmount', 'minAmount', 'tokenBalance'].includes(k)) {
+                        self.details[k] = Wrap.amount(data[k], data.token, data.tokenPreview)
+                    } else if (['fee', 'xetaBalance'].includes(k)) {
+                        self.details[k] = Wrap.xeta(data[k])
+                    } else if (['created', 'expires', 'unlocks'].includes(k)) {
+                        if (Date.now()-data[k] > 30*24*60*60*1000) self.details[k] = new Date(data[k]).toLocaleString()
+                        else self.details[k] = formatTime(new Date(data[k]))+' ('+new Date(data[k]).toLocaleString()+')'
+                    } else if (['minTime', 'maxTime'].includes(k)) {
+                        self.details[k] = formatTime(new Date(Date.now()-parseInt(data[k])), false)
+                    } else if (['origin'].includes(k)) {
+                        self.details[k] = Wrap.transaction(data[k])
+                    } else if (['pool', 'owner'].includes(k)) {
+                        self.details[k] = Wrap.pool(data[k])
+                    } else if (['token'].includes(k)) {
+                        self.details[k] = Wrap.token(data[k], data.tokenPreview)
+                    } else if (['address'].includes(k)) {
+                        if (resource == 'token') self.details[k] = Wrap.token(data[k])
+                        else if (resource == 'pool') self.details[k] = Wrap.pool(data[k])
+                        else if (resource == 'address') self.details[k] = String(data[k])
+                    } else if (['hash'].includes(k)) {
+                        if (resource == 'transsaction') self.details[k] = Wrap.transaction(data[k])
+                        else if (resource == 'transfer') self.details[k] = Wrap.transfer(data[k])
+                        else if (resource == 'claim') self.details[k] = Wrap.claim(data[k])
+                        else if (resource == 'allowance') self.details[k] = Wrap.allowance(data[k])
+                    } else if (['from', 'to', 'leader', 'creator', 'sender'].includes(k)) {
+                        self.details[k] = Wrap.address(data[k])
+                    } else if (['links'].includes(k)) {
+                        self.details[k] = data[k].map(l => Wrap.link(l)).join('')
+                    } else if (['outputs'].includes(k)) {
+                        self.details[k] = data[k].map(i => i.map(j => Wrap[j.split(':')[0]](j.split(':')[1])).join(''))
+                    } else if (['instructions'].includes(k)) {
+                        self.details[k] = String(data[k])
+                    } else self.details[k] = String(data[k])
+
+                    if (self.details[k] == '[object Object]') delete self.details[k]
+                }
+            })
+        }
+    }
+}
+</script>
+
+<div x-data="loadDetails()">
+    <div class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+        <div @click="active = !active" class="flex justify-between items-center cursor-pointer">
+            <p class="text-lg py-2 text-gray-100">Details</p>
+            <span class="cursor-pointer underline text-gray-200 text-sm font-light">
+                <span x-text="active ? 'Close' : 'Open'">Open</span> Details
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="inline ml-1 -mt-0.5" viewBox="0 0 16 16">
+                  <path x-cloak x-show="!active" fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                  <path x-cloak x-show="active" fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+                </svg>
+            </span>
+        </div>
+        <table x-cloak x-show="active" class="w-full table-fixed font-light text-sm">
+            <thead>
+                <tr>
+                    <th class="text-gray-400 text-left uppercase w-1/3"></th>
+                    <th class="text-gray-400 text-left uppercase w-2/3"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <template x-for="[key, value] in Object.entries(details)">
+                    <tr class="border-b border-gray-800">
+                        <td class="py-2 text-gray-400 capitalize text-sm font-semibold py-2" x-text="key"></td>
+                        <td @click="$el.classList.toggle('truncate')" class="text-right text-white truncate break-all py-2" x-html="value"></td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+</div>
+
                 </div>
             </main>   
             <footer id="page-footer" class="bg-black">
