@@ -291,10 +291,10 @@ function loadDetails() {
     <script>
 function addressExplorer() {
     return {
-        resource: 'pools',
+        resource: 'tokens',
         resourceFilter: null,
         transfersFilter: 'incoming',
-        claimsFilter: 'held',
+        claimsFilter: 'holding',
         allowancesFilter: 'spendable',
         transfers: [],
         transfersOutgoing: [],
@@ -304,7 +304,7 @@ function addressExplorer() {
         pools: [],
         claims: [],
         claimsIssued: [],
-        claimsHeld: [],
+        claimsHolding: [],
         pools: [],
         allowances: [],
         allowancesGranted: [],
@@ -319,7 +319,7 @@ function addressExplorer() {
             'transactions': Xeta.transaction.scanSenderCreated,
             'tokens': Xeta.token.scanOwnerCreated,
             'pools': Xeta.pool.scanCreatorCreated,
-            'claimsHeld': Xeta.claim.scanHolderCreated,
+            'claimsHolding': Xeta.claim.scanHolderCreated,
             'claimsIssued': Xeta.claim.scanIssuerCreated,
             'balances': Xeta.balance.scanAddressAmount,
             'allowancesGranted': Xeta.allowance.scanAddressCreated,
@@ -331,7 +331,7 @@ function addressExplorer() {
             'transactions': 'sender',
             'tokens': 'owner',
             'pools': 'creator',
-            'claimsHeld': 'holder',
+            'claimsHolding': 'holder',
             'claimsIssued': 'issuer',
             'balances': 'address',
             'allowancesGranted': 'address',
@@ -361,6 +361,9 @@ function addressExplorer() {
                 if (!data.length) self.depleted[self.resourceFilter] = true
                 self[self.resourceFilter] = self[self.resourceFilter].concat(data)
                 if (resource != self.resourceFilter) self[resource] = self[self.resourceFilter]
+
+                if (resource == 'tokens') Grid.layout(document.getElementById('grid'), document.getElementById('tokens'))
+                // if (resource == 'tokens') Grid.layout(document.getElementById('grid'), document.getElementById('tokens'))
             }).catch(function(e) {})
         },
     }
@@ -383,7 +386,7 @@ function addressExplorer() {
                 <span @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize" x-text="$data[resource+'Filter']"></span>
                 <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
                     <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                        <template x-for="[key, type] in Object.entries({incoming: 'transfers', outgoing: 'transfers', issued: 'claims', held: 'claims', granted: 'allowances', spendable: 'allowances'})">
+                        <template x-for="[key, type] in Object.entries({incoming: 'transfers', outgoing: 'transfers', issued: 'claims', holding: 'claims', granted: 'allowances', spendable: 'allowances'})">
                             <li x-cloak x-show="type == resource" @click="this[type+'Filter'] = key, change(type), active = false" x-text="key" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize"></li>
                         </template>
                     </ul>
@@ -554,7 +557,7 @@ function addressExplorer() {
         <tr class="text-gray-400">
             <th class="truncate py-2 pr-4 text-left uppercase w-2/5 md:w-4/12 pl-6">Address</th>
             <th class="truncate py-2 pr-4 text-left uppercase w-0 md:w-3/12 hidden md:table-cell">Name</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-2/5 md:w-2/12">TokenBalance</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/5 md:w-2/12">Balance</th>
             <th class="truncate py-2 pr-6 md:pr-4 text-left uppercase w-1/5 md:w-1/12">Program</th>
             <th class="truncate py-2 pr-6 text-left uppercase w-0 md:w-2/12 hidden md:table-cell">Expires</th>
         </tr>
@@ -571,7 +574,74 @@ function addressExplorer() {
         </template>
     </tbody>
 </table></div>
-        
+        <div x-cloak x-show="resource == 'claims'"><table class="w-full table-fixed font-light text-sm">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-2/12 pl-6">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-2/12">Amount</th>
+            <th class="truncate py-2 pr-6 md:pr-4 text-left uppercase w-1/3 md:w-2/12">Category</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-0 md:w-2/12 hidden md:table-cell">Issuer</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-0 md:w-2/12 hidden md:table-cell">Holder</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-0 md:w-1/12 hidden md:table-cell">Unlocks</th>
+            <th class="truncate py-2 pr-6 text-left uppercase w-0 md:w-1/12 hidden md:table-cell">Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="(claim, i) in claims">
+            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.claim(claim.hash)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(claim.tokenAmount, claim.token, claim.tokenPreview)"></td>
+                <td class="truncate pr-6 md:pr-4 py-2" x-html="claim.category ? claim.category : None"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(claim.creator)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(claim.owner)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="claim.unlocks ? formatTime(claim.unlocks) : 'Unlocked'"></td>
+                <td class="truncate pr-6 py-2 hidden md:table-cell" x-html="formatTime(claim.created)"></td>
+            </tr>
+        </template>
+    </tbody>
+</table></div>
+        <div x-cloak x-show="resource == 'allowances'"><table class="w-full table-fixed font-light text-sm">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 pl-6 text-left uppercase w-0 md:w-3/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-3/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-3/12">Issuer</th>
+            <th class="truncate py-2 pr-6 text-left uppercase w-1/3 md:w-3/12">Spender</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="(allowance, i) in allowances">
+            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 pl-6 py-2" x-html="Wrap.allowance(allowance.hash)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(allowance.amount, allowance.token, allowance.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.address(allowance.address)"></td>
+                <td class="truncate pr-6 py-2" x-html="Wrap.address(allowance.spender)"></td>
+            </tr>
+        </template>
+    </tbody>
+</table></div>
+        <div x-cloak x-show="resource == 'tokens'"><div id="tokens" class="hidden">
+    <template x-for="(token, i) in tokens">
+        <div class="mx-1 mb-2 token">
+            <a :href="'/token/?address='+token.address" class="py-1 px-1 border rounded-2xl bg-gray-900 border-gray-800 block">
+                <div class="border border-dashed rounded-2xl border-gray-700 bg-black px-2 py-2 transition-all">
+                    <img x-cloak x-show="token.object && token.mime && token.mime.split('/') == 'image'" class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
+                    <p class="text-sm text-white px-2 py-1 text-center tracking-wider" x-text="token.name"></p>
+                </div>
+            </a>
+        </div>
+    </template>
+</div>
+
+<div id="grid" class="w-full">
+    <div class="columns flex mx-5">
+        <div class="column w-1/2 md:w-1/3 lg:w-1/5 block"></div>
+        <div class="column w-1/2 md:w-1/3 lg:w-1/5 block"></div>
+        <div class="column w-1/2 md:w-1/3 lg:w-1/5 hidden md:block"></div>
+        <div class="column w-1/2 md:w-1/3 lg:w-1/5 hidden lg:block"></div>
+        <div class="column w-1/2 md:w-1/3 lg:w-1/5 hidden lg:block"></div>
+    </div>
+</div></div>
 
         <div x-show="!depleted[resourceFilter]" class="pt-6 flex justify-center text-sm">
             <span @click="load(resource)" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>

@@ -58,7 +58,6 @@ document.addEventListener('alpine:init', () => {
     }
 })
 
-
 function connectWallet() {
     Xeta.wallet.init({
         publicKey: Alpine.sstore('publicKey'),
