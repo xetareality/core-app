@@ -24,17 +24,33 @@ function strip(obj) {
 /**
  * Wrap resource
  */
-var wrap = {
-    transaction: function(signature) {
-        return '<a href="/transaction/?signature='+signature+'" class="underline hover:text-pink-400">'+signature+'</a>'
+var Wrap = {
+    transaction: function(hash) {
+        return '<a href="/transaction/?hash='+hash+'" class="underline hover:text-pink-400">'+hash+'</a>'
+    },
+    transfer: function(hash) {
+        return '<a href="/transfer/?hash='+hash+'" class="underline hover:text-pink-400">'+hash+'</a>'
+    },
+    tokenPreview: function(tp) {
+        return tp ? (tp.symbol ? tp.symbol : tp.name)+(tp.icon ? '<img class="h-5 w-5 ml-2" src="'+tp.icon+'" />' : '') : ''
+    },
+    xetaPreview: function() {
+        return Wrap.tokenPreview({symbol: 'XETA', name: 'Xeta', icon: '/media/favicon.png'})
     },
     token: function(address, tokenPreview) {
-        var preview = tokenPreview ? '<span class="ml-2">'+tokenPreview+'</span>' : ''
-        return '<a href="/token/?address='+address+'" class="underline hover:text-pink-400">'+address+'</a>'+preview
+        var preview = tokenPreview ? '<span class="ml-1 flex items-center">'+Wrap.tokenPreview(tokenPreview)+'</span>' : ''
+        return '<a href="/token/?address='+address+'" class="hover:text-pink-400"><span class="flex justify-end">'+address+preview+'</span></a>'
     },
-    pool: function(address, poolPreview) {
-        var preview = poolPreview ? '<span class="ml-2">'+poolPreview+'</span>' : ''
-        return '<a href="/pool/?address='+address+'" class="underline hover:text-pink-400">'+address+'</a>'+preview
+    amount: function(amount, token, tokenPreview) {
+        var preview = tokenPreview ? '<span class="ml-1 flex items-center">'+Wrap.tokenPreview(tokenPreview)+'</span>' : ''
+        return '<a href="/token/?address='+token+'" class="hover:text-pink-400"><span class="flex justify-end">'+amount+preview+'</span></a>'
+    },
+    xeta: function(amount) {
+        var preview = '<span class="ml-1 flex items-center">'+Wrap.xetaPreview()+'</span>'
+        return '<a href="/token/?address='+Xeta.config.xetaAddress+'" class="hover:text-pink-400"><span class="flex justify-end">'+amount+preview+'</span></a>'
+    },
+    pool: function(address) {
+        return '<a href="/pool/?address='+address+'" class="underline hover:text-pink-400">'+address+'</a>'
     },
     address: function(address) {
         return '<a href="/address/?address='+address+'" class="underline hover:text-pink-400">'+address+'</a>'
@@ -46,7 +62,7 @@ var wrap = {
         return '<a href="/allowance/?hash='+hash+'" class="underline hover:text-pink-400">'+hash+'</a>'
     },
     link: function(link) {
-        return '<a rel="nofollow" href="'+link+'" class="underline hover:text-pink-400 w-full block truncate pb-1">'+link+'</a>'
+        return '<a rel="nofollow noopener" href="'+link+'" class="underline hover:text-pink-400 w-full block truncate pb-1">'+link.split('?')[0].slice(0, 50)+(link.split('?')[0].length > 50 ? '...' : '')+'</a>'
     }
 }
 
@@ -58,7 +74,7 @@ function showModal(name) {
 
 function hideModal() {
     document.body.classList.remove('overflow-hidden')
-    Alpine.store('modal', null)
+    Alpine.store('modal', '')
 }
 
 function setData(id, data) {
@@ -79,8 +95,8 @@ function setPageMeta(resource, data) {
         document.title = document.title+' '+data.signature
         desc = 'Transaction '+data.signature+' was registered on '+new Date(parseInt(data.created)).toLocaleString()
     } else if (resource == 'token') {
-        document.title = document.title+(data.name ? ' '+data.name : '')+(data.ticker ? ' '+data.ticker : '')
-        desc = (data.name ? data.name : data.address)+(data.ticker ? ' '+data.ticker : '')+' was registered on '+new Date(parseInt(data.created)).toLocaleString()+' and has a supply of '+data.supply.replace('-', '')
+        document.title = document.title+(data.name ? ' '+data.name : '')+(data.symbol ? ' '+data.symbol : '')
+        desc = (data.name ? data.name : data.address)+(data.symbol ? ' '+data.symbol : '')+' was registered on '+new Date(parseInt(data.created)).toLocaleString()+' and has a supply of '+data.supply.replace('-', '')
     } else if (resource == 'pool') {
         document.title = document.title+' '+(data.name ? ' '+data.name : '')+' ('+data.program[0].toUpperCase()+data.program.slice(1)+'-Pool)'
         desc = (data.name ? data.name : data.address)+' is a '+data.program[0].toUpperCase()+data.program.slice(1)+'-Pool registered on '+new Date(parseInt(data.created)).toLocaleString()

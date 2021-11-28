@@ -1,4 +1,6 @@
 document.addEventListener('alpine:init', () => {
+    Xeta.config.init({dev: !!gup('dev')})
+
     // Init
     Alpine.store('pool', {})
     Alpine.store('transaction', {})
@@ -42,9 +44,9 @@ document.addEventListener('alpine:init', () => {
 
     // Load resource
     var resource = window.location.pathname.slice(1, -1)
-    if (['pool', 'address', 'transaction', 'token', 'claim', 'allowance'].includes(resource)) {
-        var key = resource == 'transaction' ? gup('signature') : gup('address')
-        Xeta[resource].get({[resource == 'transaction' ? 'signature' : 'address']: key, extended: true}).then(function(data) {
+    if (['pool', 'address', 'transaction', 'token', 'transfer', 'claim', 'allowance'].includes(resource)) {
+        Xeta[resource].read({[Xeta.utils.key(resource)]: gup(Xeta.utils.key(resource))}, {preview: true}).then(function(data) {
+            if (!data) return
             Alpine.store(resource, data)
             if (resource == 'pool') Alpine.store(data.program, new Xeta[data.program](data))
             setPageMeta(resource, data)
@@ -58,13 +60,12 @@ document.addEventListener('alpine:init', () => {
 
 
 function connectWallet() {
-    Xeta.wallet.connect({
+    Xeta.wallet.init({
         publicKey: Alpine.sstore('publicKey'),
         privateKey: Alpine.sstore('privateKey'),
-        seed: Alpine.sstore('seed'),
-        password: Alpine.sstore('password'),
-        networkEndpoint: 'http://127.0.0.1:3000',
-        interfaceEndpoint: 'http://127.0.0.1:8787'})
+        account: Alpine.sstore('account'),
+        secret: Alpine.sstore('secret'),
+    })
     
     refreshBalances()
 }
@@ -72,12 +73,12 @@ function connectWallet() {
 function disconnectWallet() {
     Alpine.sstore('publicKey', '')
     Alpine.sstore('privateKey', '')
-    Alpine.sstore('seed', '')
-    Alpine.sstore('password', '')
+    Alpine.sstore('account', '')
+    Alpine.sstore('secret', '')
 }
 
 function refreshBalances() {
-    Xeta.balance.scanByAddress({address: Alpine.sstore('publicKey')}).then(function(data) {
+    Xeta.balance.scanAddressAmount({address: Alpine.sstore('publicKey')}).then(function(data) {
         Alpine.sstore('balances', data)
     }).catch(function(e) {alert(e)})
 }

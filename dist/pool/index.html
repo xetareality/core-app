@@ -50,7 +50,7 @@
                 <img class="w-6 h-6 mr-2" src="/media/favicon.png" />
                 <span class="inline">Xeta Blockchain Explorer</span>
             </a>
-            <div @click="mainnet = !mainnet, Xeta.config.init({dev: !mainnet})" class="bg-transparent ml-4 cursor-pointer flex items-center" x-data="{mainnet: true}">
+            <div @click="mainnet = !mainnet, Xeta.config.init({dev: !mainnet})" class="bg-transparent ml-4 cursor-pointer flex items-center" x-data="{mainnet: !gup('dev')}">
                 <div class="relative rounded-full w-6 h-3 transition duration-200 ease-linear bg-gray-600" :class="{'bg-pink-700': mainnet}">
                     <label for="mainnet" class="absolute left-0 bg-white w-3 h-3 rounded-full transition transform duration-100 ease-linear translate-x-0" :class="{'translate-x-full': mainnet}"></label>
                     <input type="checkbox" id="mainnet" name="mainnet" class="appearance-none w-full h-full active:outline-none focus:outline-none">
@@ -59,7 +59,7 @@
             </div>
         </div>
         <div class="w-full justify-center md:justify-end md:w-3/5 flex flex items-center font-light">
-            <nav class="flex text-sm">
+            <nav class="flex text-sm mr-4">
                 <a href="/" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800">
                     <span>Network Stats</span>
                 </a>
@@ -72,7 +72,9 @@
                 <a href="https://xetareality.com" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800">
                     <span>About Xeta</span>
                 </a>
+            </nav>
 
+            <div class="text-sm flex">
                 <span @click="showModal('walletModal')" x-show="!Alpine.sstore('publicKey')" class="cursor-pointer font-medium px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white">
                     <span>Connect Wallet</span>
                 </span>
@@ -80,7 +82,7 @@
                 <div x-cloak x-show="Alpine.sstore('publicKey')" @click="showModal('actionsModal')" class="cursor-pointer font-medium px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white">
                     <span x-text="'Wallet: '+String(Alpine.sstore('publicKey')).slice(0, 10)+'...'"></span>
                 </div>
-            </nav>
+            </div>
         </div>
     </div>
 </header>
@@ -157,7 +159,7 @@ function initSearch() {
     </div>
 </div>
     <script>
-function loadPool() {
+function loadPoolPreview() {
     return {
         init() {
             // Xeta.pool.instance({address: gup('address'), extended: true}).then(function(data) {
@@ -173,7 +175,7 @@ function loadPool() {
 }
 </script>
 
-<div x-data="loadPool">
+<div x-data="loadPoolPreview">
 <script>
 function auctionPool() {
     return {
@@ -252,7 +254,7 @@ function auctionPool() {
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Auction Pool)' : 'Auction Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
             <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Bid</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -431,7 +433,7 @@ function launchPool() {
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Launch Pool)' : 'Launch Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
             <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Contribute</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -552,7 +554,7 @@ function lockPool() {
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Lock Pool)' : 'Lock Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
             <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Lock</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -673,7 +675,7 @@ function lootPool() {
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Loot Pool)' : 'Loot Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
             <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Participate</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -939,7 +941,7 @@ function lotteryPool() {
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Lottery Pool)' : 'Lottery Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
             <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Participate</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -1055,7 +1057,7 @@ function royaltyPool() {
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Royalty Pool)' : 'Royalty Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
             <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Claim Royalties</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -1192,7 +1194,7 @@ function stakingPool() {
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Staking Pool)' : 'Staking Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
             <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Stake</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -1340,7 +1342,7 @@ function swapPool() {
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker+'/XETA'+' Swap Pool' : 'Swap Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
             <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Swap</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -1667,7 +1669,7 @@ function votePool() {
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Vote Pool)' : 'Vote Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative justify-end">
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl text-center bg-pink-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -1776,7 +1778,7 @@ function votePool() {
 function loadDetails() {
     return {
         details: {},
-        active: window.location.pathname.slice(1, -1) != 'pool',
+        active: !['pool', 'address', 'token'].includes(window.location.pathname.slice(1, -1)),
         init() {
             var self = this
             document.addEventListener('resourceLoaded', function (e) {
@@ -1785,36 +1787,42 @@ function loadDetails() {
                 
                 if (resource == 'address') {
                     if (data.pool) window.location.href = '/pools/?address='+data.pool.address
-                    data = Object.assign({}, data.account, data.balance)
+                    data = Object.assign({}, data.token, data.balance)
                 }
 
-                var tokenPreview = data.tokenPreview ? data.tokenPreview.ticker+(data.tokenPreview.name ? ' ('+data.tokenPreview.name+')' : '')+(data.tokenPreview.icon ? '<img class="h-6 w-6 ml-2" src="'+data.tokenPreview.icon+'" />' : '') : ''
-                var poolPreview = data.poolPreview ? (data.poolPreview.name ? data.poolPreview.name+' ' : '')+data.poolPreview.type : ''
-
                 for (var k in data) {
-                    if (['created', 'expires', 'unlocks'].includes(k)) {
-                        if (Date.now()-data[k].toNumber() > 30*24*60*60*1000) self.details[k] = new Date(data[k].toNumber()).toLocaleString()
-                        else self.details[k] = formatTime(new Date(data[k].toNumber()))+' ('+new Date(data[k].toNumber()).toLocaleString()+')'
+                    if (['amount', 'maxAmount', 'minAmount', 'tokenBalance'].includes(k)) {
+                        self.details[k] = Wrap.amount(data[k], data.token, data.tokenPreview)
+                    } else if (['fee', 'xetaBalance'].includes(k)) {
+                        self.details[k] = Wrap.xeta(data[k])
+                    } else if (['created', 'expires', 'unlocks'].includes(k)) {
+                        if (Date.now()-data[k] > 30*24*60*60*1000) self.details[k] = new Date(data[k]).toLocaleString()
+                        else self.details[k] = formatTime(new Date(data[k]))+' ('+new Date(data[k]).toLocaleString()+')'
                     } else if (['minTime', 'maxTime'].includes(k)) {
                         self.details[k] = formatTime(new Date(Date.now()-parseInt(data[k])), false)
-                    } else if (['signature', 'input'].includes(k)) {
-                        self.details[k] = wrap.transaction(data[k])
+                    } else if (['origin'].includes(k)) {
+                        self.details[k] = Wrap.transaction(data[k])
                     } else if (['pool', 'owner'].includes(k)) {
-                        self.details[k] = wrap.pool(data[k], poolPreview)
+                        self.details[k] = Wrap.pool(data[k])
                     } else if (['token'].includes(k)) {
-                        self.details[k] = wrap.token(data[k], tokenPreview)
+                        self.details[k] = Wrap.token(data[k], data.tokenPreview)
                     } else if (['address'].includes(k)) {
-                        if (resource == 'token') wrap.token(data[k])
-                        else if (resource == 'pool') wrap.pool(data[k])
+                        if (resource == 'token') self.details[k] = Wrap.token(data[k])
+                        else if (resource == 'pool') self.details[k] = Wrap.pool(data[k])
+                        else if (resource == 'address') self.details[k] = String(data[k])
                     } else if (['hash'].includes(k)) {
-                        if (resource == 'claim') self.details[k] = wrap.claim(data[k])
-                        else if (resource == 'allowance') self.details[k] = wrap.allowance(data[k])
+                        if (resource == 'transsaction') self.details[k] = Wrap.transaction(data[k])
+                        else if (resource == 'transfer') self.details[k] = Wrap.transfer(data[k])
+                        else if (resource == 'claim') self.details[k] = Wrap.claim(data[k])
+                        else if (resource == 'allowance') self.details[k] = Wrap.allowance(data[k])
                     } else if (['from', 'to', 'leader', 'creator', 'sender'].includes(k)) {
-                        self.details[k] = wrap.address(data[k])
+                        self.details[k] = Wrap.address(data[k])
                     } else if (['links'].includes(k)) {
-                        self.details[k] = data[k].map(l => wrap.link(l)).join('')
+                        self.details[k] = data[k].map(l => Wrap.link(l)).join('')
                     } else if (['outputs'].includes(k)) {
-                        self.details[k] = data[k].map(t => wrap[t.split(':')[0]][t.split(':')[1]]).join('')
+                        self.details[k] = data[k].map(i => i.map(j => Wrap[j.split(':')[0]](j.split(':')[1])).join(''))
+                    } else if (['instructions'].includes(k)) {
+                        self.details[k] = String(data[k])
                     } else self.details[k] = String(data[k])
 
                     if (self.details[k] == '[object Object]') delete self.details[k]
@@ -1858,45 +1866,45 @@ function loadDetails() {
     <script>
 function poolExplorer() {
     return {
-        tab: 'transactionsIn',
-        transactionsIn: [],
-        transactionsOut: [],
-        transactions: [], // Filtered transactions
+        tab: 'transfersIn',
+        transfersIn: [],
+        transfersOut: [],
+        transfers: [], // Filtered transfers
         claims: [],
-        transactionsFilter: 'in',
-        claimsFilter: 'all',
+        transfersFilter: 'in', // in, out
+        claimsFilter: 'issued', // issued, holding
         existing: [],
         address: gup('address'),
         depleted: {},
         init() {
-            this.loadTransactions()
+            this.loadTransfers()
         },
-        loadTransactions() {
-            if (this.transactionsFilter == 'in') this.loadTransactionsIn()
-            else if (this.transactionsFilter == 'out') this.loadTransactionsOut()
+        loadTransfers() {
+            if (this.transfersFilter == 'in') this.loadTransfersIn()
+            else if (this.transfersFilter == 'out') this.loadTransfersOut()
         },
-        loadTransactionsOut() {
-            this.transactions = this.transactionsOut
-            if (this.depleted.transactionsOut) return
-            var last = this.transactionsOut.length ? {signature: this.transactionsOut.slice(-1)[0].signature, created: this.transactionsOut.slice(-1)[0].created} : {}
+        loadTransfersOut() {
+            this.transfers = this.transfersOut
+            if (this.depleted.transfersOut) return
+            var last = this.transfersOut.length ? {signature: this.transfersOut.slice(-1)[0].signature, created: this.transfersOut.slice(-1)[0].created} : {}
     
             var self = this
-            Xeta.transaction.scanByFrom({from: this.address, signature: last.signature, created: last.created, extended: true}).then(function(data) {
-                if (!data.length) self.depleted.transactionsOut = true
-                self.transactionsOut = self.transactionsOut.concat(data)
-                self.transactions = self.transactionsOut
+            Xeta.transfer.scanFromCreated({from: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
+                if (!data.length) self.depleted.transfersOut = true
+                self.transfersOut = self.transfersOut.concat(data)
+                self.transfers = self.transfersOut
             }).catch(function(e) {})
         },
-        loadTransactionsIn() {
-            this.transactions = this.transactionsIn
-            if (this.depleted.transactionsIn) return
-            var last = this.transactionsIn.length ? {signature: this.transactionsIn.slice(-1)[0].signature, created: this.transactionsIn.slice(-1)[0].created} : {}
+        loadTransfersIn() {
+            this.transfers = this.transfersIn
+            if (this.depleted.transfersIn) return
+            var last = this.transfersIn.length ? {signature: this.transfersIn.slice(-1)[0].signature, created: this.transfersIn.slice(-1)[0].created} : {}
     
             var self = this
-            Xeta.transaction.scanByTo({to: this.address, signature: last.signature, created: last.created, extended: true}).then(function(data) {
-                if (!data.length) self.depleted.transactionsIn = true
-                self.transactionsIn = self.transactionsIn.concat(data)
-                self.transactions = self.transactionsIn
+            Xeta.transfer.scanToCreated({to: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
+                if (!data.length) self.depleted.transfersIn = true
+                self.transfersIn = self.transfersIn.concat(data)
+                self.transfers = self.transfersIn
             }).catch(function(e) {})
         },
         loadClaims() {
@@ -1904,7 +1912,7 @@ function poolExplorer() {
             var last = this.claims.length ? {hash: this.claims.slice(-1)[0].hash, created: this.claims.slice(-1)[0].created} : {}
     
             var self = this
-            Xeta.claim.scanByCreated({owner: this.address, hash: last.hash, created: last.created, extended: true}).then(function(data) {
+            Xeta.claim.scanIssuerCreated({issuer: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
                 if (!data.length) self.depleted.claims = true
                 self.claims = self.claims.concat(data)
             }).catch(function(e) {})
@@ -1916,20 +1924,20 @@ function poolExplorer() {
 <div x-data="poolExplorer()">
     <div class="bg-black rounded-2xl px-2 pt-2 mb-2 text-sm font-light text-gray-200 section">
         <div class="flex flex-wrap">
-            <div @click="tab = 'transactionsIn', loadTransactions()" :class="{'border-pink-700': tab == 'transactionsIn' || tab == 'transactionsOut'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Transactions</div>
+            <div @click="tab = 'transfersIn', loadTransfers()" :class="{'border-pink-700': tab == 'transfersIn' || tab == 'transfersOut'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Transfers</div>
             <div @click="tab = 'claims', loadClaims()" :class="{'border-pink-700': tab == 'claims'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Claims</div>
         </div>
     </div>
 
-    <div x-cloak x-show="tab == 'transactionsIn' || tab == 'transationsOut'" class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
+    <div x-cloak x-show="tab == 'transfersIn' || tab == 'transationsOut'" class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
         <div class="flex justify-between items-center px-6">
             <p class="text-lg py-2 text-gray-100">Transactions</p>
             <div x-data="{active: false}" class="relative text-white text-sm">
-                <span @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900" x-text="{'in': 'Incoming', 'out': 'Outgoing'}[transactionsFilter]"></span>
+                <span @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900" x-text="{'in': 'Incoming', 'out': 'Outgoing'}[transfersFilter]"></span>
                 <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
                     <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                        <li @click="transactionsFilter = 'in', loadTransactions(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Incoming</li>
-                        <li @click="transactionsFilter = 'out', loadTransactions(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Outgoing</li>
+                        <li @click="transfersFilter = 'in', loadTransfers(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Incoming</li>
+                        <li @click="transfersFilter = 'out', loadTransfers(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Outgoing</li>
                     </ul>
                 </div>
             </div>
@@ -1960,10 +1968,10 @@ function poolExplorer() {
         </tr>
     </thead>
     <tbody>
-        <template x-for="(tx, i) in transactions">
+        <template x-for="(transfer, i) in transfers">
             <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
                 <td class="truncate pr-4 pl-6 py-2">
-                    <a x-text="tx.signature" :href="'/transaction/?signature='+tx.signature" class="underline hover:text-pink-400"></a>
+                    <a x-text="tx.signature" :href="'/transfer/?signature='+tx.signature" class="underline hover:text-pink-400"></a>
                 </td>
                 <td class="truncate pr-4 py-2">
                     <a :href="'/token/?address='+tx.token" x-html="tx.amount.toString()+(tx.tokenPreview ? (tx.tokenPreview.ticker ? ' '+tx.tokenPreview.ticker : '') : '')" class="hover:text-pink-400"></a>
@@ -1984,8 +1992,8 @@ function poolExplorer() {
     </tbody>
 </table>
 
-        <div x-show="(transactionsFilter == 'in' && !depleted.transactionsIn) || (transactionsFilter == 'out' && !depleted.transactionsOut)" class="pt-6 flex justify-center text-sm">
-            <span @click="loadTransactions()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
+        <div x-show="(transfersFilter == 'in' && !depleted.transfersIn) || (transfersFilter == 'out' && !depleted.transfersOut)" class="pt-6 flex justify-center text-sm">
+            <span @click="loadTransfers()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
         </div>
     </div>
 
@@ -2174,8 +2182,8 @@ function alertModal() {
 function walletModal() {
     return {
         selection: null,
-        seed: null,
-        password: null,
+        account: null,
+        secret: null,
         publicKey: null,
         privateKey: null,
         transacting: false,
@@ -2185,31 +2193,31 @@ function walletModal() {
          */
         async generateKeys() {
             this.selection = 'generate'
-            var keys = await Xeta.wallet.generateKeypair()
+            var keys = await Xeta.crypto.generateKeypair()
             this.publicKey = keys[0]
             this.privateKey = keys[1]
             Alpine.sstore('publicKey', this.publicKey)
             Alpine.sstore('privateKey', this.privateKey)
         },
         /**
-         * Create credentials
+         * Create wallet
          */
-        async createCredentials() {
+        async createWallet() {
             if (!this.transacting) {
                 var self = this;
-                var data = {seed: this.seed, password: this.password}
-                Alpine.sstore('seed', this.seed)
-                Alpine.sstore('password', this.password)
+                var data = {account: this.account, secret: this.secret}
+                Alpine.sstore('account', this.account)
+                Alpine.sstore('secret', this.secret)
                 this.transacting = true
 
-                Xeta.credentials.init({seed: this.seed, password: this.password, unsafe: true, create: true}).then(function(data) {
+                Xeta.wallet.managed({account: this.account, secret: this.secret, unsafe: true, create: true}).then(function(data) {
                     self.selection = 'public'
-                    self.publicKey = data.public
-                    self.password = null
+                    self.publicKey = data.publicKey
+                    self.secret = null
                     self.transacting = false
 
-                    Alpine.sstore('publicKey', data.public)
-                    Alpine.sstore('privateKey', data.private)
+                    Alpine.sstore('publicKey', data.publicKey)
+                    Alpine.sstore('privateKey', data.privateKey)
                     connectWallet()
                 }).catch(function(e) {
                     self.transacting = false
@@ -2218,23 +2226,23 @@ function walletModal() {
             }
         },
         /**
-         * Init credentials
+         * Init wallet
          */
-        async getCredentials() {
+        async getWallet() {
             if (!this.transacting) {
                 var self = this;
-                Alpine.sstore('seed', this.seed)
-                Alpine.sstore('password', this.password)
+                Alpine.sstore('account', this.account)
+                Alpine.sstore('secret', this.secret)
                 this.transacting = true
 
-                Xeta.credentials.init({seed: this.seed, password: this.password, unsafe: true}).then(function(data) {
+                Xeta.wallet.managed({account: this.account, secret: this.secret, unsafe: true}).then(function(data) {
                     self.selection = null
-                    self.publicKey = data.public
-                    self.password = null
+                    self.publicKey = data.publicKey
+                    self.secret = null
                     self.transacting = false
 
-                    Alpine.sstore('publicKey', data.public)
-                    Alpine.sstore('privateKey', data.private)
+                    Alpine.sstore('publicKey', data.publicKey)
+                    Alpine.sstore('privateKey', data.privateKey)
                     connectWallet()
                     hideModal()
                 }).catch(function(e) {
@@ -2283,8 +2291,8 @@ function walletModal() {
                     </div>
                     <div class="w-1/2 mb-4">
                         <div @click="selection = 'managed'" class="mx-4 cursor-pointer rounded-2xl bg-gray-900 bg-opacity-40 hover:bg-black shadow p-4 text-center">
-                            <p class="text-lg mb-2">Create new wallet (managed credentials)</p>
-                            <p class="text-sm">Xeta Reality will manage credentials for you, transactions can be signed with these credentials.</p>
+                            <p class="text-lg mb-2">Create new wallet (managed wallet)</p>
+                            <p class="text-sm">Xeta Reality will manage wallet for you, transactions can be signed with these wallet.</p>
                         </div>
                     </div>
 
@@ -2297,9 +2305,9 @@ function walletModal() {
                         </div>
                     </div>
                     <div class="w-1/2 mb-4">
-                        <div @click="selection = 'credentials'" class="mx-4 cursor-pointer rounded-2xl bg-gray-900 bg-opacity-40 hover:bg-black shadow p-4 text-center">
-                            <p class="text-lg mb-2">Managed credentials</p>
-                            <p class="text-sm">Log-in using your username and password. Choose this option if you have a managed wallet on Xeta.</p>
+                        <div @click="selection = 'wallet'" class="mx-4 cursor-pointer rounded-2xl bg-gray-900 bg-opacity-40 hover:bg-black shadow p-4 text-center">
+                            <p class="text-lg mb-2">Managed wallet</p>
+                            <p class="text-sm">Log-in using your username and secret. Choose this option if you have a managed wallet on Xeta.</p>
                         </div>
                     </div>
                 </div>
@@ -2327,18 +2335,18 @@ function walletModal() {
 
                     <div class="mb-6 w-full">
                         <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Email or username</label>
-                        <input x-model="seed" data-rules='["required", "minLength:6"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
+                        <input x-model="account" data-rules='["required", "minLength:6"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
                     </div>
 
                     <div class="mb-6 w-full">
-                        <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your password</label>
-                        <input x-model="password" data-rules='["required", "minLength:6"]' @input="validate($el)" @blur="validate($el)" type="password" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
+                        <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your secret</label>
+                        <input x-model="secret" data-rules='["required", "minLength:6"]' @input="validate($el)" @blur="validate($el)" type="secret" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
                     </div>
 
                     <div class="w-full">
-                        <button @click.prevent="validForm($root) ? await createCredentials() : ''" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full">Create credentials and show public key</button>
+                        <button @click.prevent="validForm($root) ? await createWallet() : ''" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full">Create wallet and show public key</button>
                     </div>
                 </form>
 
@@ -2364,7 +2372,7 @@ function walletModal() {
 
                     <div class="mb-6 w-full">
                         <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your private key</label>
-                        <input x-model="privateKey" data-rules='["required", "minLength:32", "maxLength:44"]' @input="validate($el)" @blur="validate($el)" type="password" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
+                        <input x-model="privateKey" data-rules='["required", "minLength:32", "maxLength:44"]' @input="validate($el)" @blur="validate($el)" type="secret" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
                     </div>
 
@@ -2373,23 +2381,23 @@ function walletModal() {
                     </div>
                 </form>
 
-                <form x-data x-show="selection == 'credentials'" class="flex flex-wrap w-full px-2 lg:px-8 py-8 text-white font-light">
+                <form x-data x-show="selection == 'wallet'" class="flex flex-wrap w-full px-2 lg:px-8 py-8 text-white font-light">
                     <p @click="selection = null" class="cursor-pointer text-gray-200 mb-4 underline">← Go back</p>
 
                     <div class="mb-6 w-full">
                         <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Email or username</label>
-                        <input x-model="seed" data-rules='["required", "minLength:6", "maxLength:40"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
+                        <input x-model="account" data-rules='["required", "minLength:6", "maxLength:40"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
                     </div>
 
                     <div class="mb-6 w-full">
-                        <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your password</label>
-                        <input x-model="password" data-rules='["required", "minLength:6", "maxLength:40"]' @input="validate($el)" @blur="validate($el)" type="password" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
+                        <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your secret</label>
+                        <input x-model="secret" data-rules='["required", "minLength:6", "maxLength:40"]' @input="validate($el)" @blur="validate($el)" type="secret" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
                     </div>
 
                     <div class="w-full">
-                        <button @click.prevent="validForm($root) ? await getCredentials() : ''" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full">Initialize wallet</button>
+                        <button @click.prevent="validForm($root) ? await getWallet() : ''" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full">Initialize wallet</button>
                     </div>
                 </form>
             </div>

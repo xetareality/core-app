@@ -1,7 +1,7 @@
 <script>
 function addressExplorer() {
     return {
-        tab: 'transactions-out',
+        tab: 'transfers-in',
         transactionsOut: [],
         transactionsIn: [],
         tokens: [],
@@ -13,9 +13,9 @@ function addressExplorer() {
         address: gup('address'),
         depleted: {},
         init() {
-            this.loadTransactionsOut()
+            this.loadTransfersIn()
         },
-        loadTransactionsOut() {
+        loadTransfersOut() {
             if (this.depleted.transactionsOut) return
             var self = this
             var last = this.transactionsOut.length ? '&signature='+this.transactionsOut.slice(-1)[0].signature+'&created='+this.transactionsOut.slice(-1)[0].created : ''
@@ -25,7 +25,7 @@ function addressExplorer() {
                 self.transactionsOut = self.transactionsOut.concat(data)
             })
         },
-        loadTransactionsIn() {
+        loadTransfersIn() {
             if (this.depleted.transactionsIn) return
             var self = this
             var last = this.transactionsIn.length ? '&signature='+this.transactionsIn.slice(-1)[0].signature+'&created='+this.transactionsIn.slice(-1)[0].created : ''
@@ -75,8 +75,8 @@ function addressExplorer() {
 <div x-data="addressExplorer()">
     <div class="bg-black rounded-2xl px-2 pt-2 mb-2 text-sm font-light text-gray-200 section">
         <div class="flex flex-wrap">
-            <div @click="tab = 'transactions-out', !transactionsOut.length ? loadTransactionsOut() : ''" :class="{'border-pink-700': tab == 'transactions-out'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Transactions Out</div>
-            <div @click="tab = 'transactions-in', !transactionsIn.length ? loadTransactionsIn() : ''" :class="{'border-pink-700': tab == 'transactions-in'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Transactions In</div>
+            <div @click="tab = 'transactions-out', !transactionsOut.length ? loadTransfersOut() : ''" :class="{'border-pink-700': tab == 'transactions-out'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Transactions Out</div>
+            <div @click="tab = 'transactions-in', !transactionsIn.length ? loadTransfersIn() : ''" :class="{'border-pink-700': tab == 'transactions-in'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Transactions In</div>
             <div @click="tab = 'tokens', !tokens.length ? loadTokens() : ''" :class="{'border-pink-700': tab == 'tokens'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Tokens</div>
             <div @click="tab = 'objects', !objects.length ? loadObjects() : ''" :class="{'border-pink-700': tab == 'objects'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">NFTs</div>
             <div @click="tab = 'pools', !pools.length ? loadPools() : ''" :class="{'border-pink-700': tab == 'pools'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Pools</div>
@@ -92,7 +92,7 @@ function addressExplorer() {
         {% include "src/blocks/lists/transactions.html" %}
 
         <div x-show="!depleted.transactionsOut" class="pt-6 flex justify-center text-sm">
-            <span @click="loadTransactionsOut()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
+            <span @click="loadTransfersOut()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
         </div>
     </div>
 
@@ -103,7 +103,7 @@ function addressExplorer() {
         {% include "src/blocks/lists/transactions.html" %}
 
         <div x-show="!depleted.transactionsIn" class="pt-6 flex justify-center text-sm">
-            <span @click="loadTransactionsIn()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
+            <span @click="loadTransfersIn()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
         </div>
     </div>
 

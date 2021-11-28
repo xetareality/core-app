@@ -75,7 +75,7 @@ function tokenExplorer() {
                         <td class="truncate pr-4 py-2">
                             <a :href="'/address/?address='+balance.address" x-text="balance.address" class="underline hover:text-pink-400"></a>
                         </td>
-                        <td x-text="balance.amount+(balance.tokenPreview.ticker ? ' '+balance.tokenPreview.ticker : '')" class="truncate py-2">
+                        <td x-text="balance.amount+(balance.tokenPreview.symbol ? ' '+balance.tokenPreview.symbol : '')" class="truncate py-2">
                         </td>
                         <td x-text="$store.token ? (balance.amount/$store.token.supply*100).toFixed(2)+'%' : 0+'%'" class="truncate py-2 text-right">
                         </td>

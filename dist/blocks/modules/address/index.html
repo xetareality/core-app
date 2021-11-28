@@ -1,0 +1,65 @@
+<script>
+function loadDetails() {
+    return {
+        details: {},
+        active: window.location.pathname.slice(1, -1) != 'pool',
+        init() {
+            var self = this
+            document.addEventListener('resourceLoaded', function (e) {
+                var resource = window.location.pathname.slice(1, -1)
+                var data = Alpine.store(resource)
+                
+                if (resource == 'address') {
+                    if (data.pool) window.location.href = '/pools/?address='+data.pool.address
+                    data = Object.assign({}, data.token, data.balance)
+                }
+
+                for (var k in data) {
+                    if (['amount', 'maxAmount', 'minAmount', 'tokenBalance'].includes(k)) {
+                        self.details[k] = Wrap.amount(data[k], data.token, data.tokenPreview)
+                    } else if (['fee', 'xetaBalance'].includes(k)) {
+                        self.details[k] = Wrap.xeta(data[k])
+                    } else if (['created', 'expires', 'unlocks'].includes(k)) {
+                        if (Date.now()-data[k] > 30*24*60*60*1000) self.details[k] = new Date(data[k]).toLocaleString()
+                        else self.details[k] = formatTime(new Date(data[k]))+' ('+new Date(data[k]).toLocaleString()+')'
+                    } else if (['minTime', 'maxTime'].includes(k)) {
+                        self.details[k] = formatTime(new Date(Date.now()-parseInt(data[k])), false)
+                    } else if (['origin'].includes(k)) {
+                        self.details[k] = Wrap.transaction(data[k])
+                    } else if (['pool', 'owner'].includes(k)) {
+                        self.details[k] = Wrap.pool(data[k])
+                    } else if (['token'].includes(k)) {
+                        self.details[k] = Wrap.token(data[k], data.tokenPreview)
+                    } else if (['address'].includes(k)) {
+                        if (resource == 'token') self.details[k] = Wrap.token(data[k])
+                        else if (resource == 'pool') self.details[k] = Wrap.pool(data[k])
+                        else if (resource == 'address') self.details[k] = String(data[k])
+                    } else if (['hash'].includes(k)) {
+                        if (resource == 'transsaction') self.details[k] = Wrap.transaction(data[k])
+                        else if (resource == 'transfer') self.details[k] = Wrap.transfer(data[k])
+                        else if (resource == 'claim') self.details[k] = Wrap.claim(data[k])
+                        else if (resource == 'allowance') self.details[k] = Wrap.allowance(data[k])
+                    } else if (['from', 'to', 'leader', 'creator', 'sender'].includes(k)) {
+                        self.details[k] = Wrap.address(data[k])
+                    } else if (['links'].includes(k)) {
+                        self.details[k] = data[k].map(l => Wrap.link(l)).join('')
+                    } else if (['outputs'].includes(k)) {
+                        self.details[k] = data[k].map(i => i.map(j => Wrap[j.split(':')[0]](j.split(':')[1])).join(''))
+                    } else if (['instructions'].includes(k)) {
+                        self.details[k] = String(data[k])
+                    } else self.details[k] = String(data[k])
+
+                    if (self.details[k] == '[object Object]') delete self.details[k]
+                }
+            })
+        }
+    }
+}
+</script>
+
+<div x-data="loadDetails()">
+    <div class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+        <p class="text-lg py-2 text-gray-100">Address</p>
+        
+    </div>
+</div>

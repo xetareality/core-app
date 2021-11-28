@@ -50,7 +50,7 @@
                 <img class="w-6 h-6 mr-2" src="/media/favicon.png" />
                 <span class="inline">Xeta Blockchain Explorer</span>
             </a>
-            <div @click="mainnet = !mainnet, Xeta.config.init({dev: !mainnet})" class="bg-transparent ml-4 cursor-pointer flex items-center" x-data="{mainnet: true}">
+            <div @click="mainnet = !mainnet, Xeta.config.init({dev: !mainnet})" class="bg-transparent ml-4 cursor-pointer flex items-center" x-data="{mainnet: !gup('dev')}">
                 <div class="relative rounded-full w-6 h-3 transition duration-200 ease-linear bg-gray-600" :class="{'bg-pink-700': mainnet}">
                     <label for="mainnet" class="absolute left-0 bg-white w-3 h-3 rounded-full transition transform duration-100 ease-linear translate-x-0" :class="{'translate-x-full': mainnet}"></label>
                     <input type="checkbox" id="mainnet" name="mainnet" class="appearance-none w-full h-full active:outline-none focus:outline-none">
@@ -59,7 +59,7 @@
             </div>
         </div>
         <div class="w-full justify-center md:justify-end md:w-3/5 flex flex items-center font-light">
-            <nav class="flex text-sm">
+            <nav class="flex text-sm mr-4">
                 <a href="/" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800">
                     <span>Network Stats</span>
                 </a>
@@ -72,7 +72,9 @@
                 <a href="https://xetareality.com" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800">
                     <span>About Xeta</span>
                 </a>
+            </nav>
 
+            <div class="text-sm flex">
                 <span @click="showModal('walletModal')" x-show="!Alpine.sstore('publicKey')" class="cursor-pointer font-medium px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white">
                     <span>Connect Wallet</span>
                 </span>
@@ -80,7 +82,7 @@
                 <div x-cloak x-show="Alpine.sstore('publicKey')" @click="showModal('actionsModal')" class="cursor-pointer font-medium px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white">
                     <span x-text="'Wallet: '+String(Alpine.sstore('publicKey')).slice(0, 10)+'...'"></span>
                 </div>
-            </nav>
+            </div>
         </div>
     </div>
 </header>
@@ -160,7 +162,7 @@ function initSearch() {
 function loadDetails() {
     return {
         details: {},
-        active: window.location.pathname.slice(1, -1) != 'pool',
+        active: !['pool', 'address', 'token'].includes(window.location.pathname.slice(1, -1)),
         init() {
             var self = this
             document.addEventListener('resourceLoaded', function (e) {
@@ -169,36 +171,42 @@ function loadDetails() {
                 
                 if (resource == 'address') {
                     if (data.pool) window.location.href = '/pools/?address='+data.pool.address
-                    data = Object.assign({}, data.account, data.balance)
+                    data = Object.assign({}, data.token, data.balance)
                 }
 
-                var tokenPreview = data.tokenPreview ? data.tokenPreview.ticker+(data.tokenPreview.name ? ' ('+data.tokenPreview.name+')' : '')+(data.tokenPreview.icon ? '<img class="h-6 w-6 ml-2" src="'+data.tokenPreview.icon+'" />' : '') : ''
-                var poolPreview = data.poolPreview ? (data.poolPreview.name ? data.poolPreview.name+' ' : '')+data.poolPreview.type : ''
-
                 for (var k in data) {
-                    if (['created', 'expires', 'unlocks'].includes(k)) {
-                        if (Date.now()-data[k].toNumber() > 30*24*60*60*1000) self.details[k] = new Date(data[k].toNumber()).toLocaleString()
-                        else self.details[k] = formatTime(new Date(data[k].toNumber()))+' ('+new Date(data[k].toNumber()).toLocaleString()+')'
+                    if (['amount', 'maxAmount', 'minAmount', 'tokenBalance'].includes(k)) {
+                        self.details[k] = Wrap.amount(data[k], data.token, data.tokenPreview)
+                    } else if (['fee', 'xetaBalance'].includes(k)) {
+                        self.details[k] = Wrap.xeta(data[k])
+                    } else if (['created', 'expires', 'unlocks'].includes(k)) {
+                        if (Date.now()-data[k] > 30*24*60*60*1000) self.details[k] = new Date(data[k]).toLocaleString()
+                        else self.details[k] = formatTime(new Date(data[k]))+' ('+new Date(data[k]).toLocaleString()+')'
                     } else if (['minTime', 'maxTime'].includes(k)) {
                         self.details[k] = formatTime(new Date(Date.now()-parseInt(data[k])), false)
-                    } else if (['signature', 'input'].includes(k)) {
-                        self.details[k] = wrap.transaction(data[k])
+                    } else if (['origin'].includes(k)) {
+                        self.details[k] = Wrap.transaction(data[k])
                     } else if (['pool', 'owner'].includes(k)) {
-                        self.details[k] = wrap.pool(data[k], poolPreview)
+                        self.details[k] = Wrap.pool(data[k])
                     } else if (['token'].includes(k)) {
-                        self.details[k] = wrap.token(data[k], tokenPreview)
+                        self.details[k] = Wrap.token(data[k], data.tokenPreview)
                     } else if (['address'].includes(k)) {
-                        if (resource == 'token') wrap.token(data[k])
-                        else if (resource == 'pool') wrap.pool(data[k])
+                        if (resource == 'token') self.details[k] = Wrap.token(data[k])
+                        else if (resource == 'pool') self.details[k] = Wrap.pool(data[k])
+                        else if (resource == 'address') self.details[k] = String(data[k])
                     } else if (['hash'].includes(k)) {
-                        if (resource == 'claim') self.details[k] = wrap.claim(data[k])
-                        else if (resource == 'allowance') self.details[k] = wrap.allowance(data[k])
+                        if (resource == 'transsaction') self.details[k] = Wrap.transaction(data[k])
+                        else if (resource == 'transfer') self.details[k] = Wrap.transfer(data[k])
+                        else if (resource == 'claim') self.details[k] = Wrap.claim(data[k])
+                        else if (resource == 'allowance') self.details[k] = Wrap.allowance(data[k])
                     } else if (['from', 'to', 'leader', 'creator', 'sender'].includes(k)) {
-                        self.details[k] = wrap.address(data[k])
+                        self.details[k] = Wrap.address(data[k])
                     } else if (['links'].includes(k)) {
-                        self.details[k] = data[k].map(l => wrap.link(l)).join('')
+                        self.details[k] = data[k].map(l => Wrap.link(l)).join('')
                     } else if (['outputs'].includes(k)) {
-                        self.details[k] = data[k].map(t => wrap[t.split(':')[0]][t.split(':')[1]]).join('')
+                        self.details[k] = data[k].map(i => i.map(j => Wrap[j.split(':')[0]](j.split(':')[1])).join(''))
+                    } else if (['instructions'].includes(k)) {
+                        self.details[k] = String(data[k])
                     } else self.details[k] = String(data[k])
 
                     if (self.details[k] == '[object Object]') delete self.details[k]
@@ -284,8 +292,8 @@ function alertModal() {
 function walletModal() {
     return {
         selection: null,
-        seed: null,
-        password: null,
+        account: null,
+        secret: null,
         publicKey: null,
         privateKey: null,
         transacting: false,
@@ -295,31 +303,31 @@ function walletModal() {
          */
         async generateKeys() {
             this.selection = 'generate'
-            var keys = await Xeta.wallet.generateKeypair()
+            var keys = await Xeta.crypto.generateKeypair()
             this.publicKey = keys[0]
             this.privateKey = keys[1]
             Alpine.sstore('publicKey', this.publicKey)
             Alpine.sstore('privateKey', this.privateKey)
         },
         /**
-         * Create credentials
+         * Create wallet
          */
-        async createCredentials() {
+        async createWallet() {
             if (!this.transacting) {
                 var self = this;
-                var data = {seed: this.seed, password: this.password}
-                Alpine.sstore('seed', this.seed)
-                Alpine.sstore('password', this.password)
+                var data = {account: this.account, secret: this.secret}
+                Alpine.sstore('account', this.account)
+                Alpine.sstore('secret', this.secret)
                 this.transacting = true
 
-                Xeta.credentials.init({seed: this.seed, password: this.password, unsafe: true, create: true}).then(function(data) {
+                Xeta.wallet.managed({account: this.account, secret: this.secret, unsafe: true, create: true}).then(function(data) {
                     self.selection = 'public'
-                    self.publicKey = data.public
-                    self.password = null
+                    self.publicKey = data.publicKey
+                    self.secret = null
                     self.transacting = false
 
-                    Alpine.sstore('publicKey', data.public)
-                    Alpine.sstore('privateKey', data.private)
+                    Alpine.sstore('publicKey', data.publicKey)
+                    Alpine.sstore('privateKey', data.privateKey)
                     connectWallet()
                 }).catch(function(e) {
                     self.transacting = false
@@ -328,23 +336,23 @@ function walletModal() {
             }
         },
         /**
-         * Init credentials
+         * Init wallet
          */
-        async getCredentials() {
+        async getWallet() {
             if (!this.transacting) {
                 var self = this;
-                Alpine.sstore('seed', this.seed)
-                Alpine.sstore('password', this.password)
+                Alpine.sstore('account', this.account)
+                Alpine.sstore('secret', this.secret)
                 this.transacting = true
 
-                Xeta.credentials.init({seed: this.seed, password: this.password, unsafe: true}).then(function(data) {
+                Xeta.wallet.managed({account: this.account, secret: this.secret, unsafe: true}).then(function(data) {
                     self.selection = null
-                    self.publicKey = data.public
-                    self.password = null
+                    self.publicKey = data.publicKey
+                    self.secret = null
                     self.transacting = false
 
-                    Alpine.sstore('publicKey', data.public)
-                    Alpine.sstore('privateKey', data.private)
+                    Alpine.sstore('publicKey', data.publicKey)
+                    Alpine.sstore('privateKey', data.privateKey)
                     connectWallet()
                     hideModal()
                 }).catch(function(e) {
@@ -393,8 +401,8 @@ function walletModal() {
                     </div>
                     <div class="w-1/2 mb-4">
                         <div @click="selection = 'managed'" class="mx-4 cursor-pointer rounded-2xl bg-gray-900 bg-opacity-40 hover:bg-black shadow p-4 text-center">
-                            <p class="text-lg mb-2">Create new wallet (managed credentials)</p>
-                            <p class="text-sm">Xeta Reality will manage credentials for you, transactions can be signed with these credentials.</p>
+                            <p class="text-lg mb-2">Create new wallet (managed wallet)</p>
+                            <p class="text-sm">Xeta Reality will manage wallet for you, transactions can be signed with these wallet.</p>
                         </div>
                     </div>
 
@@ -407,9 +415,9 @@ function walletModal() {
                         </div>
                     </div>
                     <div class="w-1/2 mb-4">
-                        <div @click="selection = 'credentials'" class="mx-4 cursor-pointer rounded-2xl bg-gray-900 bg-opacity-40 hover:bg-black shadow p-4 text-center">
-                            <p class="text-lg mb-2">Managed credentials</p>
-                            <p class="text-sm">Log-in using your username and password. Choose this option if you have a managed wallet on Xeta.</p>
+                        <div @click="selection = 'wallet'" class="mx-4 cursor-pointer rounded-2xl bg-gray-900 bg-opacity-40 hover:bg-black shadow p-4 text-center">
+                            <p class="text-lg mb-2">Managed wallet</p>
+                            <p class="text-sm">Log-in using your username and secret. Choose this option if you have a managed wallet on Xeta.</p>
                         </div>
                     </div>
                 </div>
@@ -437,18 +445,18 @@ function walletModal() {
 
                     <div class="mb-6 w-full">
                         <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Email or username</label>
-                        <input x-model="seed" data-rules='["required", "minLength:6"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
+                        <input x-model="account" data-rules='["required", "minLength:6"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
                     </div>
 
                     <div class="mb-6 w-full">
-                        <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your password</label>
-                        <input x-model="password" data-rules='["required", "minLength:6"]' @input="validate($el)" @blur="validate($el)" type="password" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
+                        <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your secret</label>
+                        <input x-model="secret" data-rules='["required", "minLength:6"]' @input="validate($el)" @blur="validate($el)" type="secret" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
                     </div>
 
                     <div class="w-full">
-                        <button @click.prevent="validForm($root) ? await createCredentials() : ''" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full">Create credentials and show public key</button>
+                        <button @click.prevent="validForm($root) ? await createWallet() : ''" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full">Create wallet and show public key</button>
                     </div>
                 </form>
 
@@ -474,7 +482,7 @@ function walletModal() {
 
                     <div class="mb-6 w-full">
                         <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your private key</label>
-                        <input x-model="privateKey" data-rules='["required", "minLength:32", "maxLength:44"]' @input="validate($el)" @blur="validate($el)" type="password" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
+                        <input x-model="privateKey" data-rules='["required", "minLength:32", "maxLength:44"]' @input="validate($el)" @blur="validate($el)" type="secret" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
                     </div>
 
@@ -483,23 +491,23 @@ function walletModal() {
                     </div>
                 </form>
 
-                <form x-data x-show="selection == 'credentials'" class="flex flex-wrap w-full px-2 lg:px-8 py-8 text-white font-light">
+                <form x-data x-show="selection == 'wallet'" class="flex flex-wrap w-full px-2 lg:px-8 py-8 text-white font-light">
                     <p @click="selection = null" class="cursor-pointer text-gray-200 mb-4 underline">← Go back</p>
 
                     <div class="mb-6 w-full">
                         <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Email or username</label>
-                        <input x-model="seed" data-rules='["required", "minLength:6", "maxLength:40"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
+                        <input x-model="account" data-rules='["required", "minLength:6", "maxLength:40"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
                     </div>
 
                     <div class="mb-6 w-full">
-                        <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your password</label>
-                        <input x-model="password" data-rules='["required", "minLength:6", "maxLength:40"]' @input="validate($el)" @blur="validate($el)" type="password" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
+                        <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your secret</label>
+                        <input x-model="secret" data-rules='["required", "minLength:6", "maxLength:40"]' @input="validate($el)" @blur="validate($el)" type="secret" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
                     </div>
 
                     <div class="w-full">
-                        <button @click.prevent="validForm($root) ? await getCredentials() : ''" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full">Initialize wallet</button>
+                        <button @click.prevent="validForm($root) ? await getWallet() : ''" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full">Initialize wallet</button>
                     </div>
                 </form>
             </div>

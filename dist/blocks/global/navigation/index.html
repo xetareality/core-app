@@ -5,7 +5,7 @@
                 <img class="w-6 h-6 mr-2" src="/media/favicon.png" />
                 <span class="inline">Xeta Blockchain Explorer</span>
             </a>
-            <div @click="mainnet = !mainnet, Xeta.config.init({dev: !mainnet})" class="bg-transparent ml-4 cursor-pointer flex items-center" x-data="{mainnet: true}">
+            <div @click="mainnet = !mainnet, Xeta.config.init({dev: !mainnet})" class="bg-transparent ml-4 cursor-pointer flex items-center" x-data="{mainnet: !gup('dev')}">
                 <div class="relative rounded-full w-6 h-3 transition duration-200 ease-linear bg-gray-600" :class="{'bg-pink-700': mainnet}">
                     <label for="mainnet" class="absolute left-0 bg-white w-3 h-3 rounded-full transition transform duration-100 ease-linear translate-x-0" :class="{'translate-x-full': mainnet}"></label>
                     <input type="checkbox" id="mainnet" name="mainnet" class="appearance-none w-full h-full active:outline-none focus:outline-none">
@@ -14,7 +14,7 @@
             </div>
         </div>
         <div class="w-full justify-center md:justify-end md:w-3/5 flex flex items-center font-light">
-            <nav class="flex text-sm">
+            <nav class="flex text-sm mr-4">
                 <a href="/" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800">
                     <span>Network Stats</span>
                 </a>
@@ -27,7 +27,9 @@
                 <a href="https://xetareality.com" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800">
                     <span>About Xeta</span>
                 </a>
+            </nav>
 
+            <div class="text-sm flex">
                 <span @click="showModal('walletModal')" x-show="!Alpine.sstore('publicKey')" class="cursor-pointer font-medium px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white">
                     <span>Connect Wallet</span>
                 </span>
@@ -35,7 +37,7 @@
                 <div x-cloak x-show="Alpine.sstore('publicKey')" @click="showModal('actionsModal')" class="cursor-pointer font-medium px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white">
                     <span x-text="'Wallet: '+String(Alpine.sstore('publicKey')).slice(0, 10)+'...'"></span>
                 </div>
-            </nav>
+            </div>
         </div>
     </div>
 </header>
