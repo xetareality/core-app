@@ -1,5 +1,5 @@
 <script>
-function loadPoolPreview() {
+function poolPreview() {
     return {
         init() {
             // Xeta.pool.instance({address: gup('address'), extended: true}).then(function(data) {
@@ -15,7 +15,7 @@ function loadPoolPreview() {
 }
 </script>
 
-<div x-data="loadPoolPreview">
+<div x-data="poolPreview">
 {% include "src/blocks/pools/auction.html" %}
 {% include "src/blocks/pools/launch.html" %}
 {% include "src/blocks/pools/lock.html" %}

@@ -1,73 +1,167 @@
 <script>
 function addressExplorer() {
     return {
-        tab: 'transfers-in',
-        transactionsOut: [],
-        transactionsIn: [],
+        tab: 'transfers',
+        transfersFilter: 'in',
+        claimsFilter: 'held',
+        allowancesFilter: 'spendable',
+        transfers: [],
+        transfersOut: [],
+        transfersIn: [],
+        transactions: [],
         tokens: [],
-        objects: [],
         pools: [],
         claims: [],
+        claimsIssued: [],
+        claimsHeld: [],
+        pools: [],
         allowances: [],
+        allowancesGranted: [],
+        allowancesSpendable: [],
+        balances: [],
         existing: [],
         address: gup('address'),
         depleted: {},
+        methods: {
+            'transfersIn': Xeta.transfer.scanToCreated,
+        },
+        inputs: {
+            'transfersIn': 'to',
+        },
         init() {
-            this.loadTransfersIn()
+            this.load('transfers', 'in')
         },
-        loadTransfersOut() {
-            if (this.depleted.transactionsOut) return
+        load(resource) {
+            var filter = this[resource+'Filter']
+            var id = resource+(filter ? filter[0].toUpperCase()+filter.slice(1) : '')
+            this[resource] = this[id]
+            if (this.depleted[id]) return
+            var last = this[id].length ? this[id].slice(-1)[0] : {}
             var self = this
-            var last = this.transactionsOut.length ? '&signature='+this.transactionsOut.slice(-1)[0].signature+'&created='+this.transactionsOut.slice(-1)[0].created : ''
-            ajax(INTERFACE+'/transactions?from='+this.address+'&extended=1&sort=DESC'+last, null, function(data) {
-                data = JSON.parse(data)
-                if (!data.length) self.depleted.transactionsOut = true
-                self.transactionsOut = self.transactionsOut.concat(data)
-            })
-        },
-        loadTransfersIn() {
-            if (this.depleted.transactionsIn) return
-            var self = this
-            var last = this.transactionsIn.length ? '&signature='+this.transactionsIn.slice(-1)[0].signature+'&created='+this.transactionsIn.slice(-1)[0].created : ''
-            ajax(INTERFACE+'/transactions?to='+this.address+'&extended=1&sort=DESC'+last, null, function(data) {
-                data = JSON.parse(data)
-                if (!data.length) self.depleted.transactionsIn = true
-                self.transactionsIn = self.transactionsIn.concat(data)
-            })
-        },
-        loadTokens() {
-            if (this.depleted.tokens) return
-            var self = this
-            var last = this.tokens.length ? '&token='+this.tokens.slice(-1)[0].token+'&amount='+this.tokens.slice(-1)[0].amount : ''
-            ajax(INTERFACE+'/balances?address='+this.address+'&extended=1&sort=DESC'+last, null, function(data) {
-                data = JSON.parse(data)
-                if (!data.length) self.depleted.tokens = true
-                self.tokens = self.tokens.concat(data.filter(d => d.amount >= 0 && !self.existing.includes(d.token)))
-                self.objects = self.objects.concat(data.filter(d => d.amount == -1 && !self.existing.includes(d.token)).reverse())
-                self.existing = self.existing.concat(data.map(d => d.token))
-            })
-        },
-        loadObjects() {
-            if (this.depleted.objects) return
-            var self = this
-            var last = this.objects.length ? '&token='+this.objects.slice(-1)[0].token+'&amount='+this.objects.slice(-1)[0].amount : ''
-            ajax(INTERFACE+'/balances?address='+this.address+'&extended=1&sort=ASC'+last, null, function(data) {
-                data = JSON.parse(data)
-                if (!data.length) self.depleted.objects = true
-                self.tokens = self.tokens.concat(data.filter(d => d.amount >= 0 && !self.existing.includes(d.token)))
-                self.objects = self.objects.concat(data.filter(d => d.amount == -1 && !self.existing.includes(d.token)).reverse())
-                self.existing = self.existing.concat(data.map(d => d.token))
-            })
-        },
-        loadPools() {
 
+            this.methods[id]({...last, ...{[this.inputs[id]]: this.address}}, {preview: true}).then(function(data) {
+                if (!data.length) self.depleted[id] = true
+                self[id] = self[id].concat(data)
+                if (filter) self[resource] = self[id]
+            }).catch(function(e) {})
         },
-        loadClaims() {
 
-        },
-        loadAllowances() {
+        // loadTransfers() {
+        //     if (this.transfersFilter == 'in') this.loadTransfersIn()
+        //     else if (this.transfersFilter == 'out') this.loadTransfersOut()
+        // },
+        // loadTransfersIn() {
+        //     this.transfers = this.transfersIn
+        //     if (this.depleted.transfersIn) return
+        //     var last = this.transfersIn.length ? this.transfersIn.slice(-1)[0] : {}
+        //     var self = this
 
-        }
+        //     Xeta.transfer.scanToCreated({to: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
+        //         if (!data.length) self.depleted.transfersIn = true
+        //         self.transfersIn = self.transfersIn.concat(data)
+        //         self.transfers = self.transfersIn
+        //     }).catch(function(e) {})
+        // },
+        // loadTransfersOut() {
+        //     this.transfers = this.transfersOut
+        //     if (this.depleted.transfersOut) return
+        //     var last = this.transfersOut.length ? this.transfersOut.slice(-1)[0] : {}
+        //     var self = this
+
+        //     Xeta.transfer.scanFromCreated({from: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
+        //         if (!data.length) self.depleted.transfersOut = true
+        //         self.transfersOut = self.transfersOut.concat(data)
+        //         self.transfers = self.transfersOut
+        //     }).catch(function(e) {})
+        // },
+        // loadTransactions() {
+        //     if (this.depleted.transactions) return
+        //     var last = this.transactions.length ? this.transactions.slice(-1)[0] : {}
+        //     var self = this
+
+        //     Xeta.transfer.scanSenderCreated({sender: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
+        //         if (!data.length) self.depleted.transactions = true
+        //         self.transactions = self.transactions.concat(data)
+        //     }).catch(function(e) {})
+        // },
+        // loadTokens() {
+        //     if (this.depleted.tokens) return
+        //     var last = this.tokens.length ? this.tokens.slice(-1)[0] : {}
+        //     var self = this
+
+        //     Xeta.transfer.scanOwnerCreated({owner: this.address, created: last.created, address: last.address}, {preview: true}).then(function(data) {
+        //         if (!data.length) self.depleted.tokens = true
+        //         self.tokens = self.tokens.concat(data)
+        //     }).catch(function(e) {})
+        // },
+        // loadPools() {
+        //     if (this.depleted.pools) return
+        //     var last = this.pools.length ? this.pools.slice(-1)[0] : {}
+        //     var self = this
+
+        //     Xeta.transfer.scanToCreated({to: this.address, created: last.created, address: last.address}, {preview: true}).then(function(data) {
+        //         if (!data.length) self.depleted.pools = true
+        //         self.pools = self.pools.concat(data)
+        //     }).catch(function(e) {})
+        // },
+        // loadClaimsHeld() {
+        //     this.claims = this.claimsHeld
+        //     if (this.depleted.claimsHeld) return
+        //     var last = this.claimsHeld.length ? this.claimsHeld.slice(-1)[0] : {}
+        //     var self = this
+
+        //     Xeta.claim.scanHolderCreated({holder: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
+        //         if (!data.length) self.depleted.claimsHeld = true
+        //         self.claimsHeld = self.claimsHeld.concat(data)
+        //         self.claims = self.claimsHeld
+        //     }).catch(function(e) {})
+        // },
+        // loadClaimsIssued() {
+        //     this.claims = this.claimsIssued
+        //     if (this.depleted.claimsIssued) return
+        //     var last = this.claimsIssued.length ? this.claimsIssued.slice(-1)[0] : {}
+        //     var self = this
+
+        //     Xeta.claim.scanIssuerCreated({issuer: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
+        //         if (!data.length) self.depleted.claimsIssued = true
+        //         self.claimsIssued = self.claimsIssued.concat(data)
+        //         self.claims = self.claimsIssued
+        //     }).catch(function(e) {})
+        // },
+        // loadBalances() {
+        //     if (this.depleted.balances) return
+        //     var last = this.balances.length ? this.balances.slice(-1)[0] : {}
+        //     var self = this
+
+        //     Xeta.transfer.scanAddressAmount({address: this.address, amount: last.amount, hash: last.hash}, {preview: true}).then(function(data) {
+        //         if (!data.length) self.depleted.balances = true
+        //         self.balances = self.balances.concat(data)
+        //     }).catch(function(e) {})
+        // },
+        // loadAllowancesGranted() {
+        //     this.allowances = this.allowancesGranted
+        //     if (this.depleted.allowancesGranted) return
+        //     var last = this.allowances.length ? this.allowances.slice(-1)[0] : {}
+        //     var self = this
+
+        //     Xeta.transfer.scanAddressCreated({address: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
+        //         if (!data.length) self.depleted.allowances = true
+        //         self.allowancesGranted = self.allowancesGranted.concat(data)
+        //         self.allowances = self.allowancesGranted
+        //     }).catch(function(e) {})
+        // },
+        // loadAllowancesSpendable() {
+        //     this.allowances = this.allowancesSpendable
+        //     if (this.depleted.allowancesSpendable) return
+        //     var last = this.allowancesSpendable.length ? this.allowancesSpendable.slice(-1)[0] : {}
+        //     var self = this
+
+        //     Xeta.transfer.scanSpenderCreated({spender: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
+        //         if (!data.length) self.depleted.allowances = true
+        //         self.allowancesSpendable = self.allowancesSpendable.concat(data)
+        //         self.allowances = self.allowancesSpendable
+        //     }).catch(function(e) {})
+        // },
     }
 }
 </script>
@@ -75,23 +169,40 @@ function addressExplorer() {
 <div x-data="addressExplorer()">
     <div class="bg-black rounded-2xl px-2 pt-2 mb-2 text-sm font-light text-gray-200 section">
         <div class="flex flex-wrap">
-            <div @click="tab = 'transactions-out', !transactionsOut.length ? loadTransfersOut() : ''" :class="{'border-pink-700': tab == 'transactions-out'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Transactions Out</div>
-            <div @click="tab = 'transactions-in', !transactionsIn.length ? loadTransfersIn() : ''" :class="{'border-pink-700': tab == 'transactions-in'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Transactions In</div>
-            <div @click="tab = 'tokens', !tokens.length ? loadTokens() : ''" :class="{'border-pink-700': tab == 'tokens'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Tokens</div>
-            <div @click="tab = 'objects', !objects.length ? loadObjects() : ''" :class="{'border-pink-700': tab == 'objects'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">NFTs</div>
-            <div @click="tab = 'pools', !pools.length ? loadPools() : ''" :class="{'border-pink-700': tab == 'pools'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Pools</div>
-            <div @click="tab = 'claims', !claims.length ? loadClaims() : ''" :class="{'border-pink-700': tab == 'claims'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Claims</div>
-            <div @click="tab = 'allowances', !allowances.length ? loadAllowances() : ''" :class="{'border-pink-700': tab == 'allowances'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Allowances</div>
+            <template x-for="resource in ['transfers', 'balances', 'tokens', 'transactions', 'pools', 'claims', 'allowances']">
+                <div @click="tab = resource, load(resource)" :class="{'border-pink-700': tab == resource}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer capitalize" x-text="resource"></div>
+            </template>
+        </div>
+    </div>
+
+    <div x-cloak x-show="tab == 'transfers'" class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
+        <div class="flex justify-between items-center px-6">
+            <p class="text-lg py-2 text-gray-100">Transfers</p>
+            <div x-data="{active: false}" class="relative text-white text-sm">
+                <span @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900" x-text="{'in': 'Incoming', 'out': 'Outgoing'}[transfersFilter]"></span>
+                <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
+                    <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                        <li @click="transfersFilter = 'in', loadTransfers(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Incoming</li>
+                        <li @click="transfersFilter = 'out', loadTransfers(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Outgoing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {% include "src/blocks/lists/transfers.html" %}
+
+        <div x-show="(transfersFilter == 'in' && !depleted.transfersIn) || (transfersFilter == 'out' && !depleted.transfersOut)" class="pt-6 flex justify-center text-sm">
+            <span @click="loadTransfers()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
         </div>
     </div>
 
     <div x-cloak x-show="tab == 'transactions-out'" class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
         <p class="text-lg py-2 px-6 text-gray-100">Transactions Out</p>
 
-        {% set transactionsCollection = 'transactionsOut' %}
+        {% set transactionsCollection = 'transfersOut' %}
         {% include "src/blocks/lists/transactions.html" %}
 
-        <div x-show="!depleted.transactionsOut" class="pt-6 flex justify-center text-sm">
+        <div x-show="!depleted.transfersOut" class="pt-6 flex justify-center text-sm">
             <span @click="loadTransfersOut()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
         </div>
     </div>
@@ -99,10 +210,10 @@ function addressExplorer() {
     <div x-cloak x-show="tab == 'transactions-in'" class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
         <p class="text-lg py-2 px-6 text-gray-100">Transactions In</p>
 
-        {% set transactionsCollection = 'transactionsIn' %}
+        {% set transactionsCollection = 'transfersIn' %}
         {% include "src/blocks/lists/transactions.html" %}
 
-        <div x-show="!depleted.transactionsIn" class="pt-6 flex justify-center text-sm">
+        <div x-show="!depleted.transfersIn" class="pt-6 flex justify-center text-sm">
             <span @click="loadTransfersIn()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
         </div>
     </div>
@@ -122,8 +233,8 @@ function addressExplorer() {
     <div x-cloak x-show="tab == 'objects'" class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
         <p class="text-lg py-2 px-6 text-gray-100">NFT Balances</p>
 
-        {% set objectsCollection = 'objects' %}
-        {% include "src/blocks/lists/nfts.html" %}
+        {% set objectsCollection = 'tokens' %}
+        {% include "src/blocks/lists/tokens.html" %}
         
 
         <div x-show="!depleted.objects" class="pt-6 flex justify-center text-sm">

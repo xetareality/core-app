@@ -7,7 +7,7 @@ function poolExplorer() {
         transfers: [], // Filtered transfers
         claims: [],
         transfersFilter: 'in', // in, out
-        claimsFilter: 'issued', // issued, holding
+        claimsFilter: 'issued', // issued, held
         existing: [],
         address: gup('address'),
         depleted: {},
@@ -18,40 +18,40 @@ function poolExplorer() {
             if (this.transfersFilter == 'in') this.loadTransfersIn()
             else if (this.transfersFilter == 'out') this.loadTransfersOut()
         },
-        loadTransfersOut() {
-            this.transfers = this.transfersOut
-            if (this.depleted.transfersOut) return
-            var last = this.transfersOut.length ? {signature: this.transfersOut.slice(-1)[0].signature, created: this.transfersOut.slice(-1)[0].created} : {}
+        // loadTransfersOut() {
+        //     this.transfers = this.transfersOut
+        //     if (this.depleted.transfersOut) return
+        //     var last = this.transfersOut.length ? {hash: this.transfersOut.slice(-1)[0].hash, created: this.transfersOut.slice(-1)[0].created} : {}
     
-            var self = this
-            Xeta.transfer.scanFromCreated({from: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
-                if (!data.length) self.depleted.transfersOut = true
-                self.transfersOut = self.transfersOut.concat(data)
-                self.transfers = self.transfersOut
-            }).catch(function(e) {})
-        },
-        loadTransfersIn() {
-            this.transfers = this.transfersIn
-            if (this.depleted.transfersIn) return
-            var last = this.transfersIn.length ? {signature: this.transfersIn.slice(-1)[0].signature, created: this.transfersIn.slice(-1)[0].created} : {}
+        //     var self = this
+        //     Xeta.transfer.scanFromCreated({from: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
+        //         if (!data.length) self.depleted.transfersOut = true
+        //         self.transfersOut = self.transfersOut.concat(data)
+        //         self.transfers = self.transfersOut
+        //     }).catch(function(e) {})
+        // },
+        // loadTransfersIn() {
+        //     this.transfers = this.transfersIn
+        //     if (this.depleted.transfersIn) return
+        //     var last = this.transfersIn.length ? {hash: this.transfersIn.slice(-1)[0].hash, created: this.transfersIn.slice(-1)[0].created} : {}
     
-            var self = this
-            Xeta.transfer.scanToCreated({to: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
-                if (!data.length) self.depleted.transfersIn = true
-                self.transfersIn = self.transfersIn.concat(data)
-                self.transfers = self.transfersIn
-            }).catch(function(e) {})
-        },
-        loadClaims() {
-            if (this.depleted.claims) return
-            var last = this.claims.length ? {hash: this.claims.slice(-1)[0].hash, created: this.claims.slice(-1)[0].created} : {}
+        //     var self = this
+        //     Xeta.transfer.scanToCreated({to: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
+        //         if (!data.length) self.depleted.transfersIn = true
+        //         self.transfersIn = self.transfersIn.concat(data)
+        //         self.transfers = self.transfersIn
+        //     }).catch(function(e) {})
+        // },
+        // loadClaims() {
+        //     if (this.depleted.claims) return
+        //     var last = this.claims.length ? {hash: this.claims.slice(-1)[0].hash, created: this.claims.slice(-1)[0].created} : {}
     
-            var self = this
-            Xeta.claim.scanIssuerCreated({issuer: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
-                if (!data.length) self.depleted.claims = true
-                self.claims = self.claims.concat(data)
-            }).catch(function(e) {})
-        },
+        //     var self = this
+        //     Xeta.claim.scanIssuerCreated({issuer: this.address, created: last.created, hash: last.hash}, {preview: true}).then(function(data) {
+        //         if (!data.length) self.depleted.claims = true
+        //         self.claims = self.claims.concat(data)
+        //     }).catch(function(e) {})
+        // },
     }
 }
 </script>

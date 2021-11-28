@@ -31,23 +31,20 @@ var Wrap = {
     transfer: function(hash) {
         return '<a href="/transfer/?hash='+hash+'" class="underline hover:text-pink-400">'+hash+'</a>'
     },
-    tokenPreview: function(tp) {
-        return tp ? (tp.symbol ? tp.symbol : tp.name)+(tp.icon ? '<img class="h-5 w-5 ml-2" src="'+tp.icon+'" />' : '') : ''
+    tokenPreview: function(tp, address) {
+        return '<span class="ml-1">'+(tp ? (tp.symbol ? tp.symbol : tp.name)+(tp.icon ? '<img class="h-5 w-5 ml-1 -mt-0.5 inline" src="'+tp.icon+'" />' : '') : address)+'</span>'
     },
     xetaPreview: function() {
         return Wrap.tokenPreview({symbol: 'XETA', name: 'Xeta', icon: '/media/favicon.png'})
     },
     token: function(address, tokenPreview) {
-        var preview = tokenPreview ? '<span class="ml-1 flex items-center">'+Wrap.tokenPreview(tokenPreview)+'</span>' : ''
-        return '<a href="/token/?address='+address+'" class="hover:text-pink-400"><span class="flex justify-end">'+address+preview+'</span></a>'
+        return '<a href="/token/?address='+address+'" class="hover:text-pink-400">'+Wrap.tokenPreview(tokenPreview, address)+'</a>'
     },
     amount: function(amount, token, tokenPreview) {
-        var preview = tokenPreview ? '<span class="ml-1 flex items-center">'+Wrap.tokenPreview(tokenPreview)+'</span>' : ''
-        return '<a href="/token/?address='+token+'" class="hover:text-pink-400"><span class="flex justify-end">'+amount+preview+'</span></a>'
+        return '<a href="/token/?address='+token+'" class="hover:text-pink-400">'+amount+'<span>'+Wrap.tokenPreview(tokenPreview, token)+'</span></a>'
     },
     xeta: function(amount) {
-        var preview = '<span class="ml-1 flex items-center">'+Wrap.xetaPreview()+'</span>'
-        return '<a href="/token/?address='+Xeta.config.xetaAddress+'" class="hover:text-pink-400"><span class="flex justify-end">'+amount+preview+'</span></a>'
+        return '<a href="/token/?address='+Xeta.config.xetaAddress+'" class="hover:text-pink-400">'+amount+'<span>'+Wrap.xetaPreview()+'</span></a>'
     },
     pool: function(address) {
         return '<a href="/pool/?address='+address+'" class="underline hover:text-pink-400">'+address+'</a>'
