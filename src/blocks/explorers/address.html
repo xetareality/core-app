@@ -1,10 +1,10 @@
 <script>
 function addressExplorer() {
     return {
-        resource: 'pools',
+        resource: 'tokens',
         resourceFilter: null,
         transfersFilter: 'incoming',
-        claimsFilter: 'held',
+        claimsFilter: 'holding',
         allowancesFilter: 'spendable',
         transfers: [],
         transfersOutgoing: [],
@@ -14,7 +14,7 @@ function addressExplorer() {
         pools: [],
         claims: [],
         claimsIssued: [],
-        claimsHeld: [],
+        claimsHolding: [],
         pools: [],
         allowances: [],
         allowancesGranted: [],
@@ -29,7 +29,7 @@ function addressExplorer() {
             'transactions': Xeta.transaction.scanSenderCreated,
             'tokens': Xeta.token.scanOwnerCreated,
             'pools': Xeta.pool.scanCreatorCreated,
-            'claimsHeld': Xeta.claim.scanHolderCreated,
+            'claimsHolding': Xeta.claim.scanHolderCreated,
             'claimsIssued': Xeta.claim.scanIssuerCreated,
             'balances': Xeta.balance.scanAddressAmount,
             'allowancesGranted': Xeta.allowance.scanAddressCreated,
@@ -41,7 +41,7 @@ function addressExplorer() {
             'transactions': 'sender',
             'tokens': 'owner',
             'pools': 'creator',
-            'claimsHeld': 'holder',
+            'claimsHolding': 'holder',
             'claimsIssued': 'issuer',
             'balances': 'address',
             'allowancesGranted': 'address',
@@ -71,6 +71,9 @@ function addressExplorer() {
                 if (!data.length) self.depleted[self.resourceFilter] = true
                 self[self.resourceFilter] = self[self.resourceFilter].concat(data)
                 if (resource != self.resourceFilter) self[resource] = self[self.resourceFilter]
+
+                if (resource == 'tokens') Grid.layout(document.getElementById('grid'), document.getElementById('tokens'))
+                // if (resource == 'tokens') Grid.layout(document.getElementById('grid'), document.getElementById('tokens'))
             }).catch(function(e) {})
         },
     }
@@ -93,7 +96,7 @@ function addressExplorer() {
                 <span @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize" x-text="$data[resource+'Filter']"></span>
                 <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
                     <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                        <template x-for="[key, type] in Object.entries({incoming: 'transfers', outgoing: 'transfers', issued: 'claims', held: 'claims', granted: 'allowances', spendable: 'allowances'})">
+                        <template x-for="[key, type] in Object.entries({incoming: 'transfers', outgoing: 'transfers', issued: 'claims', holding: 'claims', granted: 'allowances', spendable: 'allowances'})">
                             <li x-cloak x-show="type == resource" @click="this[type+'Filter'] = key, change(type), active = false" x-text="key" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize"></li>
                         </template>
                     </ul>
@@ -105,7 +108,9 @@ function addressExplorer() {
         <div x-cloak x-show="resource == 'balances'">{% include "src/blocks/lists/balances.html" %}</div>
         <div x-cloak x-show="resource == 'transactions'">{% include "src/blocks/lists/transactions.html" %}</div>
         <div x-cloak x-show="resource == 'pools'">{% include "src/blocks/lists/pools.html" %}</div>
-        
+        <div x-cloak x-show="resource == 'claims'">{% include "src/blocks/lists/claims.html" %}</div>
+        <div x-cloak x-show="resource == 'allowances'">{% include "src/blocks/lists/allowances.html" %}</div>
+        <div x-cloak x-show="resource == 'tokens'">{% include "src/blocks/lists/tokens.html" %}</div>
 
         <div x-show="!depleted[resourceFilter]" class="pt-6 flex justify-center text-sm">
             <span @click="load(resource)" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>

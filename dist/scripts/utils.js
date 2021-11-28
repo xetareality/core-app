@@ -210,3 +210,38 @@ function currentPeriod() {
     var now = new Date()
     return now.getUTCFullYear().toString().slice(-2)+('0'+(now.getUTCMonth()+1)).slice(-2)+('0'+now.getUTCDate()).slice(-2)+('0'+now.getUTCHours()).slice(-2)
 }
+
+var Grid = {
+    add: function(grid, node) {
+        Grid.next(grid).appendChild(node)
+    },
+    next: function(grid) {
+        var columns = grid.querySelectorAll('.column')
+        var candidates = []
+        var lengths = []
+        var width = document.documentElement.clientWidth
+
+        for (var i = 0; i < columns.length; i++) {
+            var small = i < 2
+            var large = i < 3
+            if ((width < 768 && small) || (width >= 768 && width < 1024 && large) || (width >= 1024)) {
+                candidates.push(columns[i])
+                lengths.push(columns[i].children.length)
+            }
+        }
+
+        return candidates[lengths.indexOf(Math.min.apply(null, lengths))]
+    },
+    clear: function(grid) {
+        Array.from(grid.querySelectorAll('.column')).forEach(function(c) {
+            Array.from(c.children).forEach(function(node) {node.remove()})
+        })
+    },
+    layout: function(grid, source, clear=false) {
+        setTimeout(function() {
+            if (clear) Grid.clear(grid)
+            var items = Array.from(source.querySelectorAll('.token'))
+            items.forEach(function(i) {Grid.add(grid, i)})
+        }, 0)
+    },
+}
