@@ -1,29 +1,95 @@
-<table class="w-full table-fixed font-light text-sm">
+<!-- <table class="w-full table-fixed font-light text-sm">
     <thead>
         <tr class="text-gray-400">
-            <th class="py-2 pr-4 text-left uppercase text-sm w-1/2 md:w-1/4">
-                Token
-            </th>
-            <th class="hidden md:table-cell py-2 pr-4 text-left uppercase text-sm w-2/4">
-                Address
-            </th>
-            <th class="py-2 text-right uppercase text-sm w-1/2 md:w-1/4">
-                Amount
-            </th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-4/12 pl-6">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-4/12">Token</th>
+            <th class="truncate py-2 pr-6 text-left uppercase w-4/12 hidden md:table-cell">Hash</th>
         </tr>
     </thead>
     <tbody>
-        <template x-for="(balance, i) in ">
+        <template x-for="(balance, i) in balances">
             <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pl-6 pr-4 py-2">
-                    <a :href="'/token/?address='+balance.token" x-text="(balance.tokenPreview.name ? balance.tokenPreview.name : '')+(balance.tokenPreview.ticker ? ' ('+balance.tokenPreview.ticker+')' : '')" class="underline hover:text-pink-400"></a>
-                </td>
-                <td class="hidden md:table-cell truncate pr-4 py-2">
-                    <a :href="'/token/?address='+balance.token" x-text="balance.token" class="underline hover:text-pink-400"></a>
-                </td>
-                <td x-text="balance.amount+(balance.tokenPreview.ticker ? ' '+balance.tokenPreview.ticker : '')" class="truncate py-2 pr-6 text-right">
-                </td>
+                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.token(balance.token)"></td>
+                <td class="truncate pr-6 py-2 hidden md:table-cell" x-html="balance.hash"></td>
+            </tr>
+        </template>
+    </tbody>
+</table> -->
+
+<!-- <table class="w-full table-fixed font-light text-sm">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-5/12 pl-6">Token</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-5/12 hidden md:table-cell">Hash</th>
+            <th class="truncate py-2 pr-6 text-left uppercase w-2/12">Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="(balance, i) in balances">
+            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.token(balance.token)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="balance.hash"></td>
+                <td class="truncate pr-6 py-2" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview)"></td>
+            </tr>
+        </template>
+    </tbody>
+</table> -->
+
+<!-- <table class="w-full table-fixed font-light text-sm">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-0 w-5/12 pl-6 hidden md:table-cell">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/3 md:w-5/12 pl-6 md:pl-0">Token</th>
+            <th class="truncate py-2 pr-6 text-left uppercase w-1/3 md:w-2/12">Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="(balance, i) in balances">
+            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2 pl-6 hidden md:table-cell" x-html="balance.hash"></td>
+                <td class="truncate pr-4 py-2 pl-6 md:pl-0" x-html="Wrap.token(balance.token)"></td>
+                <td class="truncate pr-6 py-2" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview)"></td>
+            </tr>
+        </template>
+    </tbody>
+</table> -->
+
+<table class="w-full table-fixed font-light text-sm">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-0 md:w-5/12 pl-6 hidden md:table-cell">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-3/12 pl-6 md:pl-0">Amount</th>
+            <th class="truncate py-2 pr-6 text-left uppercase w-2/3 md:w-4/12">Token</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="(balance, i) in balances">
+            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2 pl-6 hidden md:table-cell" x-html="balance.hash"></td>
+                <td class="truncate pr-6 py-2 pl-6 md:pl-0" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.token(balance.token)"></td>
             </tr>
         </template>
     </tbody>
 </table>
+
+
+<!-- <table class="w-full table-fixed font-light text-sm">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/2 md:w-4/12 pl-6">Amount</th>
+            <th class="truncate py-2 pr-6 md:pr-4 text-left uppercase w-1/2 md:w-5/12">Token</th>
+            <th class="truncate py-2 pr-6 text-left uppercase md:w-4/12 hidden md:table-cell">Hash</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="(balance, i) in balances">
+            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview)"></td>
+                <td class="truncate pr-6 md:pr-4 py-2" x-html="Wrap.token(balance.token)"></td>
+                <td class="truncate pr-6 py-2 hidden md:table-cell" x-html="balance.hash"></td>
+            </tr>
+        </template>
+    </tbody>
+</table> -->

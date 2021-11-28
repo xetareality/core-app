@@ -56,7 +56,7 @@ function poolExplorer() {
 }
 </script>
 
-<div x-data="poolExplorer()">
+<div x-data="poolExplorer">
     <div class="bg-black rounded-2xl px-2 pt-2 mb-2 text-sm font-light text-gray-200 section">
         <div class="flex flex-wrap">
             <div @click="tab = 'transfersIn', loadTransfers()" :class="{'border-pink-700': tab == 'transfersIn' || tab == 'transfersOut'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Transfers</div>

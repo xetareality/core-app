@@ -33,7 +33,7 @@ function tokenExplorer() {
 }
 </script>
 
-<div x-data="tokenExplorer()">
+<div x-data="tokenExplorer">
     <div class="bg-black rounded-2xl px-2 pt-2 mb-2 font-light text-gray-200 section">
         <div class="flex flex-wrap">
             <div @click="tab = 'transactions', !transactions.length ? loadTransactions() : ''" :class="{'border-pink-700': tab == 'transactions'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">transactions</div>
