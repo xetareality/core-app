@@ -2,14 +2,14 @@
 function loadDetails() {
     return {
         details: {},
+        resource: window.location.pathname.slice(1, -1),
         active: !['pool'].includes(window.location.pathname.slice(1, -1)),
         init() {
             var self = this
             document.addEventListener('resourceLoaded', function (e) {
-                var resource = window.location.pathname.slice(1, -1)
-                var data = Alpine.store(resource)
+                var data = Alpine.store(self.resource)
                 
-                if (resource == 'address') {
+                if (self.resource == 'address') {
                     if (data.pool) window.location.href = '/pools/?address='+data.pool.address
                     if (data.token) self.active = false
                     data = Object.assign({}, data.token, data.balance)
@@ -32,14 +32,14 @@ function loadDetails() {
                     } else if (['token'].includes(k)) {
                         self.details[k] = Wrap.token(data[k], data.tokenPreview)
                     } else if (['address'].includes(k)) {
-                        if (resource == 'token') self.details[k] = Wrap.token(data[k])
-                        else if (resource == 'pool') self.details[k] = Wrap.pool(data[k])
-                        else if (resource == 'address') self.details[k] = String(data[k])
+                        if (self.resource == 'token') self.details[k] = Wrap.token(data[k])
+                        else if (self.resource == 'pool') self.details[k] = Wrap.pool(data[k])
+                        else if (self.resource == 'address') self.details[k] = String(data[k])
                     } else if (['hash'].includes(k)) {
-                        if (resource == 'transsaction') self.details[k] = Wrap.transaction(data[k])
-                        else if (resource == 'transfer') self.details[k] = Wrap.transfer(data[k])
-                        else if (resource == 'claim') self.details[k] = Wrap.claim(data[k])
-                        else if (resource == 'allowance') self.details[k] = Wrap.allowance(data[k])
+                        if (self.resource == 'transsaction') self.details[k] = Wrap.transaction(data[k])
+                        else if (self.resource == 'transfer') self.details[k] = Wrap.transfer(data[k])
+                        else if (self.resource == 'claim') self.details[k] = Wrap.claim(data[k])
+                        else if (self.resource == 'allowance') self.details[k] = Wrap.allowance(data[k])
                     } else if (['from', 'to', 'leader', 'creator', 'sender'].includes(k)) {
                         self.details[k] = Wrap.address(data[k])
                     } else if (['links'].includes(k)) {
@@ -47,8 +47,8 @@ function loadDetails() {
                     } else if (['outputs'].includes(k)) {
                         self.details[k] = data[k].map(function(i) {
                             return i.map(function(j) {
-                                var resource = {a: 'allowance', t: 'token', x: 'transfer', c: 'claim', p: 'pool'}[j.split(':')[0]]
-                                return resource[0].toUpperCase()+resource.slice(1)+' '+Wrap[resource](j.split(':')[1])
+                                var r = {a: 'allowance', t: 'token', x: 'transfer', c: 'claim', p: 'pool'}[j.split(':')[0]]
+                                return r[0].toUpperCase()+r.slice(1)+' '+Wrap[r](j.split(':')[1])
                             }).join('<br>')
                         })
                     } else if (['instructions'].includes(k)) {
@@ -66,7 +66,10 @@ function loadDetails() {
 <div x-data="loadDetails()">
     <div class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
         <div @click="active = !active" class="flex justify-between items-center cursor-pointer">
-            <p class="text-lg py-2 text-gray-100">Details</p>
+            <p class="text-lg py-2 text-gray-100">
+                <span>Details</span>
+                <span x-cloak x-show="true" @click.stop="action(resource+'.update')" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize text-xs ml-2">Update</span>
+            </p>
             <span class="cursor-pointer underline text-gray-200 text-sm font-light">
                 <span x-text="active ? 'Close' : 'Open'">Open</span> Details
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="inline ml-1 -mt-0.5" viewBox="0 0 16 16">
