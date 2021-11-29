@@ -112,7 +112,7 @@ function addressExplorer() {
         <div x-cloak x-show="resource == 'allowances'">{% include "src/blocks/lists/allowances.html" %}</div>
         <div x-cloak x-show="resource == 'tokens'">{% include "src/blocks/lists/tokens.html" %}</div>
 
-        <div x-show="!depleted[resourceFilter]" class="pt-6 flex justify-center text-sm">
+        <div x-show="!depleted[resourceFilter] && $data[resourceFilter].length % 25 == 0" class="pt-6 flex justify-center text-sm">
             <span @click="load(resource)" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
         </div>
     </div>    
