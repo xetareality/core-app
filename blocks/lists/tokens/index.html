@@ -1,21 +1,11 @@
 <div id="tokens" class="hidden">
-    <template x-for="(token, i) in tokens">
+    <template x-for="token in tokens">
         <div class="mx-1.5 mb-4 token">
-            <a :href="'/token/?address='+token.address" class="py-1 px-1 border rounded-2xl bg-gray-900 border-gray-800 block">
-                <div class="border border-dashed rounded-2xl border-gray-700 bg-black px-2 py-2 transition-all">
-                    <img x-cloak x-show="i % 2 == 0 || i < 6" class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" :src="'https://picsum.photos/200/300?random='+i">
-                    <img x-cloak x-show="token.object && token.mime && token.mime.split('/') == 'image'" class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
-                    <p class="text-sm text-white px-2 py-0.5 text-center tracking-wider" x-text="token.name"></p>
-                    <p class="text-xs text-gray-200 px-2 py-0.5 text-center truncate" x-text="token.address"></p>
+            <a :href="'/token/?address='+token.address" class="block rounded-2xl bg-gray-900 bg-opacity-50 shadow transform-gpu hover:-translate-y-2 transition-transform duration-300">
+                <div class="rounded-2xl rounded-b-none overflow-hidden">
+                    <img class="h-32 w-full mb-2 object-center object-cover" :src="'https://picsum.photos/200/300?random='+Date.now()">
+                    <!-- <img x-cloak x-show="token.object && token.mime && token.mime.split('/') == 'image'" class="h-32 w-full mb-2 object-center object-cover" src="https://i.redd.it/tpxvny1fbdv61.png"> -->
                 </div>
-            </a>
-        </div>
-    </template>
-    <template x-for="(token, i) in tokens">
-        <div class="mx-1.5 mb-4 token">
-            <a :href="'/token/?address='+token.address" class="block rounded-2xl bg-gray-900 shadow transform-gpu hover:-translate-y-2 transition-transform duration-300">
-                <img x-cloak x-show="i % 2 == 0 || i < 6" class="h-32 w-full mb-2 object-center object-cover rounded-2xl rounded-b-none" :src="'https://picsum.photos/200/300?random='+i">
-                <!-- <img x-cloak x-show="token.object && token.mime && token.mime.split('/') == 'image'" class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" src="https://i.redd.it/tpxvny1fbdv61.png"> -->
                 <div class="px-3 py-3">
                     <p class="text-sm text-white py-0.5 text-center tracking-wider" x-text="token.name"></p>
                     <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-text="token.address"></p>

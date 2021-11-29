@@ -1,19 +1,19 @@
-<table class="w-full table-fixed font-light text-sm">
+<table class="w-full table-fixed font-light text-sm explorer">
     <thead>
         <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 pl-6 text-left uppercase w-0 md:w-3/12">Hash</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-3/12">Amount</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-3/12">Issuer</th>
-            <th class="truncate py-2 pr-6 text-left uppercase w-1/3 md:w-3/12">Spender</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">Issuer</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">Spender</th>
         </tr>
     </thead>
     <tbody>
-        <template x-for="(allowance, i) in allowances">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 pl-6 py-2" x-html="Wrap.allowance(allowance.hash)"></td>
+        <template x-for="allowance in allowances">
+            <tr class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.allowance(allowance.hash)"></td>
                 <td class="truncate pr-4 py-2" x-html="Wrap.amount(allowance.amount, allowance.token, allowance.tokenPreview)"></td>
                 <td class="truncate pr-4 py-2" x-html="Wrap.address(allowance.address)"></td>
-                <td class="truncate pr-6 py-2" x-html="Wrap.address(allowance.spender)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.address(allowance.spender)"></td>
             </tr>
         </template>
     </tbody>

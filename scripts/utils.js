@@ -26,13 +26,13 @@ function strip(obj) {
  */
 var Wrap = {
     transaction: function(hash) {
-        return '<a href="/transaction/?hash='+hash+'" class="underline hover:text-pink-400">'+hash+'</a>'
+        return '<a href="/transaction/?hash='+hash+'" class="hover:text-pink-400">'+hash+'</a>'
     },
     transfer: function(hash) {
-        return '<a href="/transfer/?hash='+hash+'" class="underline hover:text-pink-400">'+hash+'</a>'
+        return '<a href="/transfer/?hash='+hash+'" class="hover:text-pink-400">'+hash+'</a>'
     },
     tokenPreview: function(tp, address) {
-        return '<span class="ml-1">'+(tp ? (tp.symbol ? tp.symbol : tp.name)+(tp.icon ? '<img class="h-5 w-5 ml-1 -mt-0.5 inline" src="'+tp.icon+'" />' : '') : address)+'</span>'
+        return '<span class="ml-1">'+(tp ? (tp.symbol ? tp.symbol : tp.name)+(tp.icon ? '<img class="h-4 w-4 ml-1 -mt-0.5 inline" src="'+tp.icon+'" />' : '') : address)+'</span>'
     },
     xetaPreview: function() {
         return Wrap.tokenPreview({symbol: 'XETA', name: 'Xeta', icon: '/media/favicon.png'})
@@ -47,16 +47,16 @@ var Wrap = {
         return '<a href="/token/?address='+Xeta.config.xetaAddress+'" class="hover:text-pink-400">'+(amount ? amount : 0)+'<span>'+Wrap.xetaPreview()+'</span></a>'
     },
     pool: function(address) {
-        return '<a href="/pool/?address='+address+'" class="underline hover:text-pink-400">'+address+'</a>'
+        return '<a href="/pool/?address='+address+'" class="hover:text-pink-400">'+address+'</a>'
     },
     address: function(address) {
-        return '<a href="/address/?address='+address+'" class="underline hover:text-pink-400">'+address+'</a>'
+        return '<a href="/address/?address='+address+'" class="hover:text-pink-400">'+address+'</a>'
     },
     claim: function(hash) {
-        return '<a href="/claim/?hash='+hash+'" class="underline hover:text-pink-400">'+hash+'</a>'
+        return '<a href="/claim/?hash='+hash+'" class="hover:text-pink-400">'+hash+'</a>'
     },
     allowance: function(hash) {
-        return '<a href="/allowance/?hash='+hash+'" class="underline hover:text-pink-400">'+hash+'</a>'
+        return '<a href="/allowance/?hash='+hash+'" class="hover:text-pink-400">'+hash+'</a>'
     },
     link: function(link) {
         return '<a rel="nofollow noopener" href="'+link+'" class="underline hover:text-pink-400 w-full block truncate pb-1">'+link.split('?')[0].slice(0, 50)+(link.split('?')[0].length > 50 ? '...' : '')+'</a>'
@@ -92,16 +92,25 @@ function gup(e,l){l||(l=location.href),e=e.replace(/[\\[]/,"\\\\[").replace(/[\\
 function setPageMeta(resource, data) {
     var desc = ''
     if (resource == 'transaction') {
-        document.title = document.title+' '+data.signature
-        desc = 'Transaction '+data.signature+' was registered on '+new Date(parseInt(data.created)).toLocaleString()
+        document.title = [document.title, data.hash].join(' ')
+        desc = 'Xeta transaction '+data.hash+' was created on '+new Date(parseInt(data.created)).toLocaleString()
+    } else if (resource == 'transfer') {
+        document.title = [document.title, data.hash].join(' ')
+        desc = 'Xeta transfer '+data.hash+' was created on '+new Date(parseInt(data.created)).toLocaleString()
     } else if (resource == 'token') {
-        document.title = document.title+(data.name ? ' '+data.name : '')+(data.symbol ? ' '+data.symbol : '')
-        desc = (data.name ? data.name : data.address)+(data.symbol ? ' '+data.symbol : '')+' was registered on '+new Date(parseInt(data.created)).toLocaleString()+' and has a supply of '+data.supply.replace('-', '')
+        document.title = [document.title, data.name].join(' ')
+        desc = 'Xeta token '+data.address+' ('+data.name+') was created on '+new Date(parseInt(data.created)).toLocaleString()
     } else if (resource == 'pool') {
-        document.title = document.title+' '+(data.name ? ' '+data.name : '')+' ('+data.program[0].toUpperCase()+data.program.slice(1)+'-Pool)'
-        desc = (data.name ? data.name : data.address)+' is a '+data.program[0].toUpperCase()+data.program.slice(1)+'-Pool registered on '+new Date(parseInt(data.created)).toLocaleString()
+        document.title = [document.title, data.name, data.program[0].toUpperCase()+data.program.slice(1)+' Pool'].join(' ')
+        desc = 'Xeta pool '+data.address+' ('+data.name+') was created on '+new Date(parseInt(data.created)).toLocaleString()
+    } else if (resource == 'allowance') {
+        document.title = [document.title, data.hash].join(' ')
+        desc = 'Xeta allowance '+data.hash+' was created on '+new Date(parseInt(data.created)).toLocaleString()
+    } else if (resource == 'claim') {
+        document.title = [document.title, data.hash].join(' ')
+        desc = 'Xeta claim '+data.hash+' was created on '+new Date(parseInt(data.created)).toLocaleString()
     } else if (resource == 'address') {
-        document.title = document.title+' '+data.address
+        document.title = [document.title, data.address].join(' ')
         desc = data.address+' is a public address on the Xeta blockchain'
     }
 
