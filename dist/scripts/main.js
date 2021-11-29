@@ -61,6 +61,27 @@ document.addEventListener('alpine:init', () => {
     }
 })
 
+function action(name, pool) {
+    var act = Actions[name]
+    var inputs = act.inputs
+
+    // Set existing values for update actions
+    if (['address.update', 'claim.update', 'token.update', 'allowance.update'].includes(name)) {
+        var resource = Alpine.store(name.split('.')[0].replace('address', 'token'))
+        if (!resource) return
+        inputs.forEach(function(i) {
+            if (resource[i.name] != undefined) {
+                if (['strings', 'hashes', 'numbers'].includes(i.type)) i.value = resource[i.name].join(String.fromCharCode(10))
+                else if (i.type == 'object') i.value = JSON.stringify(resource[i.name])
+                else i.value = resource[i.name]
+            }
+        })
+    }
+
+    setData('input-modal', {inputs: inputs, title: act.title, description: act.description, function: name}, true)
+    showModal('inputModal')
+}
+
 function connectWallet() {
     Xeta.wallet.init({
         publicKey: Alpine.sstore('publicKey'),

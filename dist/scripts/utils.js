@@ -62,7 +62,7 @@ var Wrap = {
         return '<a rel="nofollow noopener" href="'+link+'" class="underline hover:text-pink-400 w-full block truncate pb-1">'+link.split('?')[0].slice(0, 50)+(link.split('?')[0].length > 50 ? '...' : '')+'</a>'
     },
     label: function(text, color) {
-        return '<span class="bg-'+color+'-500 bg-opacity-75 rounded-2xl px-3 py-1 ml-2 text-xs font-normal uppercase">'+text+'</span>'
+        return '<span class="bg-'+color+'-500 bg-opacity-75 rounded-2xl px-3 py-1 ml-2 text-xs font-normal uppercase select-none">'+text+'</span>'
     },
 }
 
@@ -77,10 +77,18 @@ function hideModal() {
     Alpine.store('modal', '')
 }
 
-function setData(id, data) {
-    for (key in data) {
-        document.getElementById(id)._x_dataStack[0][key] = data[key]
-    }
+function setData(id, data, init=false) {
+    setTimeout(function() {
+        var changed = false
+        for (key of Object.keys(data)) {
+            if (JSON.stringify(document.getElementById(id)._x_dataStack[0][key]) != JSON.stringify(data[key])) changed = true
+            document.getElementById(id)._x_dataStack[0][key] = data[key]
+        }
+
+        // Only re-init if settable data has changed
+        // This allows to retain form inputs on accidental closures
+        if (init && changed) document.getElementById(id)._x_dataStack[0].init()
+    }, 0)
 }
 
 function ajax(url, data, success, error) {try {x = new(this.XMLHttpRequest || ActiveXObject)('MSXML2.XMLHTTP.3.0');x.open(data ? 'POST' : 'GET', url, 1);x.onload = function (e) {success && success(this.responseText, this.status)};x.onerror = function (e) {error && error(this.responseText, this.status)};x.send(JSON.stringify(data))} catch (e) {window.console && console.log(e)}};
@@ -117,10 +125,6 @@ function setPageMeta(resource, data) {
     document.querySelector('meta[name="description"]').setAttribute('content', desc)
 }
 
-/**
- * Validation
- */
-
 function validate(e) {
     if (!e.dataset.rules) return true
     var rules = JSON.parse(e.dataset.rules)
@@ -143,15 +147,16 @@ function validate(e) {
 }
 
 function validForm(form) {
-    var elements = form.elements;
+    var elements = form.elements
+    var valid = true
+    
     for (var i = 0; i < elements.length; i++) {
-        var item = elements[i];
+        var item = elements[i]
         if (['INPUT', 'TEXTAREA'].includes(item.tagName)) {
-            var v = validate(item)
-            if (!v) return;
+            if (!validate(item)) valid = false
         }
     }
-    return true
+    return valid
 }
 
 function formatNumber(val, decimals=0) {

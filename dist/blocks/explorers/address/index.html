@@ -1,8 +1,8 @@
 <script>
 function addressExplorer() {
     return {
-        resource: 'tokens',
-        resourceFilter: 'tokens',
+        resource: 'transfers',
+        resourceFilter: 'transfers',
         transfersFilter: 'incoming',
         claimsFilter: 'holding',
         allowancesFilter: 'spendable',
@@ -95,7 +95,7 @@ function addressExplorer() {
                 <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
                     <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                         <template x-for="[key, type] in Object.entries({incoming: 'transfers', outgoing: 'transfers', issued: 'claims', holding: 'claims', granted: 'allowances', spendable: 'allowances'})">
-                            <li x-cloak x-show="type == resource" @click="this[type+'Filter'] = key, change(type), active = false" x-text="key" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize"></li>
+                            <li x-cloak x-show="type == resource" @click="$data[type+'Filter'] = key, change(type), active = false" x-text="key" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize"></li>
                         </template>
                     </ul>
                 </div>
@@ -235,8 +235,7 @@ function addressExplorer() {
         <div class="mx-1.5 mb-4 token">
             <a :href="'/token/?address='+token.address" class="block rounded-2xl bg-gray-900 bg-opacity-50 shadow transform-gpu hover:-translate-y-2 transition-transform duration-300">
                 <div class="rounded-2xl rounded-b-none overflow-hidden">
-                    <img class="h-32 w-full mb-2 object-center object-cover" :src="'https://picsum.photos/200/300?random='+Date.now()">
-                    <!-- <img x-cloak x-show="token.object && token.mime && token.mime.split('/') == 'image'" class="h-32 w-full mb-2 object-center object-cover" src="https://i.redd.it/tpxvny1fbdv61.png"> -->
+                    <img x-cloak x-show="token.object && token.mime && token.mime.split('/') == 'image'" class="h-32 w-full mb-2 object-center object-cover" src="https://i.redd.it/tpxvny1fbdv61.png">
                 </div>
                 <div class="px-3 py-3">
                     <p class="text-sm text-white py-0.5 text-center tracking-wider" x-text="token.name"></p>

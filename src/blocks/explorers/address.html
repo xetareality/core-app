@@ -1,8 +1,8 @@
 <script>
 function addressExplorer() {
     return {
-        resource: 'tokens',
-        resourceFilter: 'tokens',
+        resource: 'transfers',
+        resourceFilter: 'transfers',
         transfersFilter: 'incoming',
         claimsFilter: 'holding',
         allowancesFilter: 'spendable',
@@ -95,7 +95,7 @@ function addressExplorer() {
                 <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
                     <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                         <template x-for="[key, type] in Object.entries({incoming: 'transfers', outgoing: 'transfers', issued: 'claims', holding: 'claims', granted: 'allowances', spendable: 'allowances'})">
-                            <li x-cloak x-show="type == resource" @click="this[type+'Filter'] = key, change(type), active = false" x-text="key" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize"></li>
+                            <li x-cloak x-show="type == resource" @click="$data[type+'Filter'] = key, change(type), active = false" x-text="key" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize"></li>
                         </template>
                     </ul>
                 </div>
