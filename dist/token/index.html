@@ -19,7 +19,7 @@
         
         <!-- Scripts -->
         <script src="/scripts/xeta.js"></script>
-        <script src="/scripts/media.js"></script>
+        <script src="/scripts/modules.js"></script>
         <script src="/scripts/utils.js"></script>
         <script src="/scripts/main.js"></script>
         <script src="/scripts/custom.js"></script>
@@ -50,7 +50,7 @@
                 <img class="w-6 h-6 mr-2" src="/media/favicon.png" />
                 <span class="inline">Xeta Blockchain Explorer</span>
             </a>
-            <div @click="mainnet = !mainnet, Xeta.config.init({dev: !mainnet})" class="bg-transparent ml-4 cursor-pointer flex items-center" x-data="{mainnet: !gup('dev')}">
+            <div @click="mainnet = !mainnet, $sstore('dev', !mainnet), Xeta.config.init({dev: !mainnet}), window.location.reload()" class="bg-transparent ml-4 cursor-pointer flex items-center" x-data="{mainnet: !$sstore('dev')}">
                 <div class="relative rounded-full w-6 h-3 transition duration-200 ease-linear bg-gray-600" :class="{'bg-pink-700': mainnet}">
                     <label for="mainnet" class="absolute left-0 bg-white w-3 h-3 rounded-full transition transform duration-100 ease-linear translate-x-0" :class="{'translate-x-full': mainnet}"></label>
                     <input type="checkbox" id="mainnet" name="mainnet" class="appearance-none w-full h-full active:outline-none focus:outline-none">
@@ -158,12 +158,51 @@ function initSearch() {
         </div>
     </div>
 </div>
-    
+    <script>
+function tokenPreview() {
+    return {
+        token: {},
+        init() {
+            var self = this
+            document.addEventListener('resourceLoaded', function (e) {
+                var token = Alpine.store('token')
+                if (token) self.token = token
+            })
+        }
+    }
+}
+</script>
+
+<div x-cloak x-show="Object.keys(token).length && token.name && !token.supply" x-data="tokenPreview">
+    <div class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+        <p class="text-lg py-2 text-gray-100 capitalize" x-text="window.location.pathname.slice(1, -1)"></p>
+        <div class="flex flex-wrap">
+            <div class="w-full mb-4 text-white">
+                <div x-cloak x-show="token.icon" class="text-center rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative mb-6" style="background-image: url(/media/pattern01.jpeg)">
+                    <div class="w-1/2 md:w-1/4 md:py-8 z-50">
+                        <img class="rounded-2xl w-full object-center object-cover shadow" :src="token.icon">
+                    </div>
+                    <div class="bg-black opacity-50 w-full h-full absolute rounded-2xl z-10"></div>
+                </div>
+
+                <div>
+                    <p x-cloak x-show="token.name" class="text-xl my-2 text-gray-400 font-normal text-white" x-text="token.name"></p>
+                    <p x-cloak x-show="token.description" class="font-ligh pb-2 flex justify-center text-gray-200" x-text="token.description"></p>
+                    <ul x-cloak x-show="token.links" class="flex justify-start font-light text-sm list-none">
+                        <template x-for="link in (token.links ? token.links : [])">
+                            <li><a x-text="link.slice(0, 50)+(link.length > 50 ? '...' : '')" rel="nofollow noopener" :href="link" class="underline hover:text-pink-400 truncate pb-1 mr-2"></a></li>
+                        </template>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
     <script>
 function loadDetails() {
     return {
         details: {},
-        active: !['pool', 'token'].includes(window.location.pathname.slice(1, -1)),
+        active: !['pool'].includes(window.location.pathname.slice(1, -1)),
         init() {
             var self = this
             document.addEventListener('resourceLoaded', function (e) {
@@ -206,9 +245,14 @@ function loadDetails() {
                     } else if (['links'].includes(k)) {
                         self.details[k] = data[k].map(l => Wrap.link(l)).join('')
                     } else if (['outputs'].includes(k)) {
-                        self.details[k] = data[k].map(i => i.map(j => Wrap[j.split(':')[0]](j.split(':')[1])).join(''))
+                        self.details[k] = data[k].map(function(i) {
+                            return i.map(function(j) {
+                                var resource = {a: 'allowance', t: 'token', x: 'transfer', c: 'claim', p: 'pool'}[j.split(':')[0]]
+                                return resource[0].toUpperCase()+resource.slice(1)+' '+Wrap[resource](j.split(':')[1])
+                            }).join('<br>')
+                        })
                     } else if (['instructions'].includes(k)) {
-                        self.details[k] = String(data[k])
+                        self.details[k] = JSON.stringify(data[k])
                     } else self.details[k] = String(data[k])
 
                     if (self.details[k] == '[object Object]') delete self.details[k]
@@ -252,110 +296,103 @@ function loadDetails() {
     <script>
 function tokenExplorer() {
     return {
-        tab: 'transactions',
-        transactions: [],
-        holders: [],
+        resource: 'transfers',
+        transfers: [],
+        balances: [],
         address: gup('address'),
         depleted: {},
+        methods: {
+            'transfers': Xeta.transfer.scanTokenCreated,
+            'balances': Xeta.balance.scanTokenAmount,
+        },
+        inputs: {
+            'transfers': 'token',
+            'balances': 'token',
+        },
         init() {
-            this.loadTransactions()
+            this.load(this.resource)
         },
-        loadTransactions() {
-            if (this.depleted.transactions) return
+        load(resource) {
+            this.resource = resource
+            if (this.depleted[resource]) return
+            var last = this[resource].length ? this[resource].slice(-1)[0] : {}
             var self = this
-            var last = this.transactions.length ? '&signature='+this.transactions.slice(-1)[0].signature+'&created='+this.transactions.slice(-1)[0].created : ''
-            ajax(INTERFACE+'/transactions?token='+this.address+'&extended=1&sort=DESC'+last, null, function(data) {
-                data = JSON.parse(data)
-                if (!data.length) self.depleted.transactions = true
-                self.transactions = self.transactions.concat(data)
-            })
-        },
-        loadHolders() {
-            if (this.depleted.holders) return
-            var self = this
-            var last = this.holders.length ? '&address='+this.holders.slice(-1)[0].address+'&amount='+this.holders.slice(-1)[0].amount : ''
-            ajax(INTERFACE+'/balances?token='+this.address+'&extended=1&sort=DESC'+last, null, function(data) {
-                data = JSON.parse(data)
-                if (!data.length) self.depleted.holders = true
-                self.holders = self.holders.concat(data)
-            })
+            var token = Alpine.store('token')
+
+            this.methods[resource]({...last, ...{[this.inputs[resource]]: this.address}}, {preview: true}).then(function(data) {
+                if (!data.length) self.depleted[resource] = true
+
+                // Calculate percentages
+                if (resource == 'balances' && token) data.forEach(function(d) {d.percentage = Big(d.amount).div(token.supply).mul(100).round(4).toString()})
+
+                self[resource] = self[resource].concat(data)
+            }).catch(function(e) {})
         },
     }
 }
 </script>
 
-<div x-data="tokenExplorer">
-    <div class="bg-black rounded-2xl px-2 pt-2 mb-2 font-light text-gray-200 section">
+<div x-cloak x-show="$store.token && $store.token.supply" x-data="tokenExplorer">
+    <div class="bg-black rounded-2xl px-2 pt-2 mb-2 text-sm font-light text-gray-200 section">
         <div class="flex flex-wrap">
-            <div @click="tab = 'transactions', !transactions.length ? loadTransactions() : ''" :class="{'border-pink-700': tab == 'transactions'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">transactions</div>
-            <div @click="tab = 'holders', !holders.length ? loadHolders() : ''" :class="{'border-pink-700': tab == 'holders'}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer">Holders</div>
+            <template x-for="type in ['transfers', 'balances']">
+                <div @click="load(type)" :class="{'border-pink-700': resource == type}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer capitalize" x-text="type.replace('balances', 'holders')"></div>
+            </template>
         </div>
     </div>
 
-    <div x-cloak x-show="tab == 'transactions'" class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
-        <p class="text-lg py-2 px-6 text-gray-100">transactions</p>
+    <div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
+        <div class="flex justify-between items-center px-6">
+            <p class="text-lg py-2 text-gray-100 capitalize" x-text="resource"></p>
+        </div>
 
-        
-        <table class="w-full table-fixed font-light text-sm">
+        <div x-cloak x-show="resource == 'transfers'"><table class="w-full table-fixed font-light text-sm explorer">
     <thead>
         <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-5/12 pl-6">Hash</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-5/12">Sender</th>
-            <th class="truncate py-2 pr-6 text-left uppercase w-1/3 md:w-2/12">Created</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Created</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">From</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">To</th>
         </tr>
     </thead>
     <tbody>
-        <template x-for="(transaction, i) in transactions">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.transaction(transaction.hash)"></td>
-                <td class="truncate pr-4 py-2" x-html="Wrap.address(transaction.sender)"></td>
-                <td class="truncate pr-6 py-2" x-text="formatTime(transaction.created)"></td>
+        <template x-for="transfer in transfers">
+            <tr class="text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.transfer(transfer.hash)"></td>
+                <td class="truncate pr-4 py-2" x-text="formatTime(transfer.created)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(transfer.amount, transfer.token, transfer.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.from)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.to)"></td>
             </tr>
         </template>
     </tbody>
-</table>
-        
-        <div x-show="!depleted.transactions" class="pt-6 flex justify-center text-sm">
-            <span @click="loadTransactions()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
-        </div>
-    </div>
-    
-    <div x-cloak x-show="tab == 'holders'" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12">
-        <p class="text-lg py-2 px-6 text-gray-100">Holder Distribution</p>
+</table></div>
+        <div x-cloak x-show="resource == 'balances'"><table class="w-full table-fixed font-light text-sm explorer">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/3">Address</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/3">Token</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/4">Amount</th>
+            <th x-cloak x-show="balances.length && balances[0].percentage" class="truncate py-2 pr-4 text-left uppercase w-1/4 hidden md:table-cell">Percent</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="balance in balances">
+            <tr class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.address(balance.address)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.token(balance.token)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview)"></td>
+                <td x-cloak x-show="balance.percentage" class="truncate pr-4 py-2 hidden md:table-cell" x-html="balance.percentage+'%'"></td>
+            </tr>
+        </template>
+    </tbody>
+</table></div>
 
-        <table class="w-full table-fixed">
-            <thead>
-                <tr>
-                    <th class="py-2 text-gray-400 text-left uppercase text-sm w-1/3">
-                        Address
-                    </th>
-                    <th class="py-2 text-gray-400 text-left uppercase text-sm w-1/3">
-                        Amount
-                    </th>
-                    <th class="py-2 text-gray-400 text-right uppercase text-sm w-1/3 md:w-1/4">
-                        Percent
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <template x-for="balance in holders">
-                    <tr>
-                        <td class="truncate pr-4 py-2">
-                            <a :href="'/address/?address='+balance.address" x-text="balance.address" class="underline hover:text-pink-400"></a>
-                        </td>
-                        <td x-text="balance.amount+(balance.tokenPreview.symbol ? ' '+balance.tokenPreview.symbol : '')" class="truncate py-2">
-                        </td>
-                        <td x-text="$store.token ? (balance.amount/$store.token.supply*100).toFixed(2)+'%' : 0+'%'" class="truncate py-2 text-right">
-                        </td>
-                    </tr>
-                </template>
-            </tbody>
-        </table>
-
-        <div x-show="!depleted.holders" class="pt-6 flex justify-center text-sm">
-            <span @click="loadHolders()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
+        <div x-show="!depleted[resource] && $data[resource].length % 25 == 0" class="pt-6 flex justify-center text-sm">
+            <span @click="load(resource)" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
         </div>
-    </div>
+    </div>    
 </div>
 
                 </div>

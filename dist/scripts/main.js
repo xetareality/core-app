@@ -1,6 +1,4 @@
 document.addEventListener('alpine:init', () => {
-    Xeta.config.init({dev: !!gup('dev')})
-
     // Init
     Alpine.store('pool', {})
     Alpine.store('transaction', {})
@@ -40,7 +38,11 @@ document.addEventListener('alpine:init', () => {
     Alpine.magic('sstore', () => {return (name, value) => Alpine.sstore(name, value)})
     Alpine.magic('lstore', () => {return (name, value) => Alpine.lstore(name, value)})
 
-    if (Alpine.lstore('publicKey')) connectWallet(Alpine.lstore('publicKey'))
+    if (Alpine.sstore('publicKey')) connectWallet(Alpine.sstore('publicKey'))
+
+    // Set environment
+    if (gup('dev')) Alpine.sstore('dev', !!gup('dev'))
+    Xeta.config.init({dev: Alpine.sstore('dev')}) 
 
     // Load resource
     var resource = window.location.pathname.slice(1, -1)
@@ -48,6 +50,7 @@ document.addEventListener('alpine:init', () => {
         Xeta[resource].read({[Xeta.utils.key(resource)]: gup(Xeta.utils.key(resource))}, {preview: true}).then(function(data) {
             if (!data) return
             Alpine.store(resource, data)
+            if (resource == 'address') Alpine.store('token', data.token)
             if (resource == 'pool') Alpine.store(data.program, new Xeta[data.program](data))
             setPageMeta(resource, data)
 

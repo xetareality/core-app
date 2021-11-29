@@ -23,63 +23,79 @@ select.no-arrow {
 }
 
 .spinner{
-  height: 80px;
-  width: 80px;
-  border: 3px solid transparent;
-  border-top-color: #fff;
-  border-bottom-color: #fff;
-  border-radius: 50%;
-  position: relative;
-  -webkit-animation: spin 3s linear infinite;
+    height: 80px;
+    width: 80px;
+    border: 3px solid transparent;
+    border-top-color: #fff;
+    border-bottom-color: #fff;
+    border-radius: 50%;
+    position: relative;
+    -webkit-animation: spin 3s linear infinite;
           animation: spin 3s linear infinite;
 }
 
 .spinner::before{
-  content: "";
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  bottom: 10px;
-  left: 10px;
-  border: 3px solid transparent;
-  border-top-color: #fff;
-  border-bottom-color: #fff;
-  border-radius: 50%;
-  -webkit-animation: spin 1.5s linear infinite;
-  animation: spin 1.5s linear infinite;
+    content: "";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    border: 3px solid transparent;
+    border-top-color: #fff;
+    border-bottom-color: #fff;
+    border-radius: 50%;
+    -webkit-animation: spin 1.5s linear infinite;
+    animation: spin 1.5s linear infinite;
 }
 
 -webkit-@keyframes spin {
-  -webkit-from {
-    -webkit-transform: rotate(0deg);
-    -ms-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  -webkit-to {
-    -webkit-transform: rotate(360deg);
-    -ms-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
+    -webkit-from {
+        -webkit-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    -webkit-to {
+        -webkit-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
 }
 
 @-webkit-keyframes spin {
-  from {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  to {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
+    from {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes spin {
-  from {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  to {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
+    from {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+.explorer tr:nth-child(even) {
+    background: #080808;
+}
+
+.explorer tr:hover {
+    background: #141414;
+}
+
+.explorer th:first-child, .explorer td:first-child {
+    padding-left: 1.5rem;
+}
+
+.explorer th:last-child, .explorer td:last-child {
+    padding-right: 1.5rem;
 }

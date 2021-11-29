@@ -2,7 +2,7 @@
 function addressExplorer() {
     return {
         resource: 'tokens',
-        resourceFilter: null,
+        resourceFilter: 'tokens',
         transfersFilter: 'incoming',
         claimsFilter: 'holding',
         allowancesFilter: 'spendable',
@@ -20,7 +20,6 @@ function addressExplorer() {
         allowancesGranted: [],
         allowancesSpendable: [],
         balances: [],
-        existing: [],
         address: gup('address'),
         depleted: {},
         methods: {
@@ -63,17 +62,16 @@ function addressExplorer() {
         },
         load(resource) {
             this[resource] = this[this.resourceFilter]
-            if (this.depleted[this.resourceFilter]) return
-            var last = this[this.resourceFilter].length ? this[this.resourceFilter].slice(-1)[0] : {}
+            var resourceFilter = this.resourceFilter // Static, because this.resourceFilter could change during request
+            if (this.depleted[resourceFilter]) return
+            var last = this[resourceFilter].length ? this[resourceFilter].slice(-1)[0] : {}
             var self = this
 
-            this.methods[this.resourceFilter]({...last, ...{[this.inputs[this.resourceFilter]]: this.address}}, {preview: true}).then(function(data) {
-                if (!data.length) self.depleted[self.resourceFilter] = true
-                self[self.resourceFilter] = self[self.resourceFilter].concat(data)
-                if (resource != self.resourceFilter) self[resource] = self[self.resourceFilter]
-
+            this.methods[resourceFilter]({...last, ...{[this.inputs[resourceFilter]]: this.address}}, {preview: true}).then(function(data) {
+                if (!data.length) self.depleted[resourceFilter] = true
+                self[resourceFilter] = self[resourceFilter].concat(data)
+                if (resource != resourceFilter) self[resource] = self[resourceFilter]
                 if (resource == 'tokens') Grid.layout(document.getElementById('grid'), document.getElementById('tokens'))
-                // if (resource == 'tokens') Grid.layout(document.getElementById('grid'), document.getElementById('tokens'))
             }).catch(function(e) {})
         },
     }

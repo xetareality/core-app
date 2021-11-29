@@ -19,7 +19,7 @@
         
         <!-- Scripts -->
         <script src="/scripts/xeta.js"></script>
-        <script src="/scripts/media.js"></script>
+        <script src="/scripts/modules.js"></script>
         <script src="/scripts/utils.js"></script>
         <script src="/scripts/main.js"></script>
         <script src="/scripts/custom.js"></script>
@@ -50,7 +50,7 @@
                 <img class="w-6 h-6 mr-2" src="/media/favicon.png" />
                 <span class="inline">Xeta Blockchain Explorer</span>
             </a>
-            <div @click="mainnet = !mainnet, Xeta.config.init({dev: !mainnet})" class="bg-transparent ml-4 cursor-pointer flex items-center" x-data="{mainnet: !gup('dev')}">
+            <div @click="mainnet = !mainnet, $sstore('dev', !mainnet), Xeta.config.init({dev: !mainnet}), window.location.reload()" class="bg-transparent ml-4 cursor-pointer flex items-center" x-data="{mainnet: !$sstore('dev')}">
                 <div class="relative rounded-full w-6 h-3 transition duration-200 ease-linear bg-gray-600" :class="{'bg-pink-700': mainnet}">
                     <label for="mainnet" class="absolute left-0 bg-white w-3 h-3 rounded-full transition transform duration-100 ease-linear translate-x-0" :class="{'translate-x-full': mainnet}"></label>
                     <input type="checkbox" id="mainnet" name="mainnet" class="appearance-none w-full h-full active:outline-none focus:outline-none">
@@ -1778,7 +1778,7 @@ function votePool() {
 function loadDetails() {
     return {
         details: {},
-        active: !['pool', 'token'].includes(window.location.pathname.slice(1, -1)),
+        active: !['pool'].includes(window.location.pathname.slice(1, -1)),
         init() {
             var self = this
             document.addEventListener('resourceLoaded', function (e) {
@@ -1821,9 +1821,14 @@ function loadDetails() {
                     } else if (['links'].includes(k)) {
                         self.details[k] = data[k].map(l => Wrap.link(l)).join('')
                     } else if (['outputs'].includes(k)) {
-                        self.details[k] = data[k].map(i => i.map(j => Wrap[j.split(':')[0]](j.split(':')[1])).join(''))
+                        self.details[k] = data[k].map(function(i) {
+                            return i.map(function(j) {
+                                var resource = {a: 'allowance', t: 'token', x: 'transfer', c: 'claim', p: 'pool'}[j.split(':')[0]]
+                                return resource[0].toUpperCase()+resource.slice(1)+' '+Wrap[resource](j.split(':')[1])
+                            }).join('<br>')
+                        })
                     } else if (['instructions'].includes(k)) {
-                        self.details[k] = String(data[k])
+                        self.details[k] = JSON.stringify(data[k])
                     } else self.details[k] = String(data[k])
 
                     if (self.details[k] == '[object Object]') delete self.details[k]
@@ -1945,51 +1950,28 @@ function poolExplorer() {
         </div>
 
         
-        <table class="w-full table-fixed font-light text-sm">
+        <table class="w-full table-fixed font-light text-sm explorer">
     <thead>
         <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase md:w-2/12 pl-6">Hash</th>
-            <th class="truncate py-2 pr-4 text-left uppercase md:w-2/12">Created</th>
-            <th class="truncate py-2 pr-4 text-left uppercase md:w-2/12">Amount</th>
-            <th class="truncate py-2 pr-4 text-left uppercase md:w-3/12">From</th>
-            <th class="truncate py-2 pr-6 text-left uppercase md:w-3/12">To</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Created</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">From</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">To</th>
         </tr>
     </thead>
     <tbody>
-        <template x-for="(transfer, i) in transfers">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.transfer(transfer.hash)"></td>
+        <template x-for="transfer in transfers">
+            <tr class="text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.transfer(transfer.hash)"></td>
                 <td class="truncate pr-4 py-2" x-text="formatTime(transfer.created)"></td>
                 <td class="truncate pr-4 py-2" x-html="Wrap.amount(transfer.amount, transfer.token, transfer.tokenPreview)"></td>
-                <td class="truncate pr-4 py-2" x-html="Wrap.address(transfer.from)"></td>
-                <td class="truncate pr-6 py-2" x-html="Wrap.address(transfer.to)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.from)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.to)"></td>
             </tr>
         </template>
     </tbody>
 </table>
-
-<!-- <table class="w-full table-fixed font-light text-sm">
-    <thead>
-        <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-2/12 pl-6">Amount</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-3/12">From</th>
-            <th class="truncate py-2 pr-6 md:pr-4 text-left uppercase w-1/3 md:w-3/12">To</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w.0 md:w-2/12 hidden md:table-cell">Created</th>
-            <th class="truncate py-2 pr-6 text-left uppercase w-0 md:w-2/12 hidden md:table-cell">Hash</th>
-        </tr>
-    </thead>
-    <tbody>
-        <template x-for="(transfer, i) in transfers">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.amount(transfer.amount, transfer.token, transfer.tokenPreview)"></td>
-                <td class="truncate pr-4 py-2" x-html="Wrap.address(transfer.from)"></td>
-                <td class="truncate pr-6 md:pr-4 py-2" x-html="Wrap.address(transfer.to)"></td>
-                <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="formatTime(transfer.created)"></td>
-                <td class="truncate pr-6 py-2 hidden md:table-cell" x-html="Wrap.transfer(transfer.hash)"></td>
-            </tr>
-        </template>
-    </tbody>
-</table> -->
 
         <div x-show="(transfersFilter == 'in' && !depleted.transfersIn) || (transfersFilter == 'out' && !depleted.transfersOut)" class="pt-6 flex justify-center text-sm">
             <span @click="loadTransfers()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
@@ -1999,28 +1981,28 @@ function poolExplorer() {
     <div x-cloak x-show="tab == 'claims'" class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
         <p class="text-lg py-2 px-6 text-gray-100">Claims</p>
 
-        <table class="w-full table-fixed font-light text-sm">
+        <table class="w-full table-fixed font-light text-sm explorer">
     <thead>
         <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-2/12 pl-6">Hash</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-2/12">Amount</th>
-            <th class="truncate py-2 pr-6 md:pr-4 text-left uppercase w-1/3 md:w-2/12">Category</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-0 md:w-2/12 hidden md:table-cell">Issuer</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-0 md:w-2/12 hidden md:table-cell">Holder</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-0 md:w-1/12 hidden md:table-cell">Unlocks</th>
-            <th class="truncate py-2 pr-6 text-left uppercase w-0 md:w-1/12 hidden md:table-cell">Created</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Category</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Issuer</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Holder</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Unlocks</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Created</th>
         </tr>
     </thead>
     <tbody>
-        <template x-for="(claim, i) in claims">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.claim(claim.hash)"></td>
+        <template x-for="claim in claims">
+            <tr class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.claim(claim.hash)"></td>
                 <td class="truncate pr-4 py-2" x-html="Wrap.amount(claim.tokenAmount, claim.token, claim.tokenPreview)"></td>
-                <td class="truncate pr-6 md:pr-4 py-2" x-html="claim.category ? claim.category : None"></td>
+                <td class="truncate pr-4 py-2" x-html="claim.category ? claim.category : None"></td>
                 <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(claim.creator)"></td>
                 <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(claim.owner)"></td>
                 <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="claim.unlocks ? formatTime(claim.unlocks) : 'Unlocked'"></td>
-                <td class="truncate pr-6 py-2 hidden md:table-cell" x-html="formatTime(claim.created)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="formatTime(claim.created)"></td>
             </tr>
         </template>
     </tbody>

@@ -2,7 +2,7 @@
 function addressExplorer() {
     return {
         resource: 'tokens',
-        resourceFilter: null,
+        resourceFilter: 'tokens',
         transfersFilter: 'incoming',
         claimsFilter: 'holding',
         allowancesFilter: 'spendable',
@@ -20,7 +20,6 @@ function addressExplorer() {
         allowancesGranted: [],
         allowancesSpendable: [],
         balances: [],
-        existing: [],
         address: gup('address'),
         depleted: {},
         methods: {
@@ -63,17 +62,16 @@ function addressExplorer() {
         },
         load(resource) {
             this[resource] = this[this.resourceFilter]
-            if (this.depleted[this.resourceFilter]) return
-            var last = this[this.resourceFilter].length ? this[this.resourceFilter].slice(-1)[0] : {}
+            var resourceFilter = this.resourceFilter // Static, because this.resourceFilter could change during request
+            if (this.depleted[resourceFilter]) return
+            var last = this[resourceFilter].length ? this[resourceFilter].slice(-1)[0] : {}
             var self = this
 
-            this.methods[this.resourceFilter]({...last, ...{[this.inputs[this.resourceFilter]]: this.address}}, {preview: true}).then(function(data) {
-                if (!data.length) self.depleted[self.resourceFilter] = true
-                self[self.resourceFilter] = self[self.resourceFilter].concat(data)
-                if (resource != self.resourceFilter) self[resource] = self[self.resourceFilter]
-
+            this.methods[resourceFilter]({...last, ...{[this.inputs[resourceFilter]]: this.address}}, {preview: true}).then(function(data) {
+                if (!data.length) self.depleted[resourceFilter] = true
+                self[resourceFilter] = self[resourceFilter].concat(data)
+                if (resource != resourceFilter) self[resource] = self[resourceFilter]
                 if (resource == 'tokens') Grid.layout(document.getElementById('grid'), document.getElementById('tokens'))
-                // if (resource == 'tokens') Grid.layout(document.getElementById('grid'), document.getElementById('tokens'))
             }).catch(function(e) {})
         },
     }
@@ -104,250 +102,142 @@ function addressExplorer() {
             </div>
         </div>
 
-        <div x-cloak x-show="resource == 'transfers'"><table class="w-full table-fixed font-light text-sm">
+        <div x-cloak x-show="resource == 'transfers'"><table class="w-full table-fixed font-light text-sm explorer">
     <thead>
         <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase md:w-2/12 pl-6">Hash</th>
-            <th class="truncate py-2 pr-4 text-left uppercase md:w-2/12">Created</th>
-            <th class="truncate py-2 pr-4 text-left uppercase md:w-2/12">Amount</th>
-            <th class="truncate py-2 pr-4 text-left uppercase md:w-3/12">From</th>
-            <th class="truncate py-2 pr-6 text-left uppercase md:w-3/12">To</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Created</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">From</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">To</th>
         </tr>
     </thead>
     <tbody>
-        <template x-for="(transfer, i) in transfers">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.transfer(transfer.hash)"></td>
+        <template x-for="transfer in transfers">
+            <tr class="text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.transfer(transfer.hash)"></td>
                 <td class="truncate pr-4 py-2" x-text="formatTime(transfer.created)"></td>
                 <td class="truncate pr-4 py-2" x-html="Wrap.amount(transfer.amount, transfer.token, transfer.tokenPreview)"></td>
-                <td class="truncate pr-4 py-2" x-html="Wrap.address(transfer.from)"></td>
-                <td class="truncate pr-6 py-2" x-html="Wrap.address(transfer.to)"></td>
-            </tr>
-        </template>
-    </tbody>
-</table>
-
-<!-- <table class="w-full table-fixed font-light text-sm">
-    <thead>
-        <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-2/12 pl-6">Amount</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-3/12">From</th>
-            <th class="truncate py-2 pr-6 md:pr-4 text-left uppercase w-1/3 md:w-3/12">To</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w.0 md:w-2/12 hidden md:table-cell">Created</th>
-            <th class="truncate py-2 pr-6 text-left uppercase w-0 md:w-2/12 hidden md:table-cell">Hash</th>
-        </tr>
-    </thead>
-    <tbody>
-        <template x-for="(transfer, i) in transfers">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.amount(transfer.amount, transfer.token, transfer.tokenPreview)"></td>
-                <td class="truncate pr-4 py-2" x-html="Wrap.address(transfer.from)"></td>
-                <td class="truncate pr-6 md:pr-4 py-2" x-html="Wrap.address(transfer.to)"></td>
-                <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="formatTime(transfer.created)"></td>
-                <td class="truncate pr-6 py-2 hidden md:table-cell" x-html="Wrap.transfer(transfer.hash)"></td>
-            </tr>
-        </template>
-    </tbody>
-</table> --></div>
-        <div x-cloak x-show="resource == 'balances'"><!-- <table class="w-full table-fixed font-light text-sm">
-    <thead>
-        <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase w-4/12 pl-6">Amount</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-4/12">Token</th>
-            <th class="truncate py-2 pr-6 text-left uppercase w-4/12 hidden md:table-cell">Hash</th>
-        </tr>
-    </thead>
-    <tbody>
-        <template x-for="(balance, i) in balances">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview)"></td>
-                <td class="truncate pr-4 py-2" x-html="Wrap.token(balance.token)"></td>
-                <td class="truncate pr-6 py-2 hidden md:table-cell" x-html="balance.hash"></td>
-            </tr>
-        </template>
-    </tbody>
-</table> -->
-
-<!-- <table class="w-full table-fixed font-light text-sm">
-    <thead>
-        <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase w-5/12 pl-6">Token</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-5/12 hidden md:table-cell">Hash</th>
-            <th class="truncate py-2 pr-6 text-left uppercase w-2/12">Amount</th>
-        </tr>
-    </thead>
-    <tbody>
-        <template x-for="(balance, i) in balances">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.token(balance.token)"></td>
-                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="balance.hash"></td>
-                <td class="truncate pr-6 py-2" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview)"></td>
-            </tr>
-        </template>
-    </tbody>
-</table> -->
-
-<!-- <table class="w-full table-fixed font-light text-sm">
-    <thead>
-        <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase w-0 w-5/12 pl-6 hidden md:table-cell">Hash</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-2/3 md:w-5/12 pl-6 md:pl-0">Token</th>
-            <th class="truncate py-2 pr-6 text-left uppercase w-1/3 md:w-2/12">Amount</th>
-        </tr>
-    </thead>
-    <tbody>
-        <template x-for="(balance, i) in balances">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 py-2 pl-6 hidden md:table-cell" x-html="balance.hash"></td>
-                <td class="truncate pr-4 py-2 pl-6 md:pl-0" x-html="Wrap.token(balance.token)"></td>
-                <td class="truncate pr-6 py-2" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview)"></td>
-            </tr>
-        </template>
-    </tbody>
-</table> -->
-
-<table class="w-full table-fixed font-light text-sm">
-    <thead>
-        <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase w-0 md:w-5/12 pl-6 hidden md:table-cell">Hash</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-3/12 pl-6 md:pl-0">Amount</th>
-            <th class="truncate py-2 pr-6 text-left uppercase w-2/3 md:w-4/12">Token</th>
-        </tr>
-    </thead>
-    <tbody>
-        <template x-for="(balance, i) in balances">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 py-2 pl-6 hidden md:table-cell" x-html="balance.hash"></td>
-                <td class="truncate pr-6 py-2 pl-6 md:pl-0" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview)"></td>
-                <td class="truncate pr-4 py-2" x-html="Wrap.token(balance.token)"></td>
-            </tr>
-        </template>
-    </tbody>
-</table>
-
-
-<!-- <table class="w-full table-fixed font-light text-sm">
-    <thead>
-        <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/2 md:w-4/12 pl-6">Amount</th>
-            <th class="truncate py-2 pr-6 md:pr-4 text-left uppercase w-1/2 md:w-5/12">Token</th>
-            <th class="truncate py-2 pr-6 text-left uppercase md:w-4/12 hidden md:table-cell">Hash</th>
-        </tr>
-    </thead>
-    <tbody>
-        <template x-for="(balance, i) in balances">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview)"></td>
-                <td class="truncate pr-6 md:pr-4 py-2" x-html="Wrap.token(balance.token)"></td>
-                <td class="truncate pr-6 py-2 hidden md:table-cell" x-html="balance.hash"></td>
-            </tr>
-        </template>
-    </tbody>
-</table> --></div>
-        <div x-cloak x-show="resource == 'transactions'"><table class="w-full table-fixed font-light text-sm">
-    <thead>
-        <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-5/12 pl-6">Hash</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-5/12">Sender</th>
-            <th class="truncate py-2 pr-6 text-left uppercase w-1/3 md:w-2/12">Created</th>
-        </tr>
-    </thead>
-    <tbody>
-        <template x-for="(transaction, i) in transactions">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.transaction(transaction.hash)"></td>
-                <td class="truncate pr-4 py-2" x-html="Wrap.address(transaction.sender)"></td>
-                <td class="truncate pr-6 py-2" x-text="formatTime(transaction.created)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.from)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.to)"></td>
             </tr>
         </template>
     </tbody>
 </table></div>
-        <div x-cloak x-show="resource == 'pools'"><table class="w-full table-fixed font-light text-sm">
+        <div x-cloak x-show="resource == 'balances'"><table class="w-full table-fixed font-light text-sm explorer">
     <thead>
         <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase w-2/5 md:w-4/12 pl-6">Address</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-0 md:w-3/12 hidden md:table-cell">Name</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-2/5 md:w-2/12">Balance</th>
-            <th class="truncate py-2 pr-6 md:pr-4 text-left uppercase w-1/5 md:w-1/12">Program</th>
-            <th class="truncate py-2 pr-6 text-left uppercase w-0 md:w-2/12 hidden md:table-cell">Expires</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/3">Address</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/3">Token</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/4">Amount</th>
+            <th x-cloak x-show="balances.length && balances[0].percentage" class="truncate py-2 pr-4 text-left uppercase w-1/4 hidden md:table-cell">Percent</th>
         </tr>
     </thead>
     <tbody>
-        <template x-for="(pool, i) in pools">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.pool(pool.address)"></td>
+        <template x-for="balance in balances">
+            <tr class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.address(balance.address)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.token(balance.token)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview)"></td>
+                <td x-cloak x-show="balance.percentage" class="truncate pr-4 py-2 hidden md:table-cell" x-html="balance.percentage+'%'"></td>
+            </tr>
+        </template>
+    </tbody>
+</table></div>
+        <div x-cloak x-show="resource == 'transactions'"><table class="w-full table-fixed font-light text-sm explorer">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-5/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-5/12">Sender</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="transaction in transactions">
+            <tr class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.transaction(transaction.hash)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.address(transaction.sender)"></td>
+                <td class="truncate pr-4 py-2" x-text="formatTime(transaction.created)"></td>
+            </tr>
+        </template>
+    </tbody>
+</table></div>
+        <div x-cloak x-show="resource == 'pools'"><table class="w-full table-fixed font-light text-sm explorer">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-4/12">Address</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">Name</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Balance</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/12">Program</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Expires</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="pool in pools">
+            <tr class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.pool(pool.address)"></td>
                 <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="pool.name ? pool.name : 'Unnamed'"></td>
                 <td class="truncate pr-4 py-2" x-html="Wrap.amount(pool.tokenBalance, pool.token, pool.tokenPreview)"></td>
-                <td class="truncate pr-6 md:pr-4 py-2" x-html="pool.program.toUpperCase()"></td>
-                <td class="truncate pr-6 py-2 hidden md:table-cell" x-text="pool.expires ? formatTime(pool.expires) : 'Never'"></td>
+                <td class="truncate pr-4 py-2" x-html="pool.program.toUpperCase()"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="pool.expires ? formatTime(pool.expires) : 'Never'"></td>
             </tr>
         </template>
     </tbody>
 </table></div>
-        <div x-cloak x-show="resource == 'claims'"><table class="w-full table-fixed font-light text-sm">
+        <div x-cloak x-show="resource == 'claims'"><table class="w-full table-fixed font-light text-sm explorer">
     <thead>
         <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-2/12 pl-6">Hash</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-2/12">Amount</th>
-            <th class="truncate py-2 pr-6 md:pr-4 text-left uppercase w-1/3 md:w-2/12">Category</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-0 md:w-2/12 hidden md:table-cell">Issuer</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-0 md:w-2/12 hidden md:table-cell">Holder</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-0 md:w-1/12 hidden md:table-cell">Unlocks</th>
-            <th class="truncate py-2 pr-6 text-left uppercase w-0 md:w-1/12 hidden md:table-cell">Created</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Category</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Issuer</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Holder</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Unlocks</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Created</th>
         </tr>
     </thead>
     <tbody>
-        <template x-for="(claim, i) in claims">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 py-2 pl-6" x-html="Wrap.claim(claim.hash)"></td>
+        <template x-for="claim in claims">
+            <tr class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.claim(claim.hash)"></td>
                 <td class="truncate pr-4 py-2" x-html="Wrap.amount(claim.tokenAmount, claim.token, claim.tokenPreview)"></td>
-                <td class="truncate pr-6 md:pr-4 py-2" x-html="claim.category ? claim.category : None"></td>
+                <td class="truncate pr-4 py-2" x-html="claim.category ? claim.category : None"></td>
                 <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(claim.creator)"></td>
                 <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(claim.owner)"></td>
                 <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="claim.unlocks ? formatTime(claim.unlocks) : 'Unlocked'"></td>
-                <td class="truncate pr-6 py-2 hidden md:table-cell" x-html="formatTime(claim.created)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="formatTime(claim.created)"></td>
             </tr>
         </template>
     </tbody>
 </table></div>
-        <div x-cloak x-show="resource == 'allowances'"><table class="w-full table-fixed font-light text-sm">
+        <div x-cloak x-show="resource == 'allowances'"><table class="w-full table-fixed font-light text-sm explorer">
     <thead>
         <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 pl-6 text-left uppercase w-0 md:w-3/12">Hash</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-3/12">Amount</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/3 md:w-3/12">Issuer</th>
-            <th class="truncate py-2 pr-6 text-left uppercase w-1/3 md:w-3/12">Spender</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">Issuer</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">Spender</th>
         </tr>
     </thead>
     <tbody>
-        <template x-for="(allowance, i) in allowances">
-            <tr :class="{'bg-gray-900 bg-opacity-50': i % 2 == 0}" class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 pl-6 py-2" x-html="Wrap.allowance(allowance.hash)"></td>
+        <template x-for="allowance in allowances">
+            <tr class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.allowance(allowance.hash)"></td>
                 <td class="truncate pr-4 py-2" x-html="Wrap.amount(allowance.amount, allowance.token, allowance.tokenPreview)"></td>
                 <td class="truncate pr-4 py-2" x-html="Wrap.address(allowance.address)"></td>
-                <td class="truncate pr-6 py-2" x-html="Wrap.address(allowance.spender)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.address(allowance.spender)"></td>
             </tr>
         </template>
     </tbody>
 </table></div>
         <div x-cloak x-show="resource == 'tokens'"><div id="tokens" class="hidden">
-    <template x-for="(token, i) in tokens">
+    <template x-for="token in tokens">
         <div class="mx-1.5 mb-4 token">
-            <a :href="'/token/?address='+token.address" class="py-1 px-1 border rounded-2xl bg-gray-900 border-gray-800 block">
-                <div class="border border-dashed rounded-2xl border-gray-700 bg-black px-2 py-2 transition-all">
-                    <img x-cloak x-show="i % 2 == 0 || i < 6" class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" :src="'https://picsum.photos/200/300?random='+i">
-                    <img x-cloak x-show="token.object && token.mime && token.mime.split('/') == 'image'" class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
-                    <p class="text-sm text-white px-2 py-0.5 text-center tracking-wider" x-text="token.name"></p>
-                    <p class="text-xs text-gray-200 px-2 py-0.5 text-center truncate" x-text="token.address"></p>
+            <a :href="'/token/?address='+token.address" class="block rounded-2xl bg-gray-900 bg-opacity-50 shadow transform-gpu hover:-translate-y-2 transition-transform duration-300">
+                <div class="rounded-2xl rounded-b-none overflow-hidden">
+                    <img class="h-32 w-full mb-2 object-center object-cover" :src="'https://picsum.photos/200/300?random='+Date.now()">
+                    <!-- <img x-cloak x-show="token.object && token.mime && token.mime.split('/') == 'image'" class="h-32 w-full mb-2 object-center object-cover" src="https://i.redd.it/tpxvny1fbdv61.png"> -->
                 </div>
-            </a>
-        </div>
-    </template>
-    <template x-for="(token, i) in tokens">
-        <div class="mx-1.5 mb-4 token">
-            <a :href="'/token/?address='+token.address" class="block rounded-2xl bg-gray-900 shadow transform-gpu hover:-translate-y-2 transition-transform duration-300">
-                <img x-cloak x-show="i % 2 == 0 || i < 6" class="h-32 w-full mb-2 object-center object-cover rounded-2xl rounded-b-none" :src="'https://picsum.photos/200/300?random='+i">
-                <!-- <img x-cloak x-show="token.object && token.mime && token.mime.split('/') == 'image'" class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" src="https://i.redd.it/tpxvny1fbdv61.png"> -->
                 <div class="px-3 py-3">
                     <p class="text-sm text-white py-0.5 text-center tracking-wider" x-text="token.name"></p>
                     <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-text="token.address"></p>
