@@ -91,11 +91,11 @@ function addressExplorer() {
         <div class="flex justify-between items-center px-6">
             <p class="text-lg py-2 text-gray-100 capitalize" x-text="resource"></p>
             <div x-cloak x-show="['transfers', 'claims', 'allowances'].includes(resource)" x-data="{active: false}" class="relative text-white text-sm">
-                <span @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize" x-text="$data[resource+'Filter']"></span>
+                <span @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize text-xs" x-text="$data[resource+'Filter']"></span>
                 <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
                     <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                         <template x-for="[key, type] in Object.entries({incoming: 'transfers', outgoing: 'transfers', issued: 'claims', holding: 'claims', granted: 'allowances', spendable: 'allowances'})">
-                            <li x-cloak x-show="type == resource" @click="$data[type+'Filter'] = key, change(type), active = false" x-text="key" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize"></li>
+                            <li x-cloak x-show="type == resource" @click="$data[type+'Filter'] = key, change(type), active = false" x-text="key" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs"></li>
                         </template>
                     </ul>
                 </div>

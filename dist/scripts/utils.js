@@ -32,10 +32,10 @@ var Wrap = {
         return '<a href="/transfer/?hash='+hash+'" class="hover:text-pink-400">'+hash+'</a>'
     },
     tokenPreview: function(tp, address) {
-        return '<span class="ml-1">'+(tp ? (tp.symbol ? tp.symbol : tp.name)+(tp.icon ? '<img class="h-4 w-4 ml-1 -mt-0.5 inline" src="'+tp.icon+'" />' : '') : address)+'</span>'
+        return '<span class="ml-1">'+(tp ? (tp.symbol ? tp.symbol : tp.name)+(tp.preview ? '<img class="h-4 w-4 ml-1 -mt-0.5 inline" src="'+tp.preview+'" onerror="this.remove()" />' : '') : address)+'</span>'
     },
     xetaPreview: function() {
-        return Wrap.tokenPreview({symbol: 'XETA', name: 'Xeta', icon: '/media/favicon.png'})
+        return Wrap.tokenPreview({symbol: 'XETA', name: 'Xeta', preview: '/media/favicon.png'})
     },
     token: function(address, tokenPreview) {
         return '<a href="/token/?address='+address+'" class="hover:text-pink-400">'+Wrap.tokenPreview(tokenPreview, address)+'</a>'
@@ -128,6 +128,7 @@ function setPageMeta(resource, data) {
 function validate(e) {
     if (!e.dataset.rules) return true
     var rules = JSON.parse(e.dataset.rules)
+    if (!rules.includes('required') && !e.value) return true
     var valid = Iodine.is(e.value, rules)
 
     if (valid === true) {

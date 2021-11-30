@@ -1780,7 +1780,7 @@ function loadDetails() {
     return {
         details: {},
         resource: window.location.pathname.slice(1, -1),
-        active: !['pool'].includes(window.location.pathname.slice(1, -1)),
+        expanded: !['pool'].includes(window.location.pathname.slice(1, -1)),
         init() {
             var self = this
             document.addEventListener('resourceLoaded', function (e) {
@@ -1788,7 +1788,7 @@ function loadDetails() {
                 
                 if (self.resource == 'address') {
                     if (data.pool) window.location.href = '/pools/?address='+data.pool.address
-                    if (data.token) self.active = false
+                    if (data.token) self.expanded = false
                     data = Object.assign({}, data.token, data.balance)
                 }
 
@@ -1827,7 +1827,7 @@ function loadDetails() {
                                 var r = {a: 'allowance', t: 'token', x: 'transfer', c: 'claim', p: 'pool'}[j.split(':')[0]]
                                 return r[0].toUpperCase()+r.slice(1)+' '+Wrap[r](j.split(':')[1])
                             }).join('<br>')
-                        })
+                        }).join('<br>')
                     } else if (['instructions'].includes(k)) {
                         self.details[k] = JSON.stringify(data[k])
                     } else self.details[k] = String(data[k])
@@ -1842,20 +1842,33 @@ function loadDetails() {
 
 <div x-data="loadDetails()">
     <div class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
-        <div @click="active = !active" class="flex justify-between items-center cursor-pointer">
-            <p class="text-lg py-2 text-gray-100">
-                <span>Details</span>
-                <span x-cloak x-show="true" @click.stop="action(resource+'.update')" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize text-xs ml-2">Update</span>
-            </p>
+        <div @click="expanded = !expanded" class="flex justify-between items-center cursor-pointer">
+            <div class="flex justify-start items-center">
+                <p class="text-lg py-2 text-gray-100">Details</p>
+
+                <div x-cloak x-show="['token', 'allowance', 'address', 'claim'].includes(resource)" x-data="{active: false}" class="relative text-white text-sm ml-2">
+                    <span @click.stop="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize text-xs">Action</span>
+                    <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
+                        <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                            <li @click.stop="action(resource+'.update'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Update</li>
+                            <li x-cloak x-show="resource == 'claim'" @click.stop="action('claim.resolve'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Resolve</li>
+                            <li x-cloak x-show="resource == 'token' && $store.token.reserve" @click.stop="action('token.mint'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Mint</li>
+                            <li x-cloak x-show="resource == 'token' && !$store.token.supply" @click.stop="action(resource+'.transfer'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            
             <span class="cursor-pointer underline text-gray-200 text-sm font-light">
-                <span x-text="active ? 'Close' : 'Open'">Open</span> Details
+                <span x-text="expanded ? 'Close' : 'Open'">Open</span> Details
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="inline ml-1 -mt-0.5" viewBox="0 0 16 16">
-                  <path x-cloak x-show="!active" fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-                  <path x-cloak x-show="active" fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+                  <path x-cloak x-show="!expanded" fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                  <path x-cloak x-show="expanded" fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
                 </svg>
             </span>
         </div>
-        <table x-cloak x-show="active" class="w-full table-fixed font-light text-sm">
+        <table x-cloak x-show="expanded" class="w-full table-fixed font-light text-sm">
             <thead>
                 <tr>
                     <th class="text-gray-400 text-left uppercase w-1/3"></th>
@@ -2034,8 +2047,12 @@ function inputModal() {
             })
 
             var self = this
+            var resourceName = window.location.pathname.slice(1, -1)
+            var resource = Alpine.store(resourceName)
+
             this.inputs.forEach(function(input) {
-                self.values[input.name] = input.value != null ? input.value : input.default
+                if (input.value) self.values[input.name] = resource && resourceName == input.value.split('.')[0] ? resource[input.value.split('.')[1]] : null
+                else self.values[input.name] = null
             })
         },
         extend() {
@@ -2056,39 +2073,45 @@ function inputModal() {
 
             var parsed = {}
             Object.entries(this.values).forEach(function(e) {
-                if (e[1] == null) return
-                var v = typeof e[1] == 'string' ? e[1].trim() : e[1]
+                try {
+                    if (e[1] == null) return
+                    var v = typeof e[1] == 'string' ? e[1].trim() : e[1]
 
-                if (datatypes[e[0]] == 'string') v = v
-                else if (datatypes[e[0]] == 'strings') v = v.split(String.fromCharCode(10))
-                else if (datatypes[e[0]] == 'number') v = parseFloat(v)
-                else if (datatypes[e[0]] == 'numbers') v = v.split(String.fromCharCode(10)).map(function(i) {return parseFloat(i)})
-                else if (datatypes[e[0]] == 'hash') v = v
-                else if (datatypes[e[0]] == 'hashes') v = v.split(String.fromCharCode(10))
-                else if (datatypes[e[0]] == 'text') v = v
-                else if (datatypes[e[0]] == 'integer') v = parseInt(v)
-                else if (datatypes[e[0]] == 'timestamp') v = parseInt(v)
-                else if (datatypes[e[0]] == 'amount') v = v
-                else if (datatypes[e[0]] == 'boolean') v = !!v
-                else if (datatypes[e[0]] == 'object') v = JSON.parse(v)
-                else throw Error('invalid:datatype')
+                    if (datatypes[e[0]] == 'string') v = v
+                    else if (datatypes[e[0]] == 'strings') v = v.split(String.fromCharCode(10))
+                    else if (datatypes[e[0]] == 'number') v = parseFloat(v)
+                    else if (datatypes[e[0]] == 'numbers') v = v.split(String.fromCharCode(10)).map(function(i) {return parseFloat(i)})
+                    else if (datatypes[e[0]] == 'hash') v = v
+                    else if (datatypes[e[0]] == 'hashes') v = v.split(String.fromCharCode(10))
+                    else if (datatypes[e[0]] == 'text') v = v
+                    else if (datatypes[e[0]] == 'integer') v = parseInt(v)
+                    else if (datatypes[e[0]] == 'timestamp') v = parseInt(v)
+                    else if (datatypes[e[0]] == 'amount') v = v
+                    else if (datatypes[e[0]] == 'boolean') v = !!v
+                    else if (datatypes[e[0]] == 'object') v = JSON.parse(v)
+                    else throw Error('invalid:datatype')
 
-                parsed[e[0]] = v
+                    parsed[e[0]] = v
+                } catch (e) {
+                    alert('parsing:'+e.message)
+                }
             })
 
             return parsed
         },
         submit() {
             var self = this
-            if (!this.transacting) {
-                this.transacting = true
-                Xeta[this.function.split('.')[0]][this.function.split('.')[1]](this.data()).then(function(tx) {
-                    window.location.href = '/transaction/?hash='+tx.hash
-                }).catch(function(e) {
-                    self.transacting = false
-                    alert(e)
-                })
-            }
+            if (this.transacting || !Alpine.sstore('privateKey')) return
+            
+            this.transacting = true
+            Xeta[this.function.split('.')[0]][this.function.split('.')[1]](this.data()).then(function(tx) {
+                if (['address.update', 'token.update', 'allowance.update', 'claim.update', 'claim.resolve'].includes(self.function)) window.location.reload()
+                else window.location.href = '/transaction/?hash='+tx.hash
+            }).catch(function(e) {
+                console.log(e.message)
+                self.transacting = false
+                alert(e)
+            })
         }
     }
 }
@@ -2407,7 +2430,7 @@ function walletModal() {
 
                     <div class="mb-6 w-full">
                         <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your secret</label>
-                        <input x-model="secret" data-rules='["required", "minLength:6"]' @input="validate($el)" @blur="validate($el)" type="secret" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
+                        <input x-model="secret" data-rules='["required", "minLength:6"]' @input="validate($el)" @blur="validate($el)" type="password" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
                     </div>
 
@@ -2458,7 +2481,7 @@ function walletModal() {
 
                     <div class="mb-6 w-full">
                         <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your secret</label>
-                        <input x-model="secret" data-rules='["required", "minLength:6", "maxLength:40"]' @input="validate($el)" @blur="validate($el)" type="secret" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
+                        <input x-model="secret" data-rules='["required", "minLength:6", "maxLength:40"]' @input="validate($el)" @blur="validate($el)" type="password" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
                     </div>
 
@@ -2500,19 +2523,20 @@ function actionsModal() {
             
             <div x-show="!selection" class="flex flex-wrap justify-center">
                 <p class="w-full px-4 py-4 text-2xl text-center text-white font-light">Select Wallet Action</p>
+                <p class="w-full px-4 pb-4 text-sm text-center text-white">Connected Wallet: <span x-text="Alpine.sstore('publicKey')"></span></p>
+
                 <ul class="list-none w-2/5 mr-2 text-center">
-                    <li @click="window.location.href = '/address/?address='+$lstore('publicKey')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">View Account</li>
-                    <li @click="disconnectWallet(), showModal('walletModal')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Update Account</li>
+                    <li @click="window.location.href = '/address/?address='+$lstore('publicKey')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">View Address Page</li>
                     <li @click="disconnectWallet(), showModal('walletModal')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Change Wallet</li>
                     <li @click="disconnectWallet(), hideModal()" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Disconnect Wallet</li>
                     <li @click="backup()" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Back-up Keys</li>
                 </ul>
                 <ul class="list-none w-2/5 ml-2 text-center">
-                    <li @click="selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Transfer</li>
-                    <li @click="selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Token</li>
-                    <li @click="selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Pool</li>
-                    <li @click="selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Allowance</li>
-                    <li @click="selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Claim</li>
+                    <li @click="action('transfer.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Transfer</li>
+                    <li @click="action('token.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Token</li>
+                    <li @click="action('pool.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Pool</li>
+                    <li @click="action('allowance.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Allowance</li>
+                    <li @click="action('claim.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Claim</li>
                 </ul>
             </div>
         </div>
@@ -2535,8 +2559,12 @@ function inputModal() {
             })
 
             var self = this
+            var resourceName = window.location.pathname.slice(1, -1)
+            var resource = Alpine.store(resourceName)
+
             this.inputs.forEach(function(input) {
-                self.values[input.name] = input.value != null ? input.value : input.default
+                if (input.value) self.values[input.name] = resource && resourceName == input.value.split('.')[0] ? resource[input.value.split('.')[1]] : null
+                else self.values[input.name] = null
             })
         },
         extend() {
@@ -2557,39 +2585,45 @@ function inputModal() {
 
             var parsed = {}
             Object.entries(this.values).forEach(function(e) {
-                if (e[1] == null) return
-                var v = typeof e[1] == 'string' ? e[1].trim() : e[1]
+                try {
+                    if (e[1] == null) return
+                    var v = typeof e[1] == 'string' ? e[1].trim() : e[1]
 
-                if (datatypes[e[0]] == 'string') v = v
-                else if (datatypes[e[0]] == 'strings') v = v.split(String.fromCharCode(10))
-                else if (datatypes[e[0]] == 'number') v = parseFloat(v)
-                else if (datatypes[e[0]] == 'numbers') v = v.split(String.fromCharCode(10)).map(function(i) {return parseFloat(i)})
-                else if (datatypes[e[0]] == 'hash') v = v
-                else if (datatypes[e[0]] == 'hashes') v = v.split(String.fromCharCode(10))
-                else if (datatypes[e[0]] == 'text') v = v
-                else if (datatypes[e[0]] == 'integer') v = parseInt(v)
-                else if (datatypes[e[0]] == 'timestamp') v = parseInt(v)
-                else if (datatypes[e[0]] == 'amount') v = v
-                else if (datatypes[e[0]] == 'boolean') v = !!v
-                else if (datatypes[e[0]] == 'object') v = JSON.parse(v)
-                else throw Error('invalid:datatype')
+                    if (datatypes[e[0]] == 'string') v = v
+                    else if (datatypes[e[0]] == 'strings') v = v.split(String.fromCharCode(10))
+                    else if (datatypes[e[0]] == 'number') v = parseFloat(v)
+                    else if (datatypes[e[0]] == 'numbers') v = v.split(String.fromCharCode(10)).map(function(i) {return parseFloat(i)})
+                    else if (datatypes[e[0]] == 'hash') v = v
+                    else if (datatypes[e[0]] == 'hashes') v = v.split(String.fromCharCode(10))
+                    else if (datatypes[e[0]] == 'text') v = v
+                    else if (datatypes[e[0]] == 'integer') v = parseInt(v)
+                    else if (datatypes[e[0]] == 'timestamp') v = parseInt(v)
+                    else if (datatypes[e[0]] == 'amount') v = v
+                    else if (datatypes[e[0]] == 'boolean') v = !!v
+                    else if (datatypes[e[0]] == 'object') v = JSON.parse(v)
+                    else throw Error('invalid:datatype')
 
-                parsed[e[0]] = v
+                    parsed[e[0]] = v
+                } catch (e) {
+                    alert('parsing:'+e.message)
+                }
             })
 
             return parsed
         },
         submit() {
             var self = this
-            if (!this.transacting) {
-                this.transacting = true
-                Xeta[this.function.split('.')[0]][this.function.split('.')[1]](this.data()).then(function(tx) {
-                    window.location.href = '/transaction/?hash='+tx.hash
-                }).catch(function(e) {
-                    self.transacting = false
-                    alert(e)
-                })
-            }
+            if (this.transacting || !Alpine.sstore('privateKey')) return
+            
+            this.transacting = true
+            Xeta[this.function.split('.')[0]][this.function.split('.')[1]](this.data()).then(function(tx) {
+                if (['address.update', 'token.update', 'allowance.update', 'claim.update', 'claim.resolve'].includes(self.function)) window.location.reload()
+                else window.location.href = '/transaction/?hash='+tx.hash
+            }).catch(function(e) {
+                console.log(e.message)
+                self.transacting = false
+                alert(e)
+            })
         }
     }
 }
