@@ -21,6 +21,7 @@ function tokenExplorer() {
             this.resource = resource
             if (this.depleted[resource]) return
             var last = this[resource].length ? this[resource].slice(-1)[0] : {}
+            
             var self = this
             var token = Alpine.store('token')
 

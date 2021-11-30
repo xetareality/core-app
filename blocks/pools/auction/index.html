@@ -1,82 +1,9 @@
-<script>
-function auctionPool() {
-    return {
-        init() {
-        },
-        transfer() {
-            var inputs = {amount: {required: true, default: (Alpine.store('pool').xetaBalance || 0)+1, type: 'number'}}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Bid XETA',
-                description: 'Bid a XETA amount higher than '+(Alpine.store('pool').xetaBalance || 0)+' to enter the auction.',
-                pool: Alpine.store('auction'),
-                function: 'transfer',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        deposit() {
-            var inputs = {amount: {required: true, default: 0, type: 'number'}}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Deposit to Auction',
-                description: 'Deposit '+(Alpine.store('pool').tokenPreview && Alpine.store('pool').tokenPreview.name ? Alpine.store('pool').tokenPreview.name : 'the pool-token')+' to the auction.',
-                pool: Alpine.store('auction'),
-                function: 'deposit',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        resolve() {
-            var data = {
-                title: 'Resolve Auction',
-                description: 'Resolve auction once it has expired or successfully completed.',
-                pool: Alpine.store('auction'),
-                function: 'resolve',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-        cancel() {
-            var data = {
-                title: 'Cancel Auction',
-                description: 'Cancel auction (everyone will be able to claim back bids or deposited tokens).',
-                pool: Alpine.store('auction'),
-                function: 'cancel',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-        close() {
-            var data = {
-                title: 'Close Auction',
-                description: 'Close the auction pool permanently.',
-                pool: Alpine.store('auction'),
-                function: 'close',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-    }
-}
-</script>
 <div x-cloak x-show="$store.pool.program == 'auction'" x-data="auctionPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Auction Pool)' : 'Auction Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Bid</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Bid</span>
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>

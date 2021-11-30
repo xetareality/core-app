@@ -2,9 +2,9 @@
 function poolPreview() {
     return {
         init() {
-            // Xeta.pool.instance({address: gup('address'), extended: true}).then(function(data) {
-            //     // Alpine.store('pool', data.pool) // Raw pool
-            //     // Alpine.store(data.pool.program, data) // Instance
+            // Xeta.pool.instance({address: gup('address')}, {preview: true}).then(function(data) {
+            //     Alpine.store('pool', data.pool) // Raw pool
+            //     Alpine.store(data.pool.program, data) // Instance
 
             //     if (data.pool.expires) setInterval(function() {
             //         Alpine.store('pool').timer = timer(Alpine.store('pool').expires)
@@ -16,85 +16,12 @@ function poolPreview() {
 </script>
 
 <div x-data="poolPreview">
-<script>
-function auctionPool() {
-    return {
-        init() {
-        },
-        transfer() {
-            var inputs = {amount: {required: true, default: (Alpine.store('pool').xetaBalance || 0)+1, type: 'number'}}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Bid XETA',
-                description: 'Bid a XETA amount higher than '+(Alpine.store('pool').xetaBalance || 0)+' to enter the auction.',
-                pool: Alpine.store('auction'),
-                function: 'transfer',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        deposit() {
-            var inputs = {amount: {required: true, default: 0, type: 'number'}}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Deposit to Auction',
-                description: 'Deposit '+(Alpine.store('pool').tokenPreview && Alpine.store('pool').tokenPreview.name ? Alpine.store('pool').tokenPreview.name : 'the pool-token')+' to the auction.',
-                pool: Alpine.store('auction'),
-                function: 'deposit',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        resolve() {
-            var data = {
-                title: 'Resolve Auction',
-                description: 'Resolve auction once it has expired or successfully completed.',
-                pool: Alpine.store('auction'),
-                function: 'resolve',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-        cancel() {
-            var data = {
-                title: 'Cancel Auction',
-                description: 'Cancel auction (everyone will be able to claim back bids or deposited tokens).',
-                pool: Alpine.store('auction'),
-                function: 'cancel',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-        close() {
-            var data = {
-                title: 'Close Auction',
-                description: 'Close the auction pool permanently.',
-                pool: Alpine.store('auction'),
-                function: 'close',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-    }
-}
-</script>
 <div x-cloak x-show="$store.pool.program == 'auction'" x-data="auctionPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Auction Pool)' : 'Auction Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Bid</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Bid</span>
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -168,112 +95,12 @@ function auctionPool() {
         </div>
     </div>
 </div>
-<script>
-function launchPool() {
-    return {
-        init() {
-        },
-        transfer() {
-            var inputs = {amount: {required: true, default: 0, type: 'number'}}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Participate in Launch',
-                description: 'Participate by sending a certain XETA amount to the launch pool.',
-                pool: Alpine.store('launch'),
-                function: 'transfer',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        swap() {
-            var inputs = {amount: {required: true, default: 0, type: 'number'}}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Swap Tokens',
-                description: 'Participate in the launch pool by swapping at a fixed rate.',
-                pool: Alpine.store('launch'),
-                function: 'swap',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        resolve() {
-            var data = {
-                title: 'Resolve Launch',
-                description: 'Resolve launch pool after it has expired or successfully concluded.',
-                pool: Alpine.store('launch'),
-                function: 'resolve',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-        claim() {
-            var data = {
-                title: 'Claim Tokens',
-                description: 'Claim your tokens (XETA if the launch was unsuccessful, pool-tokens if the launch was successful).',
-                pool: Alpine.store('launch'),
-                function: 'claim',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-        deposit() {
-            var inputs = {amount: {required: true, default: 0, type: 'number'}}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Deposit Launch Tokens',
-                description: 'Deposit pool-tokens to the launch pool.',
-                pool: Alpine.store('launch'),
-                function: 'deposit',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        withdraw() {
-            var data = {
-                title: 'Withdraw Launch Tokens',
-                description: 'Withdraw pool-tokens from the launch pool.',
-                pool: Alpine.store('launch'),
-                function: 'withdraw',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-        close() {
-            var data = {
-                title: 'Close Launch Pool',
-                description: 'Permanently close the launch pool.',
-                pool: Alpine.store('launch'),
-                function: 'close',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-    }
-}
-</script>
 <div x-cloak x-show="$store.pool.program == 'launch'" x-data="launchPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Launch Pool)' : 'Launch Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Contribute</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Contribute</span>
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -349,52 +176,82 @@ function launchPool() {
         </div>
     </div>
 </div>
-<script>
-function lockPool() {
-    return {
-        init() {
-        },
-        transfer() {
-            var inputs = {
-                amount: {required: true, default: 0, type: 'number'},
-                expires: {required: false, type: 'timestamp'},
-                unlocks: {required: false, type: 'timestamp'},
-                address: {required: false, type: 'hash'},
-            }
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Lock Tokens',
-                description: 'Lock your '+(Alpine.store('pool').tokenPreview && Alpine.store('pool').tokenPreview.name ? Alpine.store('pool').tokenPreview.name : 'pool')+' tokens for a specific amount of time.',
-                pool: Alpine.store('lock'),
-                function: 'transfer',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        claim() {
-            var data = {
-                title: 'Claim Locked Tokens',
-                description: 'Claim back your locked'+(Alpine.store('pool').tokenPreview && Alpine.store('pool').tokenPreview.name ? ' '+Alpine.store('pool').tokenPreview.name : '')+' tokens.',
-                pool: Alpine.store('lock'),
-                function: 'claim',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        }
-    }
-}
-</script>
+<div x-cloak x-show="$store.pool.program == 'lending'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+    <div class="w-full flex flex-wrap justify-between items-center mb-4">
+        <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Staking Pool)' : 'Staking Pool'"></p>
+        <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
+            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Stake</span>
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                </svg>
+            </span>
+            <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
+                <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                    <li @click="claim(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
+                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="deposit(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="withdraw(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-wrap">
+        <div class="w-full mb-4 text-white">
+            <p class="text-xl mb-4 text-gray-400 font-normal">Stake and receive rewards with an APY of:</p>
+            <a href="/token/?address=1">
+                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                    <p class="text-3xl text-white py-4 tracking-wider">
+                        <span x-text="((parseFloat($store.pool.rate || 0)+parseFloat($store.pool.percentage || 0))*100).toFixed(2)"></span>
+                        <span>% APY</span>
+                    </p>
+                </div>
+            </a>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Amount</span>
+                <span>
+                    <span x-text="$store.pool.minAmount ? formatNumber($store.pool.minAmount, 8) : 0"></span>
+                    <span>to</span>
+                    <span x-text="$store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited'"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
+                </span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Time</span>
+                <span>
+                    <span x-text="$store.pool.minTime ? formatTime(parseInt($store.pool.minTime)+Date.now(), false) : '1 day'"></span>
+                    <span>to</span>
+                    <span x-text="$store.pool.maxTime ? formatTime(parseInt($store.pool.maxTime)+Date.now(), false) : 'Unlimited'"></span>
+                </span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">APY Rate</span>
+                <span x-text="(parseFloat($store.pool.rate || 0)*100).toFixed(2)+'%'"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Bonus APY Rate</span>
+                <span x-text="(parseFloat($store.pool.percentage || 0)*100).toFixed(2)+'%'"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Total Value Locked</span>
+                <span>
+                    <span x-text="formatNumber((parseFloat($store.pool.tokenBalance) || 0), 8)"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
+                </span>
+            </p>
+            
+            <p class="text-xl font-light mb-2 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Closing</span><span></span>
+                <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
+            </p>
+        </div>
+    </div>
+</div>
 <div x-cloak x-show="$store.pool.program == 'lock'" x-data="lockPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Lock Pool)' : 'Lock Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Lock</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Lock</span>
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -443,79 +300,12 @@ function lockPool() {
         </div>
     </div>
 </div>
-<script>
-function lootPool() {
-    return {
-        init() {
-        },
-        transfer() {
-            var inputs = {amount: {required: true, default: 0, type: 'number'},}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Participate in Loot Pool',
-                description: 'Participate by sending the minimum entry amount to the pool and receiving an NFT with a certain probability.',
-                pool: Alpine.store('loot'),
-                function: 'transfer',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        deposit() {
-            var inputs = {token: {required: true, type: 'hash'}}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Deposit NFT',
-                description: 'Deposit an NFT to the loot pool.',
-                pool: Alpine.store('loot'),
-                function: 'deposit',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        withdraw() {
-            var inputs = {token: {required: true, type: 'hash'}}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Withdraw NFT',
-                description: 'Withdraw a previously deposited NFT from the loot pool.',
-                pool: Alpine.store('loot'),
-                function: 'withdraw',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        clear() {
-            var data = {
-                title: 'Clear Loot Pool',
-                description: 'Clear all XETA earnings from loot pool.',
-                pool: Alpine.store('loot'),
-                function: 'clear',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-    }
-}
-</script>
 <div x-cloak x-show="$store.pool.program == 'loot'" x-data="lootPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Loot Pool)' : 'Loot Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Participate</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Participate</span>
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -692,96 +482,12 @@ function lootPool() {
         </div>
     </div>
 </div>
-<script>
-function lotteryPool() {
-    return {
-        init() {
-        },
-        transfer() {
-            var inputs = {amount: {required: true, default: 0, type: 'number'}}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Participate in Lottery',
-                description: 'Participate in the lottery pool by sending the minimum required amount to enter.',
-                pool: Alpine.store('lottery'),
-                function: 'transfer',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        claim() {
-            var data = {
-                title: 'Claim Winning Ticket',
-                description: 'Claim and find out if you hold a winning ticket.',
-                pool: Alpine.store('lottery'),
-                function: 'claim',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-        deposit() {
-            var inputs = {amount: {required: true, default: 0, type: 'number'}}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Deposit Tokens',
-                description: 'Deposit tokens to the lottery pool.',
-                pool: Alpine.store('lottery'),
-                function: 'deposit',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        withdraw() {
-            var data = {
-                title: 'Withdraw Tokens',
-                description: 'Withdraw previously deposited tokens from the lottery pool.',
-                pool: Alpine.store('lottery'),
-                function: 'withdraw',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-        close() {
-            var data = {
-                title: 'Close Lottery Pool',
-                description: 'Close lottery pool permanently.',
-                pool: Alpine.store('lottery'),
-                function: 'close',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-        clear() {
-            var data = {
-                title: 'Clear XETA earnings',
-                description: 'Clear collected XETA amounts from lottery pool.',
-                pool: Alpine.store('lottery'),
-                function: 'clear',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-    }
-}
-</script>
 <div x-cloak x-show="$store.pool.program == 'lottery'" x-data="lotteryPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Lottery Pool)' : 'Lottery Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Participate</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Participate</span>
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -823,81 +529,12 @@ function lotteryPool() {
         </div>
     </div>
 </div>
-<script>
-function royaltyPool() {
-    return {
-        init() {
-        },
-        transfer() {
-            this.claim()
-        },
-        claim() {
-            var inputs = {token: {required: true, type: 'hash'}}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Claim Royalties',
-                description: 'Claim royalties for an NFT that is included in the royalty pool rewards.',
-                pool: Alpine.store('royalty'),
-                function: 'transfer',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        deposit() {
-            var inputs = {
-                amount: {required: true, default: 0, type: 'number'},
-                expires: {required: false, type: 'timestamp'},
-                unlocks: {required: false, type: 'timestamp'},
-            }
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Deposit Reward Tokens',
-                description: 'Deposit reward tokens to the royalty pool.',
-                pool: Alpine.store('royalty'),
-                function: 'deposit',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        withdraw() {
-            var data = {
-                title: 'Withdraw Tokens',
-                description: 'Withdraw previously deposited royalty tokens.',
-                pool: Alpine.store('royalty'),
-                function: 'withdraw',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-        close() {
-            var data = {
-                title: 'Close Royalty Pool',
-                description: 'Close royalty pool permanently.',
-                pool: Alpine.store('royalty'),
-                function: 'close',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-    }
-}
-</script>
 <div x-cloak x-show="$store.pool.program == 'royalty'" x-data="royaltyPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Royalty Pool)' : 'Royalty Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Claim Royalties</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Claim Royalties</span>
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -958,99 +595,28 @@ function royaltyPool() {
         </div>
     </div>
 </div>
-<script>
-function stakingPool() {
-    return {
-        init() {
-
-        },
-        transfer() {
-            var inputs = {
-                amount: {required: true, default: 0, type: 'number'},
-                expires: {required: false, type: 'timestamp'},
-                unlocks: {required: false, type: 'timestamp'},
-            }
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Stake Tokens',
-                description: 'Stake your pool-tokens for a certain period to receive staking rewards.',
-                pool: Alpine.store('staking'),
-                function: 'transfer',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        claim() {
-            var data = {
-                title: 'Claim Stake',
-                description: 'Claim your staked tokens including rewards, after the staking period expires.',
-                pool: Alpine.store('staking'),
-                function: 'claim',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-        deposit() {
-            var inputs = {
-                amount: {required: true, default: 0, type: 'number'},
-                expires: {required: false, type: 'timestamp'},
-                unlocks: {required: false, type: 'timestamp'},
-            }
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Deposit Reward Tokens',
-                description: 'Deposit reward tokens to the staking pool.',
-                pool: Alpine.store('staking'),
-                function: 'deposit',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        withdraw() {
-            var data = {
-                title: 'Withdraw Reward Tokens',
-                description: 'Withdraw reward tokens from the staking pool.',
-                pool: Alpine.store('staking'),
-                function: 'withdraw',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-    }
-}
-</script>
-<div x-cloak x-show="$store.pool.program == 'staking'" x-data="stakingPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+<div x-cloak x-show="$store.pool.program == 'staking'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Staking Pool)' : 'Staking Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Stake</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="action('staking.transfer')" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Stake</span>
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
             </span>
             <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                    <li @click="claim(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="deposit(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="withdraw(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                    <li @click="action('staking.claim'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
+                    <li x-cloak x-show="Xeta.config.publicKey == $store.pool.creator" @click="action('staking.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="Xeta.config.publicKey == $store.pool.creator" @click="action('staking.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
                 </ul>
             </div>
         </div>
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
-            <p class="text-xl mb-4 text-gray-400 font-normal">Stake and receive rewards with an APY of:</p>
+            <p class="text-xl mb-4 text-gray-400 font-normal">Stake and receive rewards with an APY as high as:</p>
             <a href="/token/?address=1">
                 <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                     <p class="text-3xl text-white py-4 tracking-wider">
@@ -1100,89 +666,12 @@ function stakingPool() {
     </div>
 </div>
 <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-
-<script>
-function swapPool() {
-    return {
-        init() {
-        },
-        transfer() {
-            var inputs = {
-                token: {required: true, type: 'hash'},
-                amount: {required: true, default: 0, type: 'number'},
-            }
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Swap Tokens',
-                description: 'Swap XETA into pool-tokens, or pool-tokens into XETA.',
-                pool: Alpine.store('swap'),
-                function: 'transfer',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        deposit() {
-            var inputs = {
-                token: {required: true, type: 'hash'},
-                amount: {required: true, default: 0, type: 'number'},
-                expires: {required: false, type: 'timestamp'},
-                unlocks: {required: false, type: 'timestamp'},
-            }
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Deposit Tokens',
-                description: 'Deposit XETA or pool tokens to add liquidity.',
-                pool: Alpine.store('swap'),
-                function: 'deposit',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        supply() {
-            var data = {
-                title: 'Supply Liquidity',
-                description: 'Supply previously deposited XETA and pool-tokens and add to liquidity.',
-                pool: Alpine.store('swap'),
-                function: 'supply',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-        withdraw() {
-            var inputs = {percentage: {required: true, default: 1.0, type: 'number'}}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Withdraw Liquidity',
-                description: 'Withdraw your share from liquidity.',
-                pool: Alpine.store('swap'),
-                function: 'withdraw',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-    }
-}
-</script>
-
 <div x-cloak x-show="$store.pool.program == 'swap'" x-data="votePool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker+'/XETA'+' Swap Pool' : 'Swap Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Swap</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Swap</span>
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -1455,61 +944,11 @@ var chart = LightweightCharts.createChart(document.getElementById('chart'), {
         { time: '2019-05-24', open: 192.54, high: 193.86, low: 190.41, close: 193.59 },
     ]);
 </script>
-<script>
-function votePool() {
-    return {
-        init() {
-        },
-        transfer() {
-            var inputs = {
-                amount: {required: true, default: 0, type: 'number'},
-                answer: {required: false, type: 'string'},
-                number: {required: false, type: 'number'},
-            }
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Submit Vote',
-                description: 'Submit a vote by providing an answer or number and the minimum required amount to add weight to your vote.',
-                pool: Alpine.store('vote'),
-                function: 'transfer',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        claim() {
-            var data = {
-                title: 'Claim Vote Rewards',
-                description: 'Claim vote rewards, depending on the selected vote pool mechanism.',
-                pool: Alpine.store('vote'),
-                function: 'claim',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-        resolve() {
-            var data = {
-                title: 'Resolve Vote',
-                description: 'Resolve the vote and make rewards claimable.',
-                pool: Alpine.store('vote'),
-                function: 'resolve',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-    }
-}
-</script>
 <div x-cloak x-show="$store.pool.program == 'vote'" x-data="votePool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Vote Pool)' : 'Vote Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative justify-end">
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>

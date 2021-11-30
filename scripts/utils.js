@@ -37,14 +37,14 @@ var Wrap = {
     xetaPreview: function() {
         return Wrap.tokenPreview({symbol: 'XETA', name: 'Xeta', preview: '/media/favicon.png'})
     },
-    token: function(address, tokenPreview) {
-        return '<a href="/token/?address='+address+'" class="hover:text-pink-400">'+Wrap.tokenPreview(tokenPreview, address)+'</a>'
+    token: function(address) {
+        return '<a href="/token/?address='+address+'" class="hover:text-pink-400">'+address+'</a>'
     },
     amount: function(amount, token, tokenPreview) {
-        return '<a href="/token/?address='+token+'" class="hover:text-pink-400">'+(amount ? amount : 0)+'<span>'+Wrap.tokenPreview(tokenPreview, token)+'</span></a>'
+        return '<a href="/token/?address='+token+'" class="hover:text-pink-400">'+formatNumber(amount ? amount : 0, 2)+'<span>'+Wrap.tokenPreview(tokenPreview, token)+'</span></a>'
     },
     xeta: function(amount) {
-        return '<a href="/token/?address='+Xeta.config.xetaAddress+'" class="hover:text-pink-400">'+(amount ? amount : 0)+'<span>'+Wrap.xetaPreview()+'</span></a>'
+        return '<a href="/token/?address='+Xeta.config.xetaAddress+'" class="hover:text-pink-400">'+formatNumber(amount ? amount : 0, 2)+'<span>'+Wrap.xetaPreview()+'</span></a>'
     },
     pool: function(address) {
         return '<a href="/pool/?address='+address+'" class="hover:text-pink-400">'+address+'</a>'

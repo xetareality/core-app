@@ -13,7 +13,7 @@ var Actions = {
             {name: 'description', type: 'string', required: false},
             {name: 'links', type: 'strings', required: false},
             {name: 'meta', type: 'object', required: false},
-            {name: 'icon', type: 'string', required: false},
+            {name: 'preview', type: 'string', required: false},
             {name: 'category', type: 'string', required: false},
         ],
     },
@@ -24,7 +24,8 @@ var Actions = {
         title: 'Update Allowance',
         description: `
         Create an allowance for an address.
-        This will allow this address to spend your funds.`,
+        This will allow this address to spend your funds.
+        If there is a previous allowance for the same token and spender, it will overwrite it.`,
         inputs: [
             {name: 'spender', type: 'hash', required: true},
             {name: 'token', type: 'hash', required: true},

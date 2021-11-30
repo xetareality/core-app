@@ -1,22 +1,13 @@
 <script>
 function recentExplorer() {
     return {
-        transactions: [],
+        transfers: [],
         depleted: {},
         init() {
-            this.loadTransactions()
-        },
-        loadTransactions() {
-            if (this.depleted.transactions) return
             var self = this
-            var last = this.transactions.length ? '&signature='+this.transactions.slice(-1)[0].signature+'&created='+this.transactions.slice(-1)[0].created : ''
-            
-            // ajax(INTERFACE+'/transactions?period='+currentPeriod()+'&sort=DESC'+last, null, function(data) {
-            // ajax(INTERFACE+'/transactions?token='+Constants.xetaAddress+'&sort=DESC'+last, null, function(data) {
-            //     data = JSON.parse(data)
-            //     if (!data.length) self.depleted.transactions = true
-            //     self.transactions = self.transactions.concat(data)
-            // })
+            Xeta.transfer.scanTokenCreated({token: Xeta.config.xetaAddress}, {preview: true}).then(function(data) {
+                self.transfers = data
+            }).catch(function(e) {})
         },
     }
 }
@@ -24,30 +15,28 @@ function recentExplorer() {
 
 <div x-data="recentExplorer">
     <div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12 section">
-        <p class="text-lg py-2 px-6 text-gray-100">Recent Transactions</p>
-
-        
+        <p class="text-lg py-2 px-6 text-gray-100">Recent Transfers</p>
         <table class="w-full table-fixed font-light text-sm explorer">
     <thead>
         <tr class="text-gray-400">
-            <th class="truncate py-2 pr-4 text-left uppercase w-5/12">Hash</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-5/12">Sender</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Hash</th>
             <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Created</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">From</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">To</th>
         </tr>
     </thead>
     <tbody>
-        <template x-for="transaction in transactions">
-            <tr class="hover:bg-gray-900 text-white">
-                <td class="truncate pr-4 py-2" x-html="Wrap.transaction(transaction.hash)"></td>
-                <td class="truncate pr-4 py-2" x-html="Wrap.address(transaction.sender)"></td>
-                <td class="truncate pr-4 py-2" x-text="formatTime(transaction.created)"></td>
+        <template x-for="transfer in transfers">
+            <tr class="text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.transfer(transfer.hash)"></td>
+                <td class="truncate pr-4 py-2" x-text="formatTime(transfer.created)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(transfer.amount, transfer.token, transfer.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.from)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.to)"></td>
             </tr>
         </template>
     </tbody>
 </table>
-
-        <div x-show="!depleted.transactions" class="pt-6 flex justify-center text-sm">
-            <span @click="loadTransactions()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
-        </div>
     </div>
 </div>
