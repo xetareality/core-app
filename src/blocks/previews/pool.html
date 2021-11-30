@@ -10,6 +10,11 @@ function poolPreview() {
             //         Alpine.store('pool').timer = timer(Alpine.store('pool').expires)
             //     }, 1000)
             // })
+            document.addEventListener('resourceLoaded', function (e) {
+                if (Alpine.store('pool').expires) setInterval(function() {
+                    Alpine.store('pool').timer = timer(Alpine.store('pool').expires)
+                }, 1000)
+            })
         }
     }
 }

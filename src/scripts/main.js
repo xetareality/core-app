@@ -52,7 +52,6 @@ document.addEventListener('alpine:init', () => {
             if (!data) return
             Alpine.store(resource, data)
             if (resource == 'address') Alpine.store('token', data.token)
-            if (resource == 'pool') Alpine.store(data.program, new Xeta[data.program](data))
             setPageMeta(resource, data)
 
             var event = document.createEvent('Event')
@@ -105,4 +104,8 @@ function refreshBalances() {
     Xeta.balance.scanAddressAmount({address: Alpine.sstore('publicKey')}).then(function(data) {
         Alpine.sstore('balances', data)
     }).catch(function(e) {alert(e)})
+}
+
+var Constants = {
+    pixel: 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=',
 }

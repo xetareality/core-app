@@ -171,17 +171,22 @@ function poolPreview() {
             //         Alpine.store('pool').timer = timer(Alpine.store('pool').expires)
             //     }, 1000)
             // })
+            document.addEventListener('resourceLoaded', function (e) {
+                if (Alpine.store('pool').expires) setInterval(function() {
+                    Alpine.store('pool').timer = timer(Alpine.store('pool').expires)
+                }, 1000)
+            })
         }
     }
 }
 </script>
 
 <div x-data="poolPreview">
-<div x-cloak x-show="$store.pool.program == 'auction'" x-data="auctionPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+<div x-cloak x-show="$store.pool.program == 'auction'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Auction Pool)' : 'Auction Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Bid</span>
+            <span @click="action('auction.transfer')" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Bid</span>
             <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
@@ -189,64 +194,53 @@ function poolPreview() {
             </span>
             <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                    <li @click="resolve(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Resolve</li>
-                    <li @click="cancel(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Cancel</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="deposit(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="close(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
+                    <li @click="action('auction.resolve'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Resolve</li>
+                    <li @click="action('auction.cancel'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Cancel</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('auction.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('auction.close'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
                 </ul>
             </div>
         </div>
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
-            <p x-cloak x-show="$store.pool.name && $store.pool.tokenPreview && $store.pool.tokenPreview.name" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''" class="text-xl mb-4 text-gray-400 font-normal text-white"></p>
-            
-            <a href="/token/?address=1">
+
+            <!-- <a :href="'/token/?address='+$store.pool.token">
                 <div class="text-center mb-8 rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative" style="background-image: url(/media/pattern01.jpeg)">
                     <div class="w-full md:w-1/2 md:py-8 z-50">
                         <img class="rounded-2xl w-full object-center object-cover shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
                     </div>
                     <div class="bg-black opacity-50 w-full h-full absolute rounded-2xl z-10"></div>
                 </div>
-            </a>
-            <!-- <a href="/token/?address=1">
-                <div class="text-center md:border-2 mb-8 rounded-2xl md:border-gray-800 md:py-4 md:px-4 md:bg-gray-900 bg-black flex justify-center">
-                    <div class="w-full md:w-1/2 md:py-8 rounded-2xl">
-                        <img class="w-full object-center object-cover" src="https://i.redd.it/tpxvny1fbdv61.png">
-                    </div>
-                </div>
             </a> -->
-            <!-- <a href="/token/?address=1">
-                <div class="text-center mb-8 rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative" style="background-image: url(https://i.redd.it/tpxvny1fbdv61.png)">
-                    <div class="w-full md:w-1/2 md:py-8 z-50">
-                        <img class="rounded-2xl w-full object-center object-cover" src="https://i.redd.it/tpxvny1fbdv61.png">
-                    </div>
-                    <div class="bg-black opacity-50 w-full h-full absolute rounded-2xl z-10"></div>
+
+            <div x-cloak x-show="$store.pool.tokenPreview && $store.pool.tokenPreview.preview" class="text-center rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative mb-6" style="background-image: url(/media/pattern01.jpeg)">
+                <div class="w-full md:w-1/2 md:py-8 z-50">
+                    <img class="rounded-2xl w-full object-center object-cover shadow" :src="$store.pool.tokenPreview ? $store.pool.tokenPreview.preview : Constants.pixel" onerror="this.remove()">
                 </div>
-            </a> -->
-            <!-- <a href="/token/?address=1">
-                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
-                    <p class="text-3xl text-white py-4 tracking-wider">
-                        <span x-text="formatNumber($store.pool.tokenBalance)"></span>
-                        <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
-                    </p>
-                </div>
-            </a> -->
+                <div class="bg-black opacity-50 w-full h-full absolute rounded-2xl z-10"></div>
+            </div>
+
+            <div class="border-b border-gray-800 pb-2 mb-2">
+                <p x-cloak x-show="$store.pool.tokenPreview && $store.pool.tokenPreview.name" class="text-xl my-2 text-gray-200 font-normal text-white" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''"></p>
+                <p x-cloak x-show="$store.pool.tokenPreview && $store.pool.tokenPreview.description" class="font-ligh pb-2 flex text-gray-200" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.description : ''"></p>
+            </div>
+
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Target Bid</span>
-                <span x-text="$store.pool.xetaTarget ? formatNumber($store.pool.xetaTarget)+' XETA' : 'None'"></span>
+                <span x-html="Wrap.xeta($store.pool.xetaTarget)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Instant-Buy Bid</span>
-                <span x-text="$store.pool.xetaLimit ? formatNumber($store.pool.xetaLimit)+' XETA' : 'None'"></span>
+                <span x-html="Wrap.xeta($store.pool.xetaLimit)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Highest Bid</span>
-                <span x-text="$store.pool.xetaBalance ? formatNumber($store.pool.xetaBalance)+' XETA' : '0'"></span>
+                <span x-html="Wrap.xeta($store.pool.xetaBalance)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Highest Bidder</span>
-                <a x-cloak x-show="$store.pool.leader" x-text="$store.pool.leader" :href="'/address/?address='+$store.pool.leader" class="underline truncate hover:text-pink-400"></a>
+                <span x-cloak x-show="$store.pool.leader" x-html="Wrap.address($store.pool.leader)"></span>
                 <span x-cloak x-show="!$store.pool.leader">None</span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
@@ -256,11 +250,11 @@ function poolPreview() {
         </div>
     </div>
 </div>
-<div x-cloak x-show="$store.pool.program == 'launch'" x-data="launchPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+<div x-cloak x-show="$store.pool.program == 'launch'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Launch Pool)' : 'Launch Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Contribute</span>
+            <span @click="action('launch.transfer')" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Participate</span>
             <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
@@ -268,12 +262,12 @@ function poolPreview() {
             </span>
             <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                    <li @click="swap(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Swap</li>
-                    <li @click="resolve(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Resolve</li>
-                    <li @click="claim(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="deposit(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="withdraw(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="close(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
+                    <li @click="action('launch.swap'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Swap</li>
+                    <li @click="action('launch.resolve'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Resolve</li>
+                    <li @click="action('launch.claim'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('launch.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('launch.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('launch.close'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
                 </ul>
             </div>
         </div>
@@ -341,7 +335,7 @@ function poolPreview() {
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Staking Pool)' : 'Staking Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Stake</span>
+            <span @click="action('lending.transfer')" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Borrow</span>
             <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
@@ -349,9 +343,10 @@ function poolPreview() {
             </span>
             <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                    <li @click="claim(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="deposit(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="withdraw(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                    <li @click="action('lending.settle'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Settle</li>
+                    <li @click="action('lending.liquidate'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Liquidate</li>
+                    <li @click="action('lending.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li @click="action('lending.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
                 </ul>
             </div>
         </div>
@@ -407,11 +402,11 @@ function poolPreview() {
         </div>
     </div>
 </div>
-<div x-cloak x-show="$store.pool.program == 'lock'" x-data="lockPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+<div x-cloak x-show="$store.pool.program == 'lock'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Lock Pool)' : 'Lock Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Lock</span>
+            <span @click="action('lock.transfer')" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Lock</span>
             <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
@@ -419,7 +414,7 @@ function poolPreview() {
             </span>
             <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                    <li @click="claim(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
+                    <li @click="action('lock.claim'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
                 </ul>
             </div>
         </div>
@@ -461,11 +456,11 @@ function poolPreview() {
         </div>
     </div>
 </div>
-<div x-cloak x-show="$store.pool.program == 'loot'" x-data="lootPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+<div x-cloak x-show="$store.pool.program == 'loot'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Loot Pool)' : 'Loot Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Participate</span>
+            <span @click="action('loot.transfer')" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Participate</span>
             <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
@@ -473,9 +468,9 @@ function poolPreview() {
             </span>
             <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="deposit(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="withdraw(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="clear(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Clear</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('loot.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('loot.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('loot.clear'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Clear</li>
                 </ul>
             </div>
         </div>
@@ -643,11 +638,11 @@ function poolPreview() {
         </div>
     </div>
 </div>
-<div x-cloak x-show="$store.pool.program == 'lottery'" x-data="lotteryPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+<div x-cloak x-show="$store.pool.program == 'lottery'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Lottery Pool)' : 'Lottery Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Participate</span>
+            <span @click="action('lottery.transfer')" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Participate</span>
             <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
@@ -655,11 +650,12 @@ function poolPreview() {
             </span>
             <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                    <li @click="claim(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="deposit(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="withdraw(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="close(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="clear(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Clear</li>
+                    <li @click="action('lottery.claim'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
+                    <li @click="action('lottery.resolve'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Resolve</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('lottery.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('lottery.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('lottery.close'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('lottery.clear'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Clear</li>
                 </ul>
             </div>
         </div>
@@ -690,11 +686,11 @@ function poolPreview() {
         </div>
     </div>
 </div>
-<div x-cloak x-show="$store.pool.program == 'royalty'" x-data="royaltyPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+<div x-cloak x-show="$store.pool.program == 'royalty'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Royalty Pool)' : 'Royalty Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Claim Royalties</span>
+            <span @click="action('royalty.claim')" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Claim Royalties</span>
             <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
@@ -702,10 +698,9 @@ function poolPreview() {
             </span>
             <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                    <li @click="claim(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="deposit(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="withdraw(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == Alpine.store('pool').creator" @click="close(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('royalty.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('royalty.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('royalty.close'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
                 </ul>
             </div>
         </div>
@@ -769,8 +764,8 @@ function poolPreview() {
             <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                     <li @click="action('staking.claim'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == $store.pool.creator" @click="action('staking.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li x-cloak x-show="Xeta.config.publicKey == $store.pool.creator" @click="action('staking.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('staking.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('staking.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
                 </ul>
             </div>
         </div>
@@ -792,7 +787,7 @@ function poolPreview() {
                     <span x-text="$store.pool.minAmount ? formatNumber($store.pool.minAmount, 8) : 0"></span>
                     <span>to</span>
                     <span x-text="$store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited'"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? ' '+$store.pool.tokenPreview.symbol : ''"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
@@ -813,10 +808,7 @@ function poolPreview() {
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Total Value Locked</span>
-                <span>
-                    <span x-text="formatNumber((parseFloat($store.pool.tokenBalance) || 0), 8)"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
-                </span>
+                <span x-html="Wrap.amount($store.pool.tokenBalance, $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
             
             <p class="text-xl font-light mb-2 flex justify-between">
@@ -827,11 +819,11 @@ function poolPreview() {
     </div>
 </div>
 <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-<div x-cloak x-show="$store.pool.program == 'swap'" x-data="votePool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+<div x-cloak x-show="$store.pool.program == 'swap'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker+'/XETA'+' Swap Pool' : 'Swap Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Swap</span>
+            <span @click="action('swap.transfer')" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Swap</span>
             <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
@@ -839,9 +831,8 @@ function poolPreview() {
             </span>
             <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                    <li @click="deposit(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li @click="supply(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Supply</li>
-                    <li @click="withdraw(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                    <li @click="action('swap.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li @click="action('swap.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
                 </ul>
             </div>
         </div>
@@ -1105,7 +1096,7 @@ var chart = LightweightCharts.createChart(document.getElementById('chart'), {
         { time: '2019-05-24', open: 192.54, high: 193.86, low: 190.41, close: 193.59 },
     ]);
 </script>
-<div x-cloak x-show="$store.pool.program == 'vote'" x-data="votePool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+<div x-cloak x-show="$store.pool.program == 'vote'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Vote Pool)' : 'Vote Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative justify-end">
@@ -1116,8 +1107,9 @@ var chart = LightweightCharts.createChart(document.getElementById('chart'), {
             </span>
             <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                    <li @click="claim(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
-                    <li @click="resolve(), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Resolve</li>
+                    <li @click="action('vote.claim'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
+                    <li @click="action('vote.resolve'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Resolve</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('vote.oracle'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Oracle</li>
                 </ul>
             </div>
         </div>
@@ -1946,34 +1938,35 @@ function inputModal() {
 
             var parsed = {}
             Object.entries(this.values).forEach(function(e) {
-                try {
-                    if (e[1] == null) return
-                    var v = typeof e[1] == 'string' ? e[1].trim() : e[1]
+                var v = typeof e[1] == 'string' ? e[1].trim() : e[1]
+                if (v == null || v == '') return
 
-                    if (datatypes[e[0]] == 'string') v = String(v)
-                    else if (datatypes[e[0]] == 'strings') v = v.split(String.fromCharCode(10))
-                    else if (datatypes[e[0]] == 'number') v = parseFloat(v)
-                    else if (datatypes[e[0]] == 'numbers') v = v.split(String.fromCharCode(10)).map(function(i) {return parseFloat(i)})
-                    else if (datatypes[e[0]] == 'hash') v = String(v)
-                    else if (datatypes[e[0]] == 'hashes') v = v.split(String.fromCharCode(10))
-                    else if (datatypes[e[0]] == 'text') v = String(v)
-                    else if (datatypes[e[0]] == 'integer') v = parseInt(v)
-                    else if (datatypes[e[0]] == 'timestamp') v = parseInt(v)
-                    else if (datatypes[e[0]] == 'amount') v = String(v)
-                    else if (datatypes[e[0]] == 'boolean') v = !!v
-                    else if (datatypes[e[0]] == 'object') v = JSON.parse(v)
-                    else throw Error('invalid:datatype')
+                if (datatypes[e[0]] == 'string') v = String(v)
+                else if (datatypes[e[0]] == 'strings') v = v.split(String.fromCharCode(10))
+                else if (datatypes[e[0]] == 'number') v = parseFloat(v)
+                else if (datatypes[e[0]] == 'numbers') v = v.split(String.fromCharCode(10)).map(function(i) {return parseFloat(i)})
+                else if (datatypes[e[0]] == 'hash') v = String(v)
+                else if (datatypes[e[0]] == 'hashes') v = v.split(String.fromCharCode(10))
+                else if (datatypes[e[0]] == 'text') v = String(v)
+                else if (datatypes[e[0]] == 'integer') v = parseInt(v)
+                else if (datatypes[e[0]] == 'timestamp') v = parseInt(v)
+                else if (datatypes[e[0]] == 'amount') v = String(v)
+                else if (datatypes[e[0]] == 'boolean') v = !!v
+                else if (datatypes[e[0]] == 'object') v = JSON.parse(v)
+                else throw Error('invalid:datatype')
 
-                    parsed[e[0]] = v
-                } catch (e) {
-                    alert('parsing:'+e.message)
-                }
+                parsed[e[0]] = v
             })
 
             return parsed
         },
-        submit() {
-            if (this.transacting || !Alpine.sstore('privateKey')) return
+        submit() {  
+            if (this.transacting) return
+            if (!Xeta.config.privateKey) {
+                alert('wallet:disconnected')
+                return
+            }
+
             var self = this
             this.transacting = true
             Xeta.instruction.wrap(Object.assign({}, {function: this.function}, this.data())).then(function(tx) {
