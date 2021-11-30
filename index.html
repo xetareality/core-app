@@ -655,34 +655,35 @@ function inputModal() {
 
             var parsed = {}
             Object.entries(this.values).forEach(function(e) {
-                try {
-                    if (e[1] == null) return
-                    var v = typeof e[1] == 'string' ? e[1].trim() : e[1]
+                var v = typeof e[1] == 'string' ? e[1].trim() : e[1]
+                if (v == null || v == '') return
 
-                    if (datatypes[e[0]] == 'string') v = String(v)
-                    else if (datatypes[e[0]] == 'strings') v = v.split(String.fromCharCode(10))
-                    else if (datatypes[e[0]] == 'number') v = parseFloat(v)
-                    else if (datatypes[e[0]] == 'numbers') v = v.split(String.fromCharCode(10)).map(function(i) {return parseFloat(i)})
-                    else if (datatypes[e[0]] == 'hash') v = String(v)
-                    else if (datatypes[e[0]] == 'hashes') v = v.split(String.fromCharCode(10))
-                    else if (datatypes[e[0]] == 'text') v = String(v)
-                    else if (datatypes[e[0]] == 'integer') v = parseInt(v)
-                    else if (datatypes[e[0]] == 'timestamp') v = parseInt(v)
-                    else if (datatypes[e[0]] == 'amount') v = String(v)
-                    else if (datatypes[e[0]] == 'boolean') v = !!v
-                    else if (datatypes[e[0]] == 'object') v = JSON.parse(v)
-                    else throw Error('invalid:datatype')
+                if (datatypes[e[0]] == 'string') v = String(v)
+                else if (datatypes[e[0]] == 'strings') v = v.split(String.fromCharCode(10))
+                else if (datatypes[e[0]] == 'number') v = parseFloat(v)
+                else if (datatypes[e[0]] == 'numbers') v = v.split(String.fromCharCode(10)).map(function(i) {return parseFloat(i)})
+                else if (datatypes[e[0]] == 'hash') v = String(v)
+                else if (datatypes[e[0]] == 'hashes') v = v.split(String.fromCharCode(10))
+                else if (datatypes[e[0]] == 'text') v = String(v)
+                else if (datatypes[e[0]] == 'integer') v = parseInt(v)
+                else if (datatypes[e[0]] == 'timestamp') v = parseInt(v)
+                else if (datatypes[e[0]] == 'amount') v = String(v)
+                else if (datatypes[e[0]] == 'boolean') v = !!v
+                else if (datatypes[e[0]] == 'object') v = JSON.parse(v)
+                else throw Error('invalid:datatype')
 
-                    parsed[e[0]] = v
-                } catch (e) {
-                    alert('parsing:'+e.message)
-                }
+                parsed[e[0]] = v
             })
 
             return parsed
         },
-        submit() {
-            if (this.transacting || !Alpine.sstore('privateKey')) return
+        submit() {  
+            if (this.transacting) return
+            if (!Xeta.config.privateKey) {
+                alert('wallet:disconnected')
+                return
+            }
+
             var self = this
             this.transacting = true
             Xeta.instruction.wrap(Object.assign({}, {function: this.function}, this.data())).then(function(tx) {

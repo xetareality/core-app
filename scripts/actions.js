@@ -9,7 +9,7 @@ var Actions = {
         These will be shown on top of your address page.
         Leave values empty, if you don't want them to be updated.`,
         inputs: [
-            {name: 'name', type: 'string', required: true},
+            {name: 'name', type: 'string', required: false},
             {name: 'description', type: 'string', required: false},
             {name: 'links', type: 'strings', required: false},
             {name: 'meta', type: 'object', required: false},
