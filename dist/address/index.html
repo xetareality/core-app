@@ -125,7 +125,7 @@ function initSearch() {
 </script>
 
 <div class="flex flex-wrap items-center mb-4 lg:mb-8">
-    <h1 class="text-2xl w-full md:w-1/3 pr-4 py-4 md:py-1 text-gray-100 tracking-wider"> Details</h1>
+    <h1 class="text-2xl w-full md:w-1/3 pr-4 py-4 md:py-1 text-gray-100 tracking-wider font-light"> Xeta Explorer</h1>
     <div class="w-full md:w-2/3">
         <div class="" x-data="initSearch()">
             <div class="w-full flex w-full justify-end relative">
@@ -203,23 +203,22 @@ function tokenPreview() {
 function loadDetails() {
     return {
         details: {},
-        resource: window.location.pathname.slice(1, -1),
-        expanded: !['pool'].includes(window.location.pathname.slice(1, -1)),
+        expanded: !['pool'].includes(Alpine.store('resource')),
         init() {
             var self = this
             document.addEventListener('resourceLoaded', function (e) {
-                var data = Alpine.store(self.resource)
+                var data = Alpine.store(Alpine.store('resource'))
                 
-                if (self.resource == 'address') {
-                    if (data.pool) window.location.href = '/pools/?address='+data.pool.address
+                if (Alpine.store('resource') == 'address') {
+                    if (data.pool) window.location.href = '/pool/?address='+data.pool.address
                     if (data.token) self.expanded = false
                     data = Object.assign({}, data.token, data.balance)
                 }
 
                 for (var k in data) {
-                    if (['amount', 'maxAmount', 'minAmount', 'tokenBalance'].includes(k)) {
+                    if (['amount', 'maxAmount', 'minAmount', 'tokenBalance', 'tokenTurnover'].includes(k)) {
                         self.details[k] = Wrap.amount(data[k], data.token, data.tokenPreview)
-                    } else if (['fee', 'xetaBalance'].includes(k)) {
+                    } else if (['fee', 'xetaBalance', 'xetaTurnover'].includes(k)) {
                         self.details[k] = Wrap.xeta(data[k])
                     } else if (['created', 'expires', 'unlocks'].includes(k)) {
                         if (Date.now()-data[k] > 30*24*60*60*1000) self.details[k] = new Date(data[k]).toLocaleString()
@@ -231,16 +230,16 @@ function loadDetails() {
                     } else if (['pool', 'owner'].includes(k)) {
                         self.details[k] = Wrap.pool(data[k])
                     } else if (['token'].includes(k)) {
-                        self.details[k] = Wrap.token(data[k], data.tokenPreview)
+                        self.details[k] = Wrap.token(data[k])
                     } else if (['address'].includes(k)) {
-                        if (self.resource == 'token') self.details[k] = Wrap.token(data[k])
-                        else if (self.resource == 'pool') self.details[k] = Wrap.pool(data[k])
-                        else if (self.resource == 'address') self.details[k] = String(data[k])
+                        if (Alpine.store('resource') == 'token') self.details[k] = Wrap.token(data[k])
+                        else if (Alpine.store('resource') == 'pool') self.details[k] = Wrap.pool(data[k])
+                        else if (Alpine.store('resource') == 'address') self.details[k] = String(data[k])
                     } else if (['hash'].includes(k)) {
-                        if (self.resource == 'transsaction') self.details[k] = Wrap.transaction(data[k])
-                        else if (self.resource == 'transfer') self.details[k] = Wrap.transfer(data[k])
-                        else if (self.resource == 'claim') self.details[k] = Wrap.claim(data[k])
-                        else if (self.resource == 'allowance') self.details[k] = Wrap.allowance(data[k])
+                        if (Alpine.store('resource') == 'transsaction') self.details[k] = Wrap.transaction(data[k])
+                        else if (Alpine.store('resource') == 'transfer') self.details[k] = Wrap.transfer(data[k])
+                        else if (Alpine.store('resource') == 'claim') self.details[k] = Wrap.claim(data[k])
+                        else if (Alpine.store('resource') == 'allowance') self.details[k] = Wrap.allowance(data[k])
                     } else if (['from', 'to', 'leader', 'creator', 'sender'].includes(k)) {
                         self.details[k] = Wrap.address(data[k])
                     } else if (['links'].includes(k)) {
@@ -270,14 +269,14 @@ function loadDetails() {
             <div class="flex justify-start items-center">
                 <p class="text-lg py-2 text-gray-100">Details</p>
 
-                <div x-cloak x-show="['token', 'allowance', 'address', 'claim'].includes(resource)" x-data="{active: false}" class="relative text-white text-sm ml-2">
+                <div x-cloak x-show="['token', 'allowance', 'address', 'claim'].includes($store.resource)" x-data="{active: false}" class="relative text-white text-sm ml-2">
                     <span @click.stop="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize text-xs">Action</span>
                     <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
                         <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                            <li @click.stop="action(resource+'.update'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Update</li>
-                            <li x-cloak x-show="resource == 'claim'" @click.stop="action('claim.resolve'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Resolve</li>
-                            <li x-cloak x-show="resource == 'token' && $store.token.reserve" @click.stop="action('token.mint'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Mint</li>
-                            <li x-cloak x-show="resource == 'token' && !$store.token.supply" @click.stop="action(resource+'.transfer'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
+                            <li @click.stop="action($store.resource+'.update'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Update</li>
+                            <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.resolve'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Resolve</li>
+                            <li x-cloak x-show="$store.resource == 'token' && $store.token.reserve" @click.stop="action('token.mint'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Mint</li>
+                            <li x-cloak x-show="$store.resource == 'token' && !$store.token.supply" @click.stop="action($store.resource+'.transfer'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
                         </ul>
                     </div>
                 </div>
@@ -393,7 +392,8 @@ function addressExplorer() {
 <div x-data="addressExplorer">
     <div class="bg-black rounded-2xl px-2 pt-2 mb-2 text-sm font-light text-gray-200 section">
         <div class="flex flex-wrap">
-            <template x-for="type in ['transfers', 'balances', 'tokens', 'transactions', 'pools', 'claims', 'allowances']">
+            <template x-for="type in (
+                $store.resource == 'address' ? ['transfers', 'balances', 'tokens', 'transactions', 'pools', 'claims', 'allowances'] : $store.resource == 'pool' ? ['transfers', 'balances', 'tokens', 'claims'] : [])">
                 <div @click="change(type)" :class="{'border-pink-700': resource == type}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer capitalize" x-text="type"></div>
             </template>
         </div>
@@ -504,8 +504,8 @@ function addressExplorer() {
             <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Category</th>
             <th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Issuer</th>
             <th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Holder</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Unlocks</th>
-            <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Created</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Unlocks</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Created</th>
         </tr>
     </thead>
     <tbody>
@@ -882,7 +882,7 @@ function actionsModal() {
                     <li @click="action('transfer.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Transfer</li>
                     <li @click="action('token.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Token</li>
                     <li @click="action('pool.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Pool</li>
-                    <li @click="action('allowance.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Allowance</li>
+                    <li @click="action('allowance.update'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Allowance</li>
                     <li @click="action('claim.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Claim</li>
                 </ul>
             </div>
@@ -906,11 +906,10 @@ function inputModal() {
             })
 
             var self = this
-            var resourceName = window.location.pathname.slice(1, -1)
-            var resource = Alpine.store(resourceName)
+            var resource = Alpine.store(Alpine.store('resource'))
 
             this.inputs.forEach(function(input) {
-                if (input.value) self.values[input.name] = resource && resourceName == input.value.split('.')[0] ? resource[input.value.split('.')[1]] : null
+                if (input.value) self.values[input.name] = Alpine.store('resource') == input.value.split('.')[0] ? resource[input.value.split('.')[1]] : null
                 else self.values[input.name] = null
             })
         },
@@ -936,16 +935,16 @@ function inputModal() {
                     if (e[1] == null) return
                     var v = typeof e[1] == 'string' ? e[1].trim() : e[1]
 
-                    if (datatypes[e[0]] == 'string') v = v
+                    if (datatypes[e[0]] == 'string') v = String(v)
                     else if (datatypes[e[0]] == 'strings') v = v.split(String.fromCharCode(10))
                     else if (datatypes[e[0]] == 'number') v = parseFloat(v)
                     else if (datatypes[e[0]] == 'numbers') v = v.split(String.fromCharCode(10)).map(function(i) {return parseFloat(i)})
-                    else if (datatypes[e[0]] == 'hash') v = v
+                    else if (datatypes[e[0]] == 'hash') v = String(v)
                     else if (datatypes[e[0]] == 'hashes') v = v.split(String.fromCharCode(10))
-                    else if (datatypes[e[0]] == 'text') v = v
+                    else if (datatypes[e[0]] == 'text') v = String(v)
                     else if (datatypes[e[0]] == 'integer') v = parseInt(v)
                     else if (datatypes[e[0]] == 'timestamp') v = parseInt(v)
-                    else if (datatypes[e[0]] == 'amount') v = v
+                    else if (datatypes[e[0]] == 'amount') v = String(v)
                     else if (datatypes[e[0]] == 'boolean') v = !!v
                     else if (datatypes[e[0]] == 'object') v = JSON.parse(v)
                     else throw Error('invalid:datatype')
@@ -959,12 +958,11 @@ function inputModal() {
             return parsed
         },
         submit() {
-            var self = this
             if (this.transacting || !Alpine.sstore('privateKey')) return
-            
+            var self = this
             this.transacting = true
-            Xeta[this.function.split('.')[0]][this.function.split('.')[1]](this.data()).then(function(tx) {
-                if (['address.update', 'token.update', 'allowance.update', 'claim.update', 'claim.resolve'].includes(self.function)) window.location.reload()
+            Xeta.instruction.wrap(Object.assign({}, {function: this.function}, this.data())).then(function(tx) {
+                if (['address.update', 'token.update', 'claim.update', 'claim.resolve'].includes(self.function)) window.location.reload()
                 else window.location.href = '/transaction/?hash='+tx.hash
             }).catch(function(e) {
                 console.log(e.message)

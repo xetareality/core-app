@@ -2,9 +2,9 @@
 function poolPreview() {
     return {
         init() {
-            // Xeta.pool.instance({address: gup('address'), extended: true}).then(function(data) {
-            //     // Alpine.store('pool', data.pool) // Raw pool
-            //     // Alpine.store(data.pool.program, data) // Instance
+            // Xeta.pool.instance({address: gup('address')}, {preview: true}).then(function(data) {
+            //     Alpine.store('pool', data.pool) // Raw pool
+            //     Alpine.store(data.pool.program, data) // Instance
 
             //     if (data.pool.expires) setInterval(function() {
             //         Alpine.store('pool').timer = timer(Alpine.store('pool').expires)
@@ -18,6 +18,7 @@ function poolPreview() {
 <div x-data="poolPreview">
 {% include "src/blocks/pools/auction.html" %}
 {% include "src/blocks/pools/launch.html" %}
+{% include "src/blocks/pools/lending.html" %}
 {% include "src/blocks/pools/lock.html" %}
 {% include "src/blocks/pools/loot.html" %}
 {% include "src/blocks/pools/lottery.html" %}

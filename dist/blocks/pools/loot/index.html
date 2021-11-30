@@ -1,76 +1,9 @@
-<script>
-function lootPool() {
-    return {
-        init() {
-        },
-        transfer() {
-            var inputs = {amount: {required: true, default: 0, type: 'number'},}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Participate in Loot Pool',
-                description: 'Participate by sending the minimum entry amount to the pool and receiving an NFT with a certain probability.',
-                pool: Alpine.store('loot'),
-                function: 'transfer',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        deposit() {
-            var inputs = {token: {required: true, type: 'hash'}}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Deposit NFT',
-                description: 'Deposit an NFT to the loot pool.',
-                pool: Alpine.store('loot'),
-                function: 'deposit',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        withdraw() {
-            var inputs = {token: {required: true, type: 'hash'}}
-
-            var values = {}
-            for (var k in inputs) values[k] = inputs[k].default != undefined ? inputs[k].default : null
-
-            var data = {
-                title: 'Withdraw NFT',
-                description: 'Withdraw a previously deposited NFT from the loot pool.',
-                pool: Alpine.store('loot'),
-                function: 'withdraw',
-            }
-
-            setData('input-modal', {inputs: inputs, values: values, data: data})
-            showModal('inputModal')
-        },
-        clear() {
-            var data = {
-                title: 'Clear Loot Pool',
-                description: 'Clear all XETA earnings from loot pool.',
-                pool: Alpine.store('loot'),
-                function: 'clear',
-            }
-
-            setData('input-modal', {inputs: {}, values: {}, data: data})
-            showModal('inputModal')
-        },
-    }
-}
-</script>
 <div x-cloak x-show="$store.pool.program == 'loot'" x-data="lootPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Loot Pool)' : 'Loot Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
-            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-gray-900 text-lg font-medium transition-all">Participate</span>
-            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-gray-800 hover:bg-gray-900 text-lg font-medium transition-all">
+            <span @click="transfer()" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Participate</span>
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>

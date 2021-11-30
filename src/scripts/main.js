@@ -38,6 +38,7 @@ document.addEventListener('alpine:init', () => {
     Alpine.magic('sstore', () => {return (name, value) => Alpine.sstore(name, value)})
     Alpine.magic('lstore', () => {return (name, value) => Alpine.lstore(name, value)})
 
+    Alpine.store('resource', window.location.pathname.slice(1, -1))
     if (Alpine.sstore('publicKey')) connectWallet(Alpine.sstore('publicKey'))
 
     // Set environment
@@ -61,7 +62,7 @@ document.addEventListener('alpine:init', () => {
     }
 })
 
-function action(name, pool) {
+function action(name) {
     var act = Actions[name]
     var inputs = act.inputs
 
