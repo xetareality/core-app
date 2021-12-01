@@ -22,16 +22,32 @@
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
-            <p class="text-xl mb-4 text-gray-400 font-normal">Participate to win from a prize-pool with:</p>
-            <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+            <p class="text-xl mb-4 text-gray-400 font-normal">Participate to win:</p>
+            
+            <div x-cloak x-show="$store.pool.mechanism == 'ft'" class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                 <p class="text-3xl text-white py-4 tracking-wider">
                     <span x-text="formatNumber($store.pool.tokenBalance)"></span>
                     <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
                 </p>
             </div>
+
+            <div class="$store.pool.mechanism = 'nft'">
+                <div x-cloak x-show="$store.pool.tokenPreview && $store.pool.tokenPreview.preview" class="text-center rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative mb-6" style="background-image: url(/media/pattern01.jpeg)">
+                    <div class="w-full md:w-1/2 md:py-8 z-50">
+                        <img class="rounded-2xl w-full object-center object-cover shadow" :src="$store.pool.tokenPreview ? $store.pool.tokenPreview.preview : Constants.pixel" onerror="this.remove()">
+                    </div>
+                    <div class="bg-black opacity-50 w-full h-full absolute rounded-2xl z-10"></div>
+                </div>
+
+                <div class="border-b border-gray-800 pb-2 mb-2">
+                    <p x-cloak x-show="$store.pool.tokenPreview && $store.pool.tokenPreview.name" class="text-xl my-2 text-gray-200 font-normal text-white" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''"></p>
+                    <p x-cloak x-show="$store.pool.tokenPreview && $store.pool.tokenPreview.description" class="font-ligh pb-2 flex text-gray-200" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.description : ''"></p>
+                </div>
+            </div>
+
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Number of Winners</span>
-                <span x-text="$store.pool.claimsLimit ? formatNumber($store.pool.claimsLimit) : 'Everyone Wins'"></span>
+                <span x-text="$store.pool.claimsLimit ? formatNumber($store.pool.claimsLimit) : $store.pool.mechanism == 'nft' ? '1' : 'Everyone Wins'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Current Participants</span>

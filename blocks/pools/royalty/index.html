@@ -8,7 +8,7 @@
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
             </span>
-            <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
+            <div x-cloak x-show="active && $store.pool.creator == Xeta.config.publicKey" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                     <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('royalty.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
                     <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('royalty.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>

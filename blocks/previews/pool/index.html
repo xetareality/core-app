@@ -255,8 +255,7 @@ function poolPreview() {
             <p x-cloak x-show="$store.pool.name && $store.pool.tokenPreview && $store.pool.tokenPreview.name" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''" class="text-xl mb-4 text-gray-400 font-normal text-white"></p>
             <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                 <p class="text-3xl text-white py-4 tracking-wider">
-                    <span x-text="$store.pool.tokenBalance ? formatNumber($store.pool.tokenBalance) : 0"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
+                    <span x-html="Wrap.amount($store.pool.tokenBalance, $store.pool.token, $store.pool.tokenPreview)"></span>
                     <span>Locked</span>
                 </p>
             </div>
@@ -266,7 +265,7 @@ function poolPreview() {
                     <span x-text="$store.pool.minAmount ? formatNumber($store.pool.minAmount, 8) : 0"></span>
                     <span>to</span>
                     <span x-text="$store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited'"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? ' '+$store.pool.tokenPreview.symbol : ''"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
@@ -294,7 +293,7 @@ function poolPreview() {
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
             </span>
-            <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
+            <div x-cloak x-show="active && $store.pool.creator == Xeta.config.publicKey" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                     <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('loot.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
                     <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('loot.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
@@ -305,163 +304,31 @@ function poolPreview() {
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
-            <p x-cloak x-show="$store.pool.name && $store.pool.tokenPreview && $store.pool.tokenPreview.name" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''" class="text-xl mb-4 text-gray-400 font-normal text-white"></p>
-            
+            <p x-cloak x-show="$store.pool.name && $store.pool.tokenPreview && $store.pool.tokenPreview.name" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''" class="text-xl mb-4 text-gray-400 font-normal text-white"></p>            
             <p class="text-xl mb-4 text-gray-400 font-normal">Participate to win a random NFT.</p>
-
-            <div class="flex flex-wrap mb-4">
-                <!-- <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
-                    <div class="mx-2">
-                        <img class="h-32 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
-                        <a class="text-sm text-white px-2 py-3 block text-center" href="">NFT Name</a>
-                    </div>
-                </div>
-
-                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
-                    <div class="mx-2">
-                        <img class="h-32 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
-                        <a class="text-sm text-white px-2 py-3 block text-center" href="">NFT Name</a>
-                    </div>
-                </div>
-
-                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
-                    <div class="mx-2">
-                        <img class="h-32 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
-                        <a class="text-sm text-white px-2 py-3 block text-center" href="">NFT Name</a>
-                    </div>
-                </div>
-
-                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
-                    <div class="mx-2">
-                        <img class="h-32 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
-                        <a class="text-sm text-white px-2 py-3 block text-center" href="">NFT Name</a>
-                    </div>
-                </div>
-
-                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
-                    <div class="mx-2">
-                        <img class="h-32 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
-                        <a class="text-sm text-white px-2 py-3 block text-center" href="">NFT Name</a>
-                    </div>
-                </div> -->
-
-                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
-                    <div class="mx-2">
-                        <a href="/">
-                            <div class="border-2 rounded-2xl border-gray-800 px-2 py-2 bg-gray-900 hover:bg-black transition-all">
-                                <img class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
-                                <p class="text-sm text-white px-2 py-1 text-center tracking-wider">NFT Name</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
-                    <div class="mx-2">
-                        <a href="/">
-                            <div class="border-2 rounded-2xl border-gray-800 px-2 py-2 bg-gray-900 hover:bg-black transition-all">
-                                <img class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
-                                <p class="text-sm text-white px-2 py-1 text-center tracking-wider">NFT Name</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
-                    <div class="mx-2">
-                        <a href="/">
-                            <div class="border-2 rounded-2xl border-gray-800 px-2 py-2 bg-gray-900 hover:bg-black transition-all">
-                                <img class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
-                                <p class="text-sm text-white px-2 py-1 text-center tracking-wider">NFT Name</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
-                    <div class="mx-2">
-                        <a href="/">
-                            <div class="border-2 rounded-2xl border-gray-800 px-2 py-2 bg-gray-900 hover:bg-black transition-all">
-                                <img class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
-                                <p class="text-sm text-white px-2 py-1 text-center tracking-wider">NFT Name</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
-                    <div class="mx-2">
-                        <a href="/">
-                            <div class="border-2 rounded-2xl border-gray-800 px-2 py-2 bg-gray-900 hover:bg-black transition-all">
-                                <img class="h-32 w-full mb-2 object-center object-cover rounded-2xl shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
-                                <p class="text-sm text-white px-2 py-1 text-center tracking-wider">NFT Name</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
-                    <div class="mx-2">
-                        <div class="border rounded-2xl border-gray-800 px-4 py-4">
-                            <img class="h-32 mb-2 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
-                            <a class="text-sm text-white px-2" href="">NFT Name</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
-                    <div class="mx-2">
-                        <div class="border rounded-2xl border-gray-800 px-4 py-4">
-                            <img class="h-32 mb-2 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
-                            <a class="text-sm text-white px-2" href="">NFT Name</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
-                    <div class="mx-2">
-                        <div class="border rounded-2xl border-gray-800 px-4 py-4">
-                            <img class="h-32 mb-2 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
-                            <a class="text-sm text-white px-2" href="">NFT Name</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
-                    <div class="mx-2">
-                        <div class="border rounded-2xl border-gray-800 px-4 py-4">
-                            <img class="h-32 mb-2 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
-                            <a class="text-sm text-white px-2" href="">NFT Name</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="w-1/2 md:w-1/5 xl:w-1/5 mb-2">
-                    <div class="mx-2">
-                        <div class="border rounded-2xl border-gray-800 px-4 py-4">
-                            <img class="h-32 mb-2 w-full object-center object-cover rounded-2xl" src="https://i.redd.it/tpxvny1fbdv61.png">
-                            <a class="text-sm text-white px-2" href="">NFT Name</a>
-                        </div>
-                    </div>
-                </div> -->
+            <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                <p class="text-3xl text-white py-4 tracking-wider">
+                    <span x-text="(parseFloat($store.pool.percentage || 1)*100).toFixed(2)+'%'"></span>
+                    <span>Win Probability</span>
+                </p>
             </div>
-
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Cost to Participate</span>
-                <span x-cloak x-show="$store.pool.minAmount != $store.pool.maxAmount">
-                    <span x-text="$store.pool.minAmount ? formatNumber($store.pool.minAmount, 8) : 0"></span>
-                    <span>to</span>
-                    <span x-text="$store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited'"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
-                </span>
+                <span class="text-gray-400 font-normal mr-4">Cost to Enter</span>
                 <span x-cloak x-show="$store.pool.minAmount == $store.pool.maxAmount">
-                    <span x-text="$store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 0"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
+                    <span x-html="Wrap.amount($store.pool.minAmount, $store.pool.token, $store.pool.tokenPreview)"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Win Probability</span>
                 <span x-text="(parseFloat($store.pool.percentage || 1)*100).toFixed(2)+'%'"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Participants So Far</span>
+                <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Winners So Far</span>
+                <span x-text="$store.pool.claimsCount ? formatNumber($store.pool.claimsCount) : 0"></span>
             </p>
         </div>
     </div>
@@ -490,16 +357,32 @@ function poolPreview() {
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
-            <p class="text-xl mb-4 text-gray-400 font-normal">Participate to win from a prize-pool with:</p>
-            <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+            <p class="text-xl mb-4 text-gray-400 font-normal">Participate to win:</p>
+            
+            <div x-cloak x-show="$store.pool.mechanism == 'ft'" class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                 <p class="text-3xl text-white py-4 tracking-wider">
                     <span x-text="formatNumber($store.pool.tokenBalance)"></span>
                     <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
                 </p>
             </div>
+
+            <div class="$store.pool.mechanism = 'nft'">
+                <div x-cloak x-show="$store.pool.tokenPreview && $store.pool.tokenPreview.preview" class="text-center rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative mb-6" style="background-image: url(/media/pattern01.jpeg)">
+                    <div class="w-full md:w-1/2 md:py-8 z-50">
+                        <img class="rounded-2xl w-full object-center object-cover shadow" :src="$store.pool.tokenPreview ? $store.pool.tokenPreview.preview : Constants.pixel" onerror="this.remove()">
+                    </div>
+                    <div class="bg-black opacity-50 w-full h-full absolute rounded-2xl z-10"></div>
+                </div>
+
+                <div class="border-b border-gray-800 pb-2 mb-2">
+                    <p x-cloak x-show="$store.pool.tokenPreview && $store.pool.tokenPreview.name" class="text-xl my-2 text-gray-200 font-normal text-white" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''"></p>
+                    <p x-cloak x-show="$store.pool.tokenPreview && $store.pool.tokenPreview.description" class="font-ligh pb-2 flex text-gray-200" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.description : ''"></p>
+                </div>
+            </div>
+
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Number of Winners</span>
-                <span x-text="$store.pool.claimsLimit ? formatNumber($store.pool.claimsLimit) : 'Everyone Wins'"></span>
+                <span x-text="$store.pool.claimsLimit ? formatNumber($store.pool.claimsLimit) : $store.pool.mechanism == 'nft' ? '1' : 'Everyone Wins'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Current Participants</span>
@@ -522,7 +405,7 @@ function poolPreview() {
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
             </span>
-            <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
+            <div x-cloak x-show="active && $store.pool.creator == Xeta.config.publicKey" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                     <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('royalty.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
                     <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('royalty.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
