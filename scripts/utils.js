@@ -64,6 +64,11 @@ var Wrap = {
     label: function(text, color) {
         return '<span class="bg-'+color+'-500 bg-opacity-75 rounded-2xl px-3 py-1 ml-2 text-xs font-normal uppercase select-none">'+text+'</span>'
     },
+    resource: function(resource) {
+        var r = {a: 'allowance', w: 'address', t: 'token', x: 'transfer', c: 'claim', p: 'pool', l: 'link'}[resource.split(':')[0]]
+        if (r) return Wrap[r](resource.split(':').slice(1).join(':'))
+        else return resource
+    }
 }
 
 
@@ -77,7 +82,7 @@ function hideModal() {
     Alpine.store('modal', '')
 }
 
-function setData(id, data, init=false) {
+function setData(id, data, reinit) {
     setTimeout(function() {
         var changed = false
         for (key of Object.keys(data)) {
@@ -87,7 +92,7 @@ function setData(id, data, init=false) {
 
         // Only re-init if settable data has changed
         // This allows to retain form inputs on accidental closures
-        if (init && changed) document.getElementById(id)._x_dataStack[0].init()
+        if (reinit || changed) document.getElementById(id)._x_dataStack[0].init()
     }, 0)
 }
 

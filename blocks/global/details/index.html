@@ -10,6 +10,8 @@ function loadDetails() {
                 
                 if (Alpine.store('resource') == 'address') {
                     if (data.pool) window.location.href = '/pool/?address='+data.pool.address
+                    else if (data.token && data.token.address != data.token.creator) window.location.href = '/token/?address='+data.token.address
+                    
                     if (data.token) self.expanded = false
                     data = Object.assign({}, data.token, data.balance)
                 }
@@ -50,7 +52,7 @@ function loadDetails() {
                                 return r[0].toUpperCase()+r.slice(1)+' '+Wrap[r](j.split(':')[1])
                             }).join('<br>')
                         }).join('<br>')
-                    } else if (['instructions'].includes(k)) {
+                    } else if (['instructions', 'meta'].includes(k)) {
                         self.details[k] = JSON.stringify(data[k])
                     } else self.details[k] = String(data[k])
 
