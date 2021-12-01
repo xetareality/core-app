@@ -18,16 +18,13 @@
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
             <p x-cloak x-show="$store.pool.name && $store.pool.tokenPreview && $store.pool.tokenPreview.name" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''" class="text-xl mb-4 text-gray-400 font-normal text-white"></p>
-            
-            <a href="/token/?address=1">
-                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
-                    <p class="text-3xl text-white py-4 tracking-wider">
-                        <span x-text="$store.pool.tokenBalance ? formatNumber($store.pool.tokenBalance) : 0"></span>
-                        <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
-                        <span>Locked</span>
-                    </p>
-                </div>
-            </a>
+            <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                <p class="text-3xl text-white py-4 tracking-wider">
+                    <span x-text="$store.pool.tokenBalance ? formatNumber($store.pool.tokenBalance) : 0"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
+                    <span>Locked</span>
+                </p>
+            </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Amount</span>
                 <span>

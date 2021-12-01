@@ -115,10 +115,10 @@ var Actions = {
             {name: 'maxTime', type: 'integer', required: false},
             {name: 'transfersLimit', type: 'integer', required: false},
             {name: 'claimsLimit', type: 'integer', required: false},
-            {name: 'tokenLimit', type: 'amount', required: false},
-            {name: 'xetaLimit', type: 'amount', required: false},
             {name: 'tokenTarget', type: 'amount', required: false},
             {name: 'xetaTarget', type: 'amount', required: false},
+            {name: 'tokenLimit', type: 'amount', required: false},
+            {name: 'xetaLimit', type: 'amount', required: false},
         ]
     },
     /**
@@ -177,27 +177,19 @@ var Actions = {
             {name: 'amount', type: 'amount', required: true, value: 'token.reserve'},
         ],
     },
-    'token.transfer': {
-        title: 'Transfer Token',
-        description: `
-        Transfer a non-fungible token to an address.`,
-        inputs: [
-            {name: 'token', type: 'hash', required: true, value: 'token.address'},
-            {name: 'to', type: 'hash', required: true},
-        ],
-    },
     /**
      * Transfer
      */
     'transfer.create': {
         title: 'Create Transfer',
         description: `
-        Create a new fungible-token transfer.`,
+        Create a new transfer.
+        Transfer an NFT by leaving the amount empty.`,
         inputs: [
             {name: 'from', type: 'hash', required: false},
             {name: 'to', type: 'hash', required: true},
-            {name: 'token', type: 'hash', required: true},
-            {name: 'amount', type: 'amount', required: true},
+            {name: 'token', type: 'hash', required: true, value: 'token.address'},
+            {name: 'amount', type: 'amount', required: false},
             {name: 'message', type: 'string', required: false},
         ]
     },

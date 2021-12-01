@@ -20,14 +20,12 @@
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
             <p class="text-xl mb-4 text-gray-400 font-normal">Stake and receive rewards with an APY as high as:</p>
-            <a href="/token/?address=1">
-                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
-                    <p class="text-3xl text-white py-4 tracking-wider">
-                        <span x-text="((parseFloat($store.pool.rate || 0)+parseFloat($store.pool.percentage || 0))*100).toFixed(2)"></span>
-                        <span>% APY</span>
-                    </p>
-                </div>
-            </a>
+            <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                <p class="text-3xl text-white py-4 tracking-wider">
+                    <span x-text="((parseFloat($store.pool.rate || 0)+parseFloat($store.pool.percentage || 0))*100).toFixed(2)"></span>
+                    <span>% APY</span>
+                </p>
+            </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Amount</span>
                 <span>

@@ -73,9 +73,10 @@ function loadDetails() {
                     <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
                         <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                             <li @click.stop="action($store.resource+'.update'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Update</li>
+                            <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.transfer'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
                             <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.resolve'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Resolve</li>
+                            <li x-cloak x-show="$store.resource == 'token'" @click.stop="action('transfer.create'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
                             <li x-cloak x-show="$store.resource == 'token' && $store.token.reserve" @click.stop="action('token.mint'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Mint</li>
-                            <li x-cloak x-show="$store.resource == 'token' && !$store.token.supply" @click.stop="action($store.resource+'.transfer'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
                         </ul>
                     </div>
                 </div>

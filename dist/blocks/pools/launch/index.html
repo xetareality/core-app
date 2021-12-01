@@ -22,43 +22,42 @@
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
-            <a href="/token/?address=1">
-                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
-                    <p class="text-3xl text-white py-4 tracking-wider">
-                        <span x-text="formatNumber($store.pool.xetaBalance ? $store.pool.xetaBalance : 0)"></span>
-                        <span x-text="' out of '+formatNumber($store.pool.xetaLimit ? $store.pool.xetaLimit : 0)+' XETA raised for'"></span>
-                        <span x-text="formatNumber($store.pool.tokenBalance)"></span>
-                        <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : 'Tokens'"></span>
-                    </p>
-                </div>
-            </a>
+            <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                <p class="text-3xl text-white py-4 tracking-wider">
+                    <span x-cloak x-show="!$store.pool.closed" x-text="formatNumber($store.pool.xetaBalance ? $store.pool.xetaBalance : 0)"></span>
+                    <span x-cloak x-show="!$store.pool.closed" x-text="' out of '+formatNumber($store.pool.xetaLimit ? $store.pool.xetaLimit : 0)+' XETA raised'"></span>
+                    <span x-cloak x-show="$store.pool.closed">Launch Concluded</span>
+                </p>
+            </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Tokens for Distribution</span>
-                <span x-text="$store.pool.tokenBalance ? formatNumber($store.pool.tokenBalance)+' XETA' : 'None'"></span>
+                <span x-html="Wrap.amount($store.pool.tokenBalance, $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Total Token Supply</span>
-                <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.supply ? formatNumber($store.pool.tokenPreview.supply)+' XETA' : 'None'"></span>
+                <span x-html="$store.pool.tokenPreview && $store.pool.tokenPreview.supply ? Wrap.amount($store.pool.tokenPreview.supply, $store.pool.token, $store.pool.tokenPreview) : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Liquidity Percentage</span>
                 <span x-text="(parseFloat($store.pool.percentage || 0)*100).toFixed(2)+'%'"></span>
             </p>
-            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Presale Rate</span>
-                <span x-text="$store.pool.rate ? formatNumber($store.pool.rate, 4)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : 'Tokens')+' per XETA' : 'None'"></span>
+            <p x-cloak x-show="$store.pool.xetaTarget" class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Softcap Rate</span>
+                <span x-cloak x-show="$store.pool.rate" x-text="formatNumber($store.pool.rate, 8)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? $store.pool.tokenPreview.symbol : 'Tokens')+' per XETA'"></span>
+                <span x-cloak x-show="!$store.pool.rate" x-text="formatNumber(Big($store.pool.tokenBalance ? $store.pool.tokenBalance : 0).div(2).div($store.pool.xetaTarget ? $store.pool.xetaTarget : 1).toString(), 4)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? $store.pool.tokenPreview.symbol : 'Tokens')+' per XETA'"></span>
             </p>
-            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Listing Rate</span>
-                <span x-text="$store.pool.rate ? formatNumber($store.pool.rate, 4)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : 'Tokens')+' per XETA' : 'None'"></span>
+            <p x-cloak x-show="$store.pool.xetaLimit" class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Hardcap Rate</span>
+                <span x-cloak x-show="$store.pool.rate" x-text="formatNumber($store.pool.rate, 8)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? $store.pool.tokenPreview.symbol : 'Tokens')+' per XETA'"></span>
+                <span x-cloak x-show="!$store.pool.rate" x-text="formatNumber(Big($store.pool.tokenBalance ? $store.pool.tokenBalance : 0).div(2).div($store.pool.xetaLimit ? $store.pool.xetaLimit : 1).toString(), 4)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? $store.pool.tokenPreview.symbol : 'Tokens')+' per XETA'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Contribution</span>
-                <span x-text="formatNumber($store.pool.minAmount ? $store.pool.minAmount : 0)+' to '+($store.pool.maxAmount ? formatNumber($store.pool.maxAmount) : 'Unlimited')+' XETA'"></span>
+                <span x-html="formatNumber($store.pool.minAmount ? $store.pool.minAmount : 0, 8)+' to '+($store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited')+' '+Wrap.xeta(null)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Funds Raised</span>
-                <span x-text="$store.pool.xetaBalance ? formatNumber($store.pool.xetaBalance)+' XETA' : 'None'"></span>
+                <span x-html="$store.pool.xetaBalance ? Wrap.xeta($store.pool.xetaBalance) : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Current Participants</span>
@@ -66,11 +65,11 @@
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">XETA Soft Cap</span>
-                <span x-text="$store.pool.xetaTarget ? formatNumber(Math.min($store.pool.xetaTarget, ($store.pool.xetaLimit ? $store.pool.xetaLimit : 1e15)))+' XETA' : 'None'"></span>
+                <span x-html="$store.pool.xetaTarget ? Wrap.xeta($store.pool.xetaTarget) : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">XETA Hard Cap</span>
-                <span x-text="$store.pool.xetaLimit ? formatNumber($store.pool.xetaLimit)+' XETA' : 'None'"></span>
+                <span x-html="$store.pool.xetaLimit ? Wrap.xeta($store.pool.xetaLimit) : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Closing</span>

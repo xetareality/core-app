@@ -274,9 +274,10 @@ function loadDetails() {
                     <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
                         <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                             <li @click.stop="action($store.resource+'.update'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Update</li>
+                            <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.transfer'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
                             <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.resolve'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Resolve</li>
+                            <li x-cloak x-show="$store.resource == 'token'" @click.stop="action('transfer.create'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
                             <li x-cloak x-show="$store.resource == 'token' && $store.token.reserve" @click.stop="action('token.mint'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Mint</li>
-                            <li x-cloak x-show="$store.resource == 'token' && !$store.token.supply" @click.stop="action($store.resource+'.transfer'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
                         </ul>
                     </div>
                 </div>
@@ -547,7 +548,7 @@ function addressExplorer() {
         <div class="mx-1.5 mb-4 token">
             <a :href="'/token/?address='+token.address" class="block rounded-2xl bg-gray-900 bg-opacity-50 shadow transform-gpu hover:-translate-y-2 transition-transform duration-300">
                 <div class="rounded-2xl rounded-b-none overflow-hidden">
-                    <img x-cloak x-show="token.preview" class="h-32 w-full mb-2 object-center object-cover" src="https://i.redd.it/tpxvny1fbdv61.png" onerror="this.remove()">
+                    <img x-cloak x-show="token.preview" class="h-32 w-full mb-2 object-center object-cover" :src="token.preview ? token.preview : Constants.pixel" onerror="this.remove()">
                 </div>
                 <div class="px-3 py-3">
                     <p class="text-sm text-white py-0.5 text-center tracking-wider" x-text="token.name"></p>
@@ -907,7 +908,8 @@ function inputModal() {
 
             var self = this
             var resource = Alpine.store(Alpine.store('resource'))
-
+            this.values = {}
+            
             this.inputs.forEach(function(input) {
                 if (input.value) self.values[input.name] = Alpine.store('resource') == input.value.split('.')[0] ? resource[input.value.split('.')[1]] : null
                 else self.values[input.name] = null
@@ -946,7 +948,7 @@ function inputModal() {
                 else if (datatypes[e[0]] == 'amount') v = String(v)
                 else if (datatypes[e[0]] == 'boolean') v = !!v
                 else if (datatypes[e[0]] == 'object') v = JSON.parse(v)
-                else throw Error('invalid:datatype')
+                else v = String(v)
 
                 parsed[e[0]] = v
             })
