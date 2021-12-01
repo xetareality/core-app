@@ -41,10 +41,10 @@ var Wrap = {
         return '<a href="/token/?address='+address+'" class="hover:text-pink-400">'+address+'</a>'
     },
     amount: function(amount, token, tokenPreview) {
-        return '<a href="/token/?address='+token+'" class="hover:text-pink-400">'+(amount != null ? '<span class="mr-1">'+formatNumber(amount, 2)+'</span>' : '')+'<span>'+(token && tokenPreview ? Wrap.tokenPreview(tokenPreview, token) : 'Tokens')+'</span></a>'
+        return '<a href="/token/?address='+token+'" class="hover:text-pink-400"><span class="mr-1">'+(amount ? formatNumber(amount, 2) : 'Ø')+'</span><span>'+(token && tokenPreview ? Wrap.tokenPreview(tokenPreview, token) : 'Tokens')+'</span></a>'
     },
     xeta: function(amount) {
-        return '<a href="/token/?address='+Xeta.config.xetaAddress+'" class="hover:text-pink-400">'+(amount != null ? '<span class="mr-1">'+formatNumber(amount, 2)+'</span>' : '')+'<span>'+Wrap.xetaPreview()+'</span></a>'
+        return '<a href="/token/?address='+Xeta.config.xetaAddress+'" class="hover:text-pink-400"><span class="mr-1">'+(amount ? formatNumber(amount, 2) : 'Ø')+'</span><span>'+Wrap.xetaPreview()+'</span></a>'
     },
     pool: function(address) {
         return '<a href="/pool/?address='+address+'" class="hover:text-pink-400">'+address+'</a>'

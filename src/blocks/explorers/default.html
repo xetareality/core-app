@@ -4,7 +4,7 @@ function addressExplorer() {
         resource: 'transfers',
         resourceFilter: 'transfers',
         transfersFilter: 'incoming',
-        claimsFilter: 'holding',
+        claimsFilter: Alpine.store('resource') == 'address' ? 'holding' : 'issued',
         allowancesFilter: 'spendable',
         transfers: [],
         transfersOutgoing: [],
@@ -49,6 +49,8 @@ function addressExplorer() {
         init() {
             var self = this
             document.addEventListener('resourceLoaded', function (e) {
+                if (Alpine.store('resource') == 'pool' && Alpine.store('pool').program == 'loot') self.resource = 'tokens'
+
                 var address = Alpine.store('address')
                 try { if (address.token.meta.default) self.resource = address.token.meta.default } catch (e) {}
                 self.change(self.resource)
