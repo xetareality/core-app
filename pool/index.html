@@ -274,43 +274,42 @@ function poolPreview() {
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
-            <a href="/token/?address=1">
-                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
-                    <p class="text-3xl text-white py-4 tracking-wider">
-                        <span x-text="formatNumber($store.pool.xetaBalance ? $store.pool.xetaBalance : 0)"></span>
-                        <span x-text="' out of '+formatNumber($store.pool.xetaLimit ? $store.pool.xetaLimit : 0)+' XETA raised for'"></span>
-                        <span x-text="formatNumber($store.pool.tokenBalance)"></span>
-                        <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : 'Tokens'"></span>
-                    </p>
-                </div>
-            </a>
+            <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                <p class="text-3xl text-white py-4 tracking-wider">
+                    <span x-cloak x-show="!$store.pool.closed" x-text="formatNumber($store.pool.xetaBalance ? $store.pool.xetaBalance : 0)"></span>
+                    <span x-cloak x-show="!$store.pool.closed" x-text="' out of '+formatNumber($store.pool.xetaLimit ? $store.pool.xetaLimit : 0)+' XETA raised'"></span>
+                    <span x-cloak x-show="$store.pool.closed">Launch Concluded</span>
+                </p>
+            </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Tokens for Distribution</span>
-                <span x-text="$store.pool.tokenBalance ? formatNumber($store.pool.tokenBalance)+' XETA' : 'None'"></span>
+                <span x-html="Wrap.amount($store.pool.tokenBalance, $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Total Token Supply</span>
-                <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.supply ? formatNumber($store.pool.tokenPreview.supply)+' XETA' : 'None'"></span>
+                <span x-html="$store.pool.tokenPreview && $store.pool.tokenPreview.supply ? Wrap.amount($store.pool.tokenPreview.supply, $store.pool.token, $store.pool.tokenPreview) : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Liquidity Percentage</span>
                 <span x-text="(parseFloat($store.pool.percentage || 0)*100).toFixed(2)+'%'"></span>
             </p>
-            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Presale Rate</span>
-                <span x-text="$store.pool.rate ? formatNumber($store.pool.rate, 4)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : 'Tokens')+' per XETA' : 'None'"></span>
+            <p x-cloak x-show="$store.pool.xetaTarget" class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Softcap Rate</span>
+                <span x-cloak x-show="$store.pool.rate" x-text="formatNumber($store.pool.rate, 8)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? $store.pool.tokenPreview.symbol : 'Tokens')+' per XETA'"></span>
+                <span x-cloak x-show="!$store.pool.rate" x-text="formatNumber(Big($store.pool.tokenBalance ? $store.pool.tokenBalance : 0).div(2).div($store.pool.xetaTarget ? $store.pool.xetaTarget : 1).toString(), 4)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? $store.pool.tokenPreview.symbol : 'Tokens')+' per XETA'"></span>
             </p>
-            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Listing Rate</span>
-                <span x-text="$store.pool.rate ? formatNumber($store.pool.rate, 4)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : 'Tokens')+' per XETA' : 'None'"></span>
+            <p x-cloak x-show="$store.pool.xetaLimit" class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Hardcap Rate</span>
+                <span x-cloak x-show="$store.pool.rate" x-text="formatNumber($store.pool.rate, 8)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? $store.pool.tokenPreview.symbol : 'Tokens')+' per XETA'"></span>
+                <span x-cloak x-show="!$store.pool.rate" x-text="formatNumber(Big($store.pool.tokenBalance ? $store.pool.tokenBalance : 0).div(2).div($store.pool.xetaLimit ? $store.pool.xetaLimit : 1).toString(), 4)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? $store.pool.tokenPreview.symbol : 'Tokens')+' per XETA'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Contribution</span>
-                <span x-text="formatNumber($store.pool.minAmount ? $store.pool.minAmount : 0)+' to '+($store.pool.maxAmount ? formatNumber($store.pool.maxAmount) : 'Unlimited')+' XETA'"></span>
+                <span x-html="formatNumber($store.pool.minAmount ? $store.pool.minAmount : 0, 8)+' to '+($store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited')+' '+Wrap.xeta(null)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Funds Raised</span>
-                <span x-text="$store.pool.xetaBalance ? formatNumber($store.pool.xetaBalance)+' XETA' : 'None'"></span>
+                <span x-html="$store.pool.xetaBalance ? Wrap.xeta($store.pool.xetaBalance) : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Current Participants</span>
@@ -318,11 +317,11 @@ function poolPreview() {
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">XETA Soft Cap</span>
-                <span x-text="$store.pool.xetaTarget ? formatNumber(Math.min($store.pool.xetaTarget, ($store.pool.xetaLimit ? $store.pool.xetaLimit : 1e15)))+' XETA' : 'None'"></span>
+                <span x-html="$store.pool.xetaTarget ? Wrap.xeta($store.pool.xetaTarget) : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">XETA Hard Cap</span>
-                <span x-text="$store.pool.xetaLimit ? formatNumber($store.pool.xetaLimit)+' XETA' : 'None'"></span>
+                <span x-html="$store.pool.xetaLimit ? Wrap.xeta($store.pool.xetaLimit) : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Closing</span>
@@ -333,7 +332,7 @@ function poolPreview() {
 </div>
 <div x-cloak x-show="$store.pool.program == 'lending'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
-        <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Staking Pool)' : 'Staking Pool'"></p>
+        <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Lending Pool)' : 'Lending Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative">
             <span @click="action('lending.transfer')" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Borrow</span>
             <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
@@ -353,48 +352,41 @@ function poolPreview() {
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
-            <p class="text-xl mb-4 text-gray-400 font-normal">Stake and receive rewards with an APY of:</p>
-            <a href="/token/?address=1">
-                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
-                    <p class="text-3xl text-white py-4 tracking-wider">
-                        <span x-text="((parseFloat($store.pool.rate || 0)+parseFloat($store.pool.percentage || 0))*100).toFixed(2)"></span>
-                        <span>% APY</span>
-                    </p>
-                </div>
-            </a>
+            <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                <p class="text-3xl text-white py-4 tracking-wider">
+                    <span x-html="Wrap.amount($store.pool.tokenBalance, $store.pool.token, $store.pool.tokenPreview)"></span>
+                    <span>Available to Borrow</span>
+                </p>
+            </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Amount</span>
+                <span class="text-gray-400 font-normal mr-4">Min/Max Borrow-Amount</span>
                 <span>
                     <span x-text="$store.pool.minAmount ? formatNumber($store.pool.minAmount, 8) : 0"></span>
                     <span>to</span>
                     <span x-text="$store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited'"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? ' '+$store.pool.tokenPreview.symbol : ''"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Time</span>
-                <span>
-                    <span x-text="$store.pool.minTime ? formatTime(parseInt($store.pool.minTime)+Date.now(), false) : '1 day'"></span>
-                    <span>to</span>
-                    <span x-text="$store.pool.maxTime ? formatTime(parseInt($store.pool.maxTime)+Date.now(), false) : 'Unlimited'"></span>
-                </span>
+                <span class="text-gray-400 font-normal mr-4">Minimum Collateralization</span>
+                <span x-text="$store.pool.percentage+'x'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">APY Rate</span>
+                <span class="text-gray-400 font-normal mr-4">Yearly Interest Rate</span>
                 <span x-text="(parseFloat($store.pool.rate || 0)*100).toFixed(2)+'%'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Bonus APY Rate</span>
-                <span x-text="(parseFloat($store.pool.percentage || 0)*100).toFixed(2)+'%'"></span>
+                <span class="text-gray-400 font-normal mr-4">Liquidation Fee</span>
+                <span x-text="(parseFloat($store.pool.rate || 0)*100).toFixed(2)+'%'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Total Value Locked</span>
-                <span>
-                    <span x-text="formatNumber((parseFloat($store.pool.tokenBalance) || 0), 8)"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
-                </span>
+                <span class="text-gray-400 font-normal mr-4">Total Turnover</span>
+                <span x-html="Wrap.amount($store.pool.tokenTurnover, $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
-            
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Pool Collateral</span>
+                <span x-html="Wrap.xeta($store.pool.xetaBalance)"></span>
+            </p>
             <p class="text-xl font-light mb-2 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Closing</span><span></span>
                 <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
@@ -422,16 +414,13 @@ function poolPreview() {
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
             <p x-cloak x-show="$store.pool.name && $store.pool.tokenPreview && $store.pool.tokenPreview.name" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''" class="text-xl mb-4 text-gray-400 font-normal text-white"></p>
-            
-            <a href="/token/?address=1">
-                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
-                    <p class="text-3xl text-white py-4 tracking-wider">
-                        <span x-text="$store.pool.tokenBalance ? formatNumber($store.pool.tokenBalance) : 0"></span>
-                        <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
-                        <span>Locked</span>
-                    </p>
-                </div>
-            </a>
+            <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                <p class="text-3xl text-white py-4 tracking-wider">
+                    <span x-text="$store.pool.tokenBalance ? formatNumber($store.pool.tokenBalance) : 0"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
+                    <span>Locked</span>
+                </p>
+            </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Amount</span>
                 <span>
@@ -663,14 +652,12 @@ function poolPreview() {
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
             <p class="text-xl mb-4 text-gray-400 font-normal">Participate to win from a prize-pool with:</p>
-            <a href="/token/?address=1">
-                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
-                    <p class="text-3xl text-white py-4 tracking-wider">
-                        <span x-text="formatNumber($store.pool.tokenBalance)"></span>
-                        <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
-                    </p>
-                </div>
-            </a>
+            <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                <p class="text-3xl text-white py-4 tracking-wider">
+                    <span x-text="formatNumber($store.pool.tokenBalance)"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
+                </p>
+            </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Number of Winners</span>
                 <span x-text="$store.pool.claimsLimit ? formatNumber($store.pool.claimsLimit) : 'Everyone Wins'"></span>
@@ -710,15 +697,13 @@ function poolPreview() {
             <p x-cloak x-show="$store.pool.name && $store.pool.tokenPreview && $store.pool.tokenPreview.name" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''" class="text-xl mb-4 text-gray-400 font-normal text-white"></p>
             
             <p class="text-xl mb-4 text-gray-400 font-normal">Hold NFTs from the following collection and receive:</p>
-            <a href="/token/?address=1">
-                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
-                    <p class="text-3xl text-white py-4 tracking-wider">
-                        <span x-text="formatNumber($store.pool.rate, 8)"></span>
-                        <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
-                        <span>Daily Royalty Rewards</span>
-                    </p>
-                </div>
-            </a>
+            <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                <p class="text-3xl text-white py-4 tracking-wider">
+                    <span x-text="formatNumber($store.pool.rate, 8)"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
+                    <span>Daily Royalty Rewards</span>
+                </p>
+            </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Daily Royalty Rate</span>
                 <span>
@@ -773,14 +758,12 @@ function poolPreview() {
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
             <p class="text-xl mb-4 text-gray-400 font-normal">Stake and receive rewards with an APY as high as:</p>
-            <a href="/token/?address=1">
-                <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
-                    <p class="text-3xl text-white py-4 tracking-wider">
-                        <span x-text="((parseFloat($store.pool.rate || 0)+parseFloat($store.pool.percentage || 0))*100).toFixed(2)"></span>
-                        <span>% APY</span>
-                    </p>
-                </div>
-            </a>
+            <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                <p class="text-3xl text-white py-4 tracking-wider">
+                    <span x-text="((parseFloat($store.pool.rate || 0)+parseFloat($store.pool.percentage || 0))*100).toFixed(2)"></span>
+                    <span>% APY</span>
+                </p>
+            </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Amount</span>
                 <span>
@@ -1281,9 +1264,10 @@ function loadDetails() {
                     <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
                         <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                             <li @click.stop="action($store.resource+'.update'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Update</li>
+                            <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.transfer'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
                             <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.resolve'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Resolve</li>
+                            <li x-cloak x-show="$store.resource == 'token'" @click.stop="action('transfer.create'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
                             <li x-cloak x-show="$store.resource == 'token' && $store.token.reserve" @click.stop="action('token.mint'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Mint</li>
-                            <li x-cloak x-show="$store.resource == 'token' && !$store.token.supply" @click.stop="action($store.resource+'.transfer'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
                         </ul>
                     </div>
                 </div>
@@ -1554,7 +1538,7 @@ function addressExplorer() {
         <div class="mx-1.5 mb-4 token">
             <a :href="'/token/?address='+token.address" class="block rounded-2xl bg-gray-900 bg-opacity-50 shadow transform-gpu hover:-translate-y-2 transition-transform duration-300">
                 <div class="rounded-2xl rounded-b-none overflow-hidden">
-                    <img x-cloak x-show="token.preview" class="h-32 w-full mb-2 object-center object-cover" src="https://i.redd.it/tpxvny1fbdv61.png" onerror="this.remove()">
+                    <img x-cloak x-show="token.preview" class="h-32 w-full mb-2 object-center object-cover" :src="token.preview ? token.preview : Constants.pixel" onerror="this.remove()">
                 </div>
                 <div class="px-3 py-3">
                     <p class="text-sm text-white py-0.5 text-center tracking-wider" x-text="token.name"></p>
@@ -1914,7 +1898,8 @@ function inputModal() {
 
             var self = this
             var resource = Alpine.store(Alpine.store('resource'))
-
+            this.values = {}
+            
             this.inputs.forEach(function(input) {
                 if (input.value) self.values[input.name] = Alpine.store('resource') == input.value.split('.')[0] ? resource[input.value.split('.')[1]] : null
                 else self.values[input.name] = null
@@ -1953,7 +1938,7 @@ function inputModal() {
                 else if (datatypes[e[0]] == 'amount') v = String(v)
                 else if (datatypes[e[0]] == 'boolean') v = !!v
                 else if (datatypes[e[0]] == 'object') v = JSON.parse(v)
-                else throw Error('invalid:datatype')
+                else v = String(v)
 
                 parsed[e[0]] = v
             })
