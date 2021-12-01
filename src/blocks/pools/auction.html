@@ -20,16 +20,6 @@
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
-
-            <!-- <a :href="'/token/?address='+$store.pool.token">
-                <div class="text-center mb-8 rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative" style="background-image: url(/media/pattern01.jpeg)">
-                    <div class="w-full md:w-1/2 md:py-8 z-50">
-                        <img class="rounded-2xl w-full object-center object-cover shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
-                    </div>
-                    <div class="bg-black opacity-50 w-full h-full absolute rounded-2xl z-10"></div>
-                </div>
-            </a> -->
-
             <div x-cloak x-show="$store.pool.tokenPreview && $store.pool.tokenPreview.preview" class="text-center rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative mb-6" style="background-image: url(/media/pattern01.jpeg)">
                 <div class="w-full md:w-1/2 md:py-8 z-50">
                     <img class="rounded-2xl w-full object-center object-cover shadow" :src="$store.pool.tokenPreview ? $store.pool.tokenPreview.preview : Constants.pixel" onerror="this.remove()">
@@ -60,7 +50,7 @@
                 <span x-cloak x-show="!$store.pool.leader">None</span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Closing</span>
+                <span class="text-gray-400 font-normal mr-4">Expires</span>
                 <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
             </p>
         </div>

@@ -1,4 +1,20 @@
-<div x-cloak x-show="$store.pool.program == 'vote'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+<script>
+function votePool() {
+    return {
+        init() {},
+        sorted(candidates, meta) {
+            if (!meta) return candidates.map(function(c) {return [c, 0]})
+
+            return candidates.map(function(c) {
+                var m = meta[Xeta.utils.base58encode(new TextEncoder().encode(c)).slice(-8)]
+                if (m) return [c, m.s]
+                else return [c, 0]
+            }).sort(function(a, b) {return b[1]-a[1]})
+        }
+    }
+}
+</script>
+<div x-cloak x-show="$store.pool.program == 'vote'" x-data="votePool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Vote Pool)' : 'Vote Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative justify-end">
@@ -15,94 +31,59 @@
                 </ul>
             </div>
         </div>
+        <p x-cloak x-show="$store.pool.description" class="font-ligh pt-1 flex text-gray-200" x-text="$store.pool.description"></p>
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
-            <p x-cloak x-show="$store.pool.name && $store.pool.tokenPreview && $store.pool.tokenPreview.name" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''" class="text-xl mb-4 text-gray-400 font-normal text-white"></p>
-            
-            <p class="text-xl mb-4 text-gray-400 font-normal">Vote for one of the following candidates:</p>
-
-            <div class="border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
-                <ul class="list-none flex flex-wrap">
-                    <li class="w-full flex justify-between items-center py-2 border-b border-gray-800">
-                        <a href="/pool/?address=JB7sFWZ1e6Rr3CXk1aYvEaPENSDc1igX1ykUkwCgina3" class="underline hover:text-pink-400">JB7sFWZ1e6Rr3CXk1aYvEaPENSDc1igX1ykUkwCgina3</a>
-                        <div class="flex items-center">
-                            <span class="text-gray-100">5,133</span>
-                            <span class="ml-4 cursor-pointer text-white py-2 px-4 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-light transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
-                                  <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"></path>
-                                </svg>
-                            </span>
-                        </div>
-                    </li>
-
-                    <li class="w-full flex justify-between items-center py-2 border-b border-gray-800">
-                        <a href="/pool/?address=JB7sFWZ1e6Rr3CXk1aYvEaPENSDc1igX1ykUkwCgina3" class="underline hover:text-pink-400">Address Label</a>
-                        <div class="flex items-center">
-                            <span class="text-gray-100">1,414</span>
-                            <span class="ml-4 cursor-pointer text-white py-2 px-4 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-light transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
-                                  <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"></path>
-                                </svg>
-                            </span>
-                        </div>
-                    </li>
-
-                    <li class="w-full flex justify-between items-center py-2 border-b border-gray-800">
-                        <a href="/pool/?address=JB7sFWZ1e6Rr3CXk1aYvEaPENSDc1igX1ykUkwCgina3" class="underline hover:text-pink-400">JB7sFWZ1e6Rr3CXk1aYvEaPENSDc1igX1ykUkwCgina3</a>
-                        <div class="flex items-center">
-                            <span class="text-gray-100">1,414</span>
-                            <span class="ml-4 cursor-pointer text-white py-2 px-4 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-light transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
-                                  <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"></path>
-                                </svg>
-                            </span>
-                        </div>
-                    </li>
-
-                    <li class="w-full flex justify-between items-center py-2 border-b border-gray-800">
-                        <a href="/pool/?address=JB7sFWZ1e6Rr3CXk1aYvEaPENSDc1igX1ykUkwCgina3" class="underline hover:text-pink-400">JB7sFWZ1e6Rr3CXk1aYvEaPENSDc1igX1ykUkwCgina3</a>
-                        <div class="flex items-center">
-                            <span class="text-gray-100">1,414</span>
-                            <span class="ml-4 cursor-pointer text-white py-2 px-4 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-light transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
-                                  <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"></path>
-                                </svg>
-                            </span>
-                        </div>
-                    </li>
-
-                </ul>
+            <div x-cloak x-show="$store.pool.candidates">
+                <p class="text-xl mb-4 text-gray-400 font-normal">Vote for one of the following candidates:</p>
+                <div class="border-2 mb-8 rounded-2xl border-gray-800 px-4 bg-gray-900">
+                    <ul class="list-none flex flex-wrap">
+                        <template x-for="candidate in ($store.pool.candidates ? sorted($store.pool.candidates, $store.pool.meta) : [])">
+                            <li class="w-full flex justify-between items-center py-2 border-b border-gray-700">
+                                <span x-html="candidate[0].slice(0, 4) == 'http' ? Wrap.link(candidate[0]) : (candidate[0].includes(' ') || candidate[0].length < 32 || candidate[0].length > 44) ? candidate[0] : Wrap.address(candidate[0])"></span>
+                                <div class="flex items-center">
+                                    <span class="text-gray-100" x-text="candidate[1]"></span>
+                                    <span @click="$store.claim.answer = candidate[0], action('vote.transfer', true)" class="ml-4 cursor-pointer text-white py-2 px-4 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-light transition-all">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
+                                          <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"></path>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
             </div>
 
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Daily Royalty Rate</span>
+                <span class="text-gray-400 font-normal mr-4">Min/Max Vote-Amount</span>
                 <span>
-                    <span x-text="$store.pool.rate ? formatNumber($store.pool.rate, 8) : 0"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
+                    <span x-text="$store.pool.minAmount ? formatNumber($store.pool.minAmount, 8) : 0"></span>
+                    <span>to</span>
+                    <span x-text="$store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited'"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? ' '+$store.pool.tokenPreview.symbol : ''"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Rewards Available</span>
-                <span>
-                    <span x-text="$store.pool.tokenBalance ? formatNumber($store.pool.tokenBalance, 8) : 0"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
-                </span>
+                <span class="text-gray-400 font-normal mr-4">Total Votes</span>
+                <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Total Claims</span>
-                <span x-text="$store.pool.claimsCount ? formatNumber($store.pool.claimsCount) : 0"></span>
+                <span class="text-gray-400 font-normal mr-4">Max. Votes</span>
+                <span x-text="$store.pool.transfersLimit ? formatNumber($store.pool.transfersLimit) : 'Unlimited'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Rewards Distributed</span>
-                <span>
-                    <span x-text="$store.pool.tokenTurnover ? formatNumber($store.pool.tokenTurnover, 8) : 0"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
-                </span>
+                <span class="text-gray-400 font-normal mr-4">Max. Vote Amount</span>
+                <span x-html="$store.pool.tokenLimit ? Wrap.amount($store.pool.tokenLimit, $store.pool.token, $store.pool.tokenPreview) : 'Unlimited'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Collection</span>
-                <a x-cloak x-show="$store.pool.creator" x-text="$store.pool.creator" :href="'/address/?address='+$store.pool.creator" class="underline truncate hover:text-pink-400"></a>
+                <span class="text-gray-400 font-normal mr-4 up">Resolution Mechanism</span>
+                <span x-text="$store.pool.mechanism ? $store.pool.mechanism : 'Unspecified'"></span>
+            </p>
+            <p class="text-xl font-light mb-2 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Expires</span><span></span>
+                <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
             </p>
         </div>
     </div>

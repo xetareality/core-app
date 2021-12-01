@@ -211,6 +211,8 @@ function loadDetails() {
                 
                 if (Alpine.store('resource') == 'address') {
                     if (data.pool) window.location.href = '/pool/?address='+data.pool.address
+                    else if (data.token && data.token.address != data.token.creator) window.location.href = '/token/?address='+data.token.address
+                    
                     if (data.token) self.expanded = false
                     data = Object.assign({}, data.token, data.balance)
                 }
@@ -251,7 +253,7 @@ function loadDetails() {
                                 return r[0].toUpperCase()+r.slice(1)+' '+Wrap[r](j.split(':')[1])
                             }).join('<br>')
                         }).join('<br>')
-                    } else if (['instructions'].includes(k)) {
+                    } else if (['instructions', 'meta'].includes(k)) {
                         self.details[k] = JSON.stringify(data[k])
                     } else self.details[k] = String(data[k])
 
@@ -731,34 +733,19 @@ function actionsModal() {
         <script>
 function inputModal() {
     return {
-        extended: false,
         transacting: false,
         inputs: [],
-        filteredInputs: [],
         title: null,
         description: null,
         function: null,
         values: {},
         init() {
-            this.filteredInputs = this.inputs.filter(function(i) {
-                return i.required
-            })
-
             var self = this
-            var resource = Alpine.store(Alpine.store('resource'))
             this.values = {}
-            
-            this.inputs.forEach(function(input) {
-                if (input.value) self.values[input.name] = Alpine.store('resource') == input.value.split('.')[0] ? resource[input.value.split('.')[1]] : null
-                else self.values[input.name] = null
-            })
-        },
-        extend() {
-            this.extended = !this.extended
-            var self = this
 
-            this.filteredInputs = this.inputs.filter(function(i) {
-                return self.extended || i.required
+            this.inputs.forEach(function(input) {
+                if (input.value) self.values[input.name] = Alpine.store(input.value.split('.')[0])[input.value.split('.')[1]]
+                else self.values[input.name] = null
             })
         },
         /**
@@ -835,7 +822,7 @@ function inputModal() {
             </div>
 
             <form x-cloak x-show="!transacting" x-data>
-                <template x-for="input in filteredInputs">
+                <template x-for="input in inputs">
                     <div class="mb-6 w-full">
                         <label class="text-gray-200 text-xs font-semibold uppercase mb-2 block" x-text="input.name+(input.required ? ' (required)' : '')"></label>
 
@@ -915,8 +902,6 @@ function inputModal() {
                     </div>
                 </template>
 
-                <label x-cloak x-show="Object.values(inputs).some(function(i) {return !i.required})" @click="extend()" class="cursor-pointer text-gray-200 text-xs font-semibold uppercase mb-2 block underline mb-4"><span x-text="extended ? 'Hide' : 'Show'"></span> Optional Fields</label>
-                
                 <div>
                     <button @click.prevent="validForm($root) ? submit() : ''" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-800 transition-all w-full">Submit</button>
                 </div>

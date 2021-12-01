@@ -204,16 +204,6 @@ function poolPreview() {
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
-
-            <!-- <a :href="'/token/?address='+$store.pool.token">
-                <div class="text-center mb-8 rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative" style="background-image: url(/media/pattern01.jpeg)">
-                    <div class="w-full md:w-1/2 md:py-8 z-50">
-                        <img class="rounded-2xl w-full object-center object-cover shadow" src="https://i.redd.it/tpxvny1fbdv61.png">
-                    </div>
-                    <div class="bg-black opacity-50 w-full h-full absolute rounded-2xl z-10"></div>
-                </div>
-            </a> -->
-
             <div x-cloak x-show="$store.pool.tokenPreview && $store.pool.tokenPreview.preview" class="text-center rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative mb-6" style="background-image: url(/media/pattern01.jpeg)">
                 <div class="w-full md:w-1/2 md:py-8 z-50">
                     <img class="rounded-2xl w-full object-center object-cover shadow" :src="$store.pool.tokenPreview ? $store.pool.tokenPreview.preview : Constants.pixel" onerror="this.remove()">
@@ -244,7 +234,7 @@ function poolPreview() {
                 <span x-cloak x-show="!$store.pool.leader">None</span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Closing</span>
+                <span class="text-gray-400 font-normal mr-4">Expires</span>
                 <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
             </p>
         </div>
@@ -324,7 +314,7 @@ function poolPreview() {
                 <span x-html="$store.pool.xetaLimit ? Wrap.xeta($store.pool.xetaLimit) : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Closing</span>
+                <span class="text-gray-400 font-normal mr-4">Expires</span>
                 <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
             </p>
         </div>
@@ -388,7 +378,7 @@ function poolPreview() {
                 <span x-html="Wrap.xeta($store.pool.xetaBalance)"></span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Closing</span><span></span>
+                <span class="text-gray-400 font-normal mr-4">Expires</span><span></span>
                 <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
             </p>
         </div>
@@ -413,7 +403,6 @@ function poolPreview() {
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
-            <p x-cloak x-show="$store.pool.name && $store.pool.tokenPreview && $store.pool.tokenPreview.name" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''" class="text-xl mb-4 text-gray-400 font-normal text-white"></p>
             <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                 <p class="text-3xl text-white py-4 tracking-wider">
                     <span x-html="Wrap.amount($store.pool.tokenBalance, $store.pool.token, $store.pool.tokenPreview)"></span>
@@ -464,8 +453,7 @@ function poolPreview() {
         </div>
     </div>
     <div class="flex flex-wrap">
-        <div class="w-full mb-4 text-white">
-            <p x-cloak x-show="$store.pool.name && $store.pool.tokenPreview && $store.pool.tokenPreview.name" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''" class="text-xl mb-4 text-gray-400 font-normal text-white"></p>            
+        <div class="w-full mb-4 text-white">          
             <p class="text-xl mb-4 text-gray-400 font-normal">Participate to win a random NFT.</p>
             <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                 <p class="text-3xl text-white py-4 tracking-wider">
@@ -550,7 +538,7 @@ function poolPreview() {
                 <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Closing</span>
+                <span class="text-gray-400 font-normal mr-4">Expires</span>
                 <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
             </p>
         </div>
@@ -577,28 +565,23 @@ function poolPreview() {
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
-            <p x-cloak x-show="$store.pool.name && $store.pool.tokenPreview && $store.pool.tokenPreview.name" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''" class="text-xl mb-4 text-gray-400 font-normal text-white"></p>
-            
-            <p class="text-xl mb-4 text-gray-400 font-normal">Hold NFTs from the following collection and receive:</p>
+            <p class="text-xl mb-4 text-gray-400 font-normal">Hold NFTs by the following creator and receive:</p>
             <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                 <p class="text-3xl text-white py-4 tracking-wider">
-                    <span x-text="formatNumber($store.pool.rate, 8)"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
+                    <span x-html="Wrap.amount($store.pool.rate, $store.pool.token, $store.pool.tokenPreview)"></span>
                     <span>Daily Royalty Rewards</span>
                 </p>
             </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Daily Royalty Rate</span>
                 <span>
-                    <span x-text="formatNumber($store.pool.rate, 8)"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
+                    <span x-html="Wrap.amount($store.pool.rate, $store.pool.token, $store.pool.tokenPreview)"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Rewards Available</span>
                 <span>
-                    <span x-text="$store.pool.tokenBalance ? formatNumber($store.pool.tokenBalance, 8) : 0"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
+                    <span x-html="Wrap.amount($store.pool.tokenBalance, $store.pool.token, $store.pool.tokenPreview)"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
@@ -607,14 +590,19 @@ function poolPreview() {
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Rewards Distributed</span>
-                <span>
-                    <span x-text="$store.pool.tokenTurnover ? formatNumber($store.pool.tokenTurnover, 8) : 0"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
-                </span>
+                <span x-html="Wrap.amount($store.pool.tokenTurnover, $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Collection</span>
-                <a x-cloak x-show="$store.pool.creator" x-text="$store.pool.creator" :href="'/address/?address='+$store.pool.creator" class="underline truncate hover:text-pink-400"></a>
+                <span class="text-gray-400 font-normal mr-4">Creator/Collection</span>
+                <span x-html="Wrap.address($store.pool.creator)"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Allowed Candidates</span>
+                <span x-text="$store.pool.candidates && $store.pool.candidates.length ? 'Limited, See in Details' : 'All NFTs by Creator'"></span>
+            </p>
+            <p class="text-xl font-light mb-2 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Expires</span><span></span>
+                <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
             </p>
         </div>
     </div>
@@ -676,9 +664,8 @@ function poolPreview() {
                 <span class="text-gray-400 font-normal mr-4">Total Value Locked</span>
                 <span x-html="Wrap.amount($store.pool.tokenBalance, $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
-            
             <p class="text-xl font-light mb-2 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Closing</span><span></span>
+                <span class="text-gray-400 font-normal mr-4">Expires</span><span></span>
                 <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
             </p>
         </div>
@@ -962,7 +949,23 @@ var chart = LightweightCharts.createChart(document.getElementById('chart'), {
         { time: '2019-05-24', open: 192.54, high: 193.86, low: 190.41, close: 193.59 },
     ]);
 </script>
-<div x-cloak x-show="$store.pool.program == 'vote'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+<script>
+function votePool() {
+    return {
+        init() {},
+        sorted(candidates, meta) {
+            if (!meta) return candidates.map(function(c) {return [c, 0]})
+
+            return candidates.map(function(c) {
+                var m = meta[Xeta.utils.base58encode(new TextEncoder().encode(c)).slice(-8)]
+                if (m) return [c, m.s]
+                else return [c, 0]
+            }).sort(function(a, b) {return b[1]-a[1]})
+        }
+    }
+}
+</script>
+<div x-cloak x-show="$store.pool.program == 'vote'" x-data="votePool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Vote Pool)' : 'Vote Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-1/4 flex relative justify-end">
@@ -979,94 +982,59 @@ var chart = LightweightCharts.createChart(document.getElementById('chart'), {
                 </ul>
             </div>
         </div>
+        <p x-cloak x-show="$store.pool.description" class="font-ligh pt-1 flex text-gray-200" x-text="$store.pool.description"></p>
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
-            <p x-cloak x-show="$store.pool.name && $store.pool.tokenPreview && $store.pool.tokenPreview.name" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''" class="text-xl mb-4 text-gray-400 font-normal text-white"></p>
-            
-            <p class="text-xl mb-4 text-gray-400 font-normal">Vote for one of the following candidates:</p>
-
-            <div class="border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
-                <ul class="list-none flex flex-wrap">
-                    <li class="w-full flex justify-between items-center py-2 border-b border-gray-800">
-                        <a href="/pool/?address=JB7sFWZ1e6Rr3CXk1aYvEaPENSDc1igX1ykUkwCgina3" class="underline hover:text-pink-400">JB7sFWZ1e6Rr3CXk1aYvEaPENSDc1igX1ykUkwCgina3</a>
-                        <div class="flex items-center">
-                            <span class="text-gray-100">5,133</span>
-                            <span class="ml-4 cursor-pointer text-white py-2 px-4 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-light transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
-                                  <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"></path>
-                                </svg>
-                            </span>
-                        </div>
-                    </li>
-
-                    <li class="w-full flex justify-between items-center py-2 border-b border-gray-800">
-                        <a href="/pool/?address=JB7sFWZ1e6Rr3CXk1aYvEaPENSDc1igX1ykUkwCgina3" class="underline hover:text-pink-400">Address Label</a>
-                        <div class="flex items-center">
-                            <span class="text-gray-100">1,414</span>
-                            <span class="ml-4 cursor-pointer text-white py-2 px-4 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-light transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
-                                  <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"></path>
-                                </svg>
-                            </span>
-                        </div>
-                    </li>
-
-                    <li class="w-full flex justify-between items-center py-2 border-b border-gray-800">
-                        <a href="/pool/?address=JB7sFWZ1e6Rr3CXk1aYvEaPENSDc1igX1ykUkwCgina3" class="underline hover:text-pink-400">JB7sFWZ1e6Rr3CXk1aYvEaPENSDc1igX1ykUkwCgina3</a>
-                        <div class="flex items-center">
-                            <span class="text-gray-100">1,414</span>
-                            <span class="ml-4 cursor-pointer text-white py-2 px-4 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-light transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
-                                  <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"></path>
-                                </svg>
-                            </span>
-                        </div>
-                    </li>
-
-                    <li class="w-full flex justify-between items-center py-2 border-b border-gray-800">
-                        <a href="/pool/?address=JB7sFWZ1e6Rr3CXk1aYvEaPENSDc1igX1ykUkwCgina3" class="underline hover:text-pink-400">JB7sFWZ1e6Rr3CXk1aYvEaPENSDc1igX1ykUkwCgina3</a>
-                        <div class="flex items-center">
-                            <span class="text-gray-100">1,414</span>
-                            <span class="ml-4 cursor-pointer text-white py-2 px-4 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-light transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
-                                  <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"></path>
-                                </svg>
-                            </span>
-                        </div>
-                    </li>
-
-                </ul>
+            <div x-cloak x-show="$store.pool.candidates">
+                <p class="text-xl mb-4 text-gray-400 font-normal">Vote for one of the following candidates:</p>
+                <div class="border-2 mb-8 rounded-2xl border-gray-800 px-4 bg-gray-900">
+                    <ul class="list-none flex flex-wrap">
+                        <template x-for="candidate in ($store.pool.candidates ? sorted($store.pool.candidates, $store.pool.meta) : [])">
+                            <li class="w-full flex justify-between items-center py-2 border-b border-gray-700">
+                                <span x-html="candidate[0].slice(0, 4) == 'http' ? Wrap.link(candidate[0]) : (candidate[0].includes(' ') || candidate[0].length < 32 || candidate[0].length > 44) ? candidate[0] : Wrap.address(candidate[0])"></span>
+                                <div class="flex items-center">
+                                    <span class="text-gray-100" x-text="candidate[1]"></span>
+                                    <span @click="$store.claim.answer = candidate[0], action('vote.transfer', true)" class="ml-4 cursor-pointer text-white py-2 px-4 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-light transition-all">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
+                                          <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"></path>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
             </div>
 
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Daily Royalty Rate</span>
+                <span class="text-gray-400 font-normal mr-4">Min/Max Vote-Amount</span>
                 <span>
-                    <span x-text="$store.pool.rate ? formatNumber($store.pool.rate, 8) : 0"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
+                    <span x-text="$store.pool.minAmount ? formatNumber($store.pool.minAmount, 8) : 0"></span>
+                    <span>to</span>
+                    <span x-text="$store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited'"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? ' '+$store.pool.tokenPreview.symbol : ''"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Rewards Available</span>
-                <span>
-                    <span x-text="$store.pool.tokenBalance ? formatNumber($store.pool.tokenBalance, 8) : 0"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
-                </span>
+                <span class="text-gray-400 font-normal mr-4">Total Votes</span>
+                <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Total Claims</span>
-                <span x-text="$store.pool.claimsCount ? formatNumber($store.pool.claimsCount) : 0"></span>
+                <span class="text-gray-400 font-normal mr-4">Max. Votes</span>
+                <span x-text="$store.pool.transfersLimit ? formatNumber($store.pool.transfersLimit) : 'Unlimited'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Rewards Distributed</span>
-                <span>
-                    <span x-text="$store.pool.tokenTurnover ? formatNumber($store.pool.tokenTurnover, 8) : 0"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? ' '+$store.pool.tokenPreview.ticker : ''"></span>
-                </span>
+                <span class="text-gray-400 font-normal mr-4">Max. Vote Amount</span>
+                <span x-html="$store.pool.tokenLimit ? Wrap.amount($store.pool.tokenLimit, $store.pool.token, $store.pool.tokenPreview) : 'Unlimited'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Collection</span>
-                <a x-cloak x-show="$store.pool.creator" x-text="$store.pool.creator" :href="'/address/?address='+$store.pool.creator" class="underline truncate hover:text-pink-400"></a>
+                <span class="text-gray-400 font-normal mr-4 up">Resolution Mechanism</span>
+                <span x-text="$store.pool.mechanism ? $store.pool.mechanism : 'Unspecified'"></span>
+            </p>
+            <p class="text-xl font-light mb-2 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Expires</span><span></span>
+                <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
             </p>
         </div>
     </div>
@@ -1084,6 +1052,8 @@ function loadDetails() {
                 
                 if (Alpine.store('resource') == 'address') {
                     if (data.pool) window.location.href = '/pool/?address='+data.pool.address
+                    else if (data.token && data.token.address != data.token.creator) window.location.href = '/token/?address='+data.token.address
+                    
                     if (data.token) self.expanded = false
                     data = Object.assign({}, data.token, data.balance)
                 }
@@ -1124,7 +1094,7 @@ function loadDetails() {
                                 return r[0].toUpperCase()+r.slice(1)+' '+Wrap[r](j.split(':')[1])
                             }).join('<br>')
                         }).join('<br>')
-                    } else if (['instructions'].includes(k)) {
+                    } else if (['instructions', 'meta'].includes(k)) {
                         self.details[k] = JSON.stringify(data[k])
                     } else self.details[k] = String(data[k])
 
@@ -1768,34 +1738,19 @@ function actionsModal() {
         <script>
 function inputModal() {
     return {
-        extended: false,
         transacting: false,
         inputs: [],
-        filteredInputs: [],
         title: null,
         description: null,
         function: null,
         values: {},
         init() {
-            this.filteredInputs = this.inputs.filter(function(i) {
-                return i.required
-            })
-
             var self = this
-            var resource = Alpine.store(Alpine.store('resource'))
             this.values = {}
-            
-            this.inputs.forEach(function(input) {
-                if (input.value) self.values[input.name] = Alpine.store('resource') == input.value.split('.')[0] ? resource[input.value.split('.')[1]] : null
-                else self.values[input.name] = null
-            })
-        },
-        extend() {
-            this.extended = !this.extended
-            var self = this
 
-            this.filteredInputs = this.inputs.filter(function(i) {
-                return self.extended || i.required
+            this.inputs.forEach(function(input) {
+                if (input.value) self.values[input.name] = Alpine.store(input.value.split('.')[0])[input.value.split('.')[1]]
+                else self.values[input.name] = null
             })
         },
         /**
@@ -1872,7 +1827,7 @@ function inputModal() {
             </div>
 
             <form x-cloak x-show="!transacting" x-data>
-                <template x-for="input in filteredInputs">
+                <template x-for="input in inputs">
                     <div class="mb-6 w-full">
                         <label class="text-gray-200 text-xs font-semibold uppercase mb-2 block" x-text="input.name+(input.required ? ' (required)' : '')"></label>
 
@@ -1952,8 +1907,6 @@ function inputModal() {
                     </div>
                 </template>
 
-                <label x-cloak x-show="Object.values(inputs).some(function(i) {return !i.required})" @click="extend()" class="cursor-pointer text-gray-200 text-xs font-semibold uppercase mb-2 block underline mb-4"><span x-text="extended ? 'Hide' : 'Show'"></span> Optional Fields</label>
-                
                 <div>
                     <button @click.prevent="validForm($root) ? submit() : ''" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-800 transition-all w-full">Submit</button>
                 </div>

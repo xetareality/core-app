@@ -101,6 +101,7 @@ var Actions = {
             {name: 'program', type: 'string', required: true},
             {name: 'token', type: 'string', required: true, value: 'token.address'},
             {name: 'name', type: 'string', required: false},
+            {name: 'description', type: 'string', required: false},
             {name: 'mechanism', type: 'string', required: false},
             {name: 'candidates', type: 'strings', required: false},
             {name: 'rate', type: 'number', required: false},
@@ -630,7 +631,7 @@ var Actions = {
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
-            {name: 'answer', type: 'string', required: false},
+            {name: 'answer', type: 'string', required: false, value: 'claim.answer'},
             {name: 'number', type: 'number', required: false},
         ],
     },

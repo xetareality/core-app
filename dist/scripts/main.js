@@ -61,7 +61,7 @@ document.addEventListener('alpine:init', () => {
     }
 })
 
-function action(name) {
+function action(name, reinit=false) {
     var act = Actions[name]
     var inputs = act.inputs
 
@@ -78,7 +78,7 @@ function action(name) {
         })
     }
 
-    setData('input-modal', {inputs: inputs, title: act.title, description: act.description, function: name}, true)
+    setData('input-modal', {inputs: inputs, title: act.title, description: act.description, function: name}, reinit)
     showModal('inputModal')
 }
 
