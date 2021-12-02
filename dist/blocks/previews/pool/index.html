@@ -548,11 +548,7 @@ function swapPool() {
         },
         load(refresh=false) {
             if (this.depleted[this.interval]) {
-                if (refresh) {
-                    if (this.series) this.chart.removeSeries(this.series)
-                    this.series = this.chart.addCandlestickSeries()
-                    this.series.setData(this.candles[this.interval])
-                }
+                if (refresh) this.plot()
                 return
             }
 
@@ -564,15 +560,14 @@ function swapPool() {
                 data = data.sort(function(a, b) {return a.time-b.time}) // Sort asc
                 self.candles[self.interval] = data.concat(self.candles[self.interval] ? self.candles[self.interval] : [])
                 if (data.length) self.adjust(self.candles[self.interval])
-
-                if (refresh || !self.series) {
-                    if (self.series) self.chart.removeSeries(self.series)
-                    self.series = self.chart.addCandlestickSeries()
-                    self.series.setData(self.candles[self.interval])
-                } else {
-                    self.series.setData(data)
-                }
+                self.plot()
             }).catch(function(e) {})
+        },
+        plot() {
+            var self = this
+            setTimeout(function() {
+                self.series.setData(self.candles[self.interval])
+            }, 0)
         },
         adjust(candles) {
             var previous = null
@@ -582,7 +577,6 @@ function swapPool() {
             })
         },
         render() {
-            // Init chart
             this.chart = LightweightCharts.createChart(document.getElementById('chart'), {
                 width: document.getElementById('inner-width').offsetWidth-48,
                 height: (document.getElementById('inner-width').offsetWidth-48)/2,
@@ -611,6 +605,8 @@ function swapPool() {
                     rightOffset: 75,
                 },
             })
+
+            this.series = this.chart.addCandlestickSeries()
         }
     }
 }
@@ -666,7 +662,7 @@ function swapPool() {
                 </div>
             </div>
 
-            <div class="border-2 mb-8 rounded-2xl border-gray-800">
+            <div class="mb-8 rounded-2xl">
                 <div id="chart"></div>
             </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
