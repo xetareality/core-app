@@ -1,5 +1,5 @@
 <script>
-function swapPool() {
+function statisticsPage() {
     return {
         pool: {},
         token: false,
@@ -36,7 +36,11 @@ function swapPool() {
         },
         load(refresh=false) {
             if (this.depleted[this.interval]) {
-                if (refresh) this.plot()
+                if (refresh) {
+                    if (this.series) this.chart.removeSeries(this.series)
+                    this.series = this.chart.addCandlestickSeries()
+                    this.series.setData(this.candles[this.interval])
+                }
                 return
             }
 
@@ -48,14 +52,15 @@ function swapPool() {
                 data = data.sort(function(a, b) {return a.time-b.time}) // Sort asc
                 self.candles[self.interval] = data.concat(self.candles[self.interval] ? self.candles[self.interval] : [])
                 if (data.length) self.adjust(self.candles[self.interval])
-                self.plot()
+
+                if (refresh || !self.series) {
+                    if (self.series) self.chart.removeSeries(self.series)
+                    self.series = self.chart.addCandlestickSeries()
+                    self.series.setData(self.candles[self.interval])
+                } else {
+                    self.series.setData(data)
+                }
             }).catch(function(e) {})
-        },
-        plot() {
-            var self = this
-            setTimeout(function() {
-                self.series.setData(self.candles[self.interval])
-            }, 0)
         },
         adjust(candles) {
             var previous = null
@@ -65,6 +70,7 @@ function swapPool() {
             })
         },
         render() {
+            // Init chart
             this.chart = LightweightCharts.createChart(document.getElementById('chart'), {
                 width: document.getElementById('inner-width').offsetWidth-48,
                 height: (document.getElementById('inner-width').offsetWidth-48)/2,
@@ -93,14 +99,12 @@ function swapPool() {
                     rightOffset: 75,
                 },
             })
-
-            this.series = this.chart.addCandlestickSeries()
         }
     }
 }
 </script>
 <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-<div x-cloak x-show="$store.pool.program == 'swap'" x-data="swapPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+<div x-data="statisticsPage" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-8">
         <p class="text-2xl font-medium py-2 text-white w-full md:w-1/4" x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker+'/XETA'+' Swap Pool' : 'Swap Pool'"></p>
         <div x-data="{active: false}" class="w-full md:w-3/4 justify-end items-center flex relative">
@@ -150,7 +154,7 @@ function swapPool() {
                 </div>
             </div>
 
-            <div class="mb-8 rounded-2xl">
+            <div class="border-2 mb-8 rounded-2xl border-gray-800">
                 <div id="chart"></div>
             </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">

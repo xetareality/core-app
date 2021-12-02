@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Xeta Claim</title>
+        <title>Xeta Pool</title>
         <meta name="description" content="">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
@@ -91,7 +91,7 @@
                 <div class="container xl:max-w-6xl mx-auto p-4 lg:p-8">
                     <div id="inner-width" class="block"></div>
                     
-    <script>
+<script>
 function initSearch() {
     return {
         searchQuery: '',
@@ -159,117 +159,253 @@ function initSearch() {
         </div>
     </div>
 </div>
-    <script>
-function loadDetails() {
+<script>
+function statisticsPage() {
     return {
-        details: {},
-        expanded: !['pool'].includes(Alpine.store('resource')),
+        key: 'transfers:total',
+        keys: [
+            'allowances:total',
+            'balances:total',
+            'candles:total',
+            'claims:total',
+            'pools:total',
+            'statistics:total',
+            'tokens:total',
+            'transactions:total',
+            'transfers:total',
+            'wallets:total',
+
+            'transactions:count',
+            'sponsored:count',
+            'sponsoredFee:sum',
+            'consumedFee:sum',
+            'errors:count',
+            'confirmationTime:sum',
+            'confirmed:count',
+            'transfers:count',
+            'transferAmount:sum',
+            'xetaTransfers:count',
+            'xetaAmount:sum',
+            
+            // Instructions
+            'instructions:count',
+            'tokenTransfers:count',
+            'claimTransfers:count',
+            
+            'accountCalls:count',
+            'allowanceCalls:count',
+            'claimCalls:count',
+            'poolCalls:count',
+            'tokenCalls:count',
+            'transferCalls:count',
+            
+            'auctionCalls:count',
+            'launchCalls:count',
+            'lendingCalls:count',
+            'lockCalls:count',
+            'lootCalls:count',
+            'lotteryCalls:count',
+            'royaltyCalls:count',
+            'stakingCalls:count',
+            'swapCalls:count',
+            'voteCalls:count',
+            
+            'swapAmount:sum',
+            'swapXeta:sum',
+            'lendingAmount:sum',
+            'stakingAmount:sum',
+        ],
+        agg: 'None',
+        statistics: {},
+        depleted: {},
+        chart: null,
+        series: null,
+        timeTooltip: '',
+        valueTooltip: '',
+        loading: false,
+        aggregated: [],
+        encoded: '',
         init() {
+            this.load()
+            this.render()
+        },
+        load(refresh=false) {
+            if (this.loading) return
+            if (this.depleted[this.key]) {
+                if (refresh) this.agg == 'None' ? this.plot() : this.aggregate()
+                return
+            }
+
+            this.loading = true
+            var last = this.statistics[this.key] ? this.statistics[this.key][0] : null
             var self = this
-            document.addEventListener('resourceLoaded', function (e) {
-                var data = Alpine.store(Alpine.store('resource'))
-                
-                if (Alpine.store('resource') == 'address') {
-                    if (data.pool) window.location.href = '/pool/?address='+data.pool.address
-                    else if (data.token && data.token.address != data.token.creator) window.location.href = '/token/?address='+data.token.address
-                    
-                    if (data.token) self.expanded = false
-                    data = Object.assign({}, data.token, data.balance)
-                }
 
-                for (var k in data) {
-                    if (['amount', 'maxAmount', 'minAmount', 'tokenBalance', 'tokenTurnover'].includes(k)) {
-                        self.details[k] = Wrap.amount(data[k], data.token, data.tokenPreview)
-                    } else if (['fee', 'xetaBalance', 'xetaTurnover'].includes(k)) {
-                        self.details[k] = Wrap.xeta(data[k])
-                    } else if (['created', 'expires', 'unlocks'].includes(k)) {
-                        if (Date.now()-data[k] > 30*24*60*60*1000) self.details[k] = new Date(data[k]).toLocaleString()
-                        else self.details[k] = formatTime(new Date(data[k]))+' ('+new Date(data[k]).toLocaleString()+')'
-                    } else if (['minTime', 'maxTime'].includes(k)) {
-                        self.details[k] = formatTime(new Date(Date.now()-parseInt(data[k])), false)
-                    } else if (['origin'].includes(k)) {
-                        self.details[k] = Wrap.transaction(data[k])
-                    } else if (['pool', 'owner'].includes(k)) {
-                        self.details[k] = Wrap.pool(data[k])
-                    } else if (['token'].includes(k)) {
-                        self.details[k] = Wrap.token(data[k])
-                    } else if (['address'].includes(k)) {
-                        if (Alpine.store('resource') == 'token') self.details[k] = Wrap.token(data[k])
-                        else if (Alpine.store('resource') == 'pool') self.details[k] = Wrap.pool(data[k])
-                        else if (Alpine.store('resource') == 'address') self.details[k] = String(data[k])
-                    } else if (['hash'].includes(k)) {
-                        if (Alpine.store('resource') == 'transsaction') self.details[k] = Wrap.transaction(data[k])
-                        else if (Alpine.store('resource') == 'transfer') self.details[k] = Wrap.transfer(data[k])
-                        else if (Alpine.store('resource') == 'claim') self.details[k] = Wrap.claim(data[k])
-                        else if (Alpine.store('resource') == 'allowance') self.details[k] = Wrap.allowance(data[k])
-                    } else if (['from', 'to', 'leader', 'creator', 'sender'].includes(k)) {
-                        self.details[k] = Wrap.address(data[k])
-                    } else if (['links'].includes(k)) {
-                        self.details[k] = data[k].map(l => Wrap.link(l)).join('')
-                    } else if (['outputs'].includes(k)) {
-                        self.details[k] = data[k].map(function(i) {
-                            return i.map(function(j) {
-                                var r = {a: 'allowance', t: 'token', x: 'transfer', c: 'claim', p: 'pool'}[j.split(':')[0]]
-                                return r[0].toUpperCase()+r.slice(1)+' '+Wrap[r](j.split(':')[1])
-                            }).join('<br>')
-                        }).join('<br>')
-                    } else if (['instructions', 'meta'].includes(k)) {
-                        self.details[k] = JSON.stringify(data[k])
-                    } else self.details[k] = String(data[k])
+            Xeta.statistic.scan({...(last ? last : {}), ...{key: this.key}}, {limit: 5}).then(function(data) {
+                if (!data.length) self.depleted[self.key] = true
+                data = data.sort(function(a, b) {return a.time-b.time}) // Sort asc
+                data = data.map(function(d) {return {time: d.time, value: d.value}})
+                self.statistics[self.key] = data.concat(self.statistics[self.key] ? self.statistics[self.key] : [])
 
-                    if (self.details[k] == '[object Object]') delete self.details[k]
+                self.agg == 'None' ? self.plot() : self.aggregate()
+                self.loading = false
+            }).catch(function(e) {})
+        },
+        plot(data) {
+            this.series.setData(data ? data : this.statistics[this.key])
+            var self = this
+            setTimeout(function() {
+                self.series.setData(data ? data : self.statistics[self.key])
+            }, 0)
+        },
+        aggregate() {
+            var sums = {}
+            var counts = {}
+
+            if (this.agg == 'None') return this.plot(null)
+            else {
+                var daily = this.agg.includes('Daily')
+                this.statistics[this.key].forEach(function(d) {
+                    var key = d.time - d.time % 300 // 60*60*24*(daily ? 1 : 7)
+                    sums[key] = sums[key] ? sums[key]+d.value : d.value
+                    counts[key] = counts[key] ? counts[key]+1 : 1
+                })
+            }
+
+            var mean = this.agg.includes('Mean')
+            if (!mean) this.aggregated = Object.entries(sums).map(function(e) {return {time: parseInt(e[0]), value: e[1]}})
+            else this.aggregated = Object.entries(sums).map(function(e) {return {time: parseInt(e[0]), value: e[1]/(counts[e[0]] ? counts[e[0]] : 1)}})
+            this.plot(this.aggregated)
+        },
+        render() {
+            this.chart = LightweightCharts.createChart(document.getElementById('chart'), {
+                width: document.getElementById('inner-width').offsetWidth-48,
+                height: (document.getElementById('inner-width').offsetWidth-48)/2,
+                layout: {
+                    backgroundColor: 'rgba(0, 0, 0, 1)',
+                    textColor: 'rgba(255, 255, 255, 0.75)',
+                },
+                grid: {
+                    vertLines: {
+                        color: 'rgba(255, 255, 255, 0.2)',
+                    },
+                    horzLines: {
+                        color: 'rgba(255, 255, 255, 0.2)',
+                    },
+                },
+                crosshair: {
+                    horzLine: {
+                        visible: false,
+                        labelVisible: false
+                    },
+                    vertLine: {
+                        visible: true,
+                        style: 0,
+                        width: 1,
+                        color: 'rgba(32, 38, 46, 1)',
+                        labelVisible: false,
+                    }
+                },
+                rightPriceScale: {
+                    borderColor: 'rgba(255, 255, 255, 0)',
+                },
+                timeScale: {
+                    borderColor: 'rgba(255, 255, 255, 0)',
+                    timeVisible: true,
+                    secondsVisible: false,
+                },
+            })
+
+            this.series = this.chart.addAreaSeries({  
+                topColor: 'rgba(139,92,246,0.5)', 
+                bottomColor: 'rgba(139,92,246,0.0)',
+                lineColor: 'rgba(139,92,246,0.5)',
+                lineWidth: 2
+            })
+
+            var self = this
+            this.chart.subscribeCrosshairMove(function(param) {
+                try {
+                    if (param.time) self.timeTooltip = new Date(param.time*1000).toLocaleString()
+                    else self.timeTooltip = ''
+                    var val = param.seriesPrices.values().next().value
+                    if (val) self.valueTooltip = val+' '+self.key.split(':')[0][0].toUpperCase()+self.key.split(':')[0].slice(1)+' ('+self.key.split(':')[1]+')'
+                    else self.valueTooltip = ''
+                } catch (e) {}
+            })
+
+            this.chart.timeScale().subscribeVisibleTimeRangeChange(function(range) {
+                if (!self.depleted[self.key]) {
+                    var last = self.statistics[self.key] ? self.statistics[self.key][0] : null
+                    if (range.from > last.time) return
+                    else self.load()
                 }
             })
+        },
+        download(el) {
+            var rows = [['timestamp', this.key]].concat((this.aggregated.length ? this.aggregated : this.statistics[this.key].length ? this.statistics[this.key] : []).map(function(data) {
+                return [String(data.time), String(data.value)]
+            }))
+
+            var csv = "data:text/csv;charset=utf-8,"
+            rows.forEach(function(row) {
+                csv += row.join(',') + '\r\n'
+            })
+
+            this.encoded = encodeURI(csv)
+            setTimeout(function() {
+                document.getElementById('download').click()
+            }, 0)
         }
     }
 }
 </script>
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+<div x-data="statisticsPage" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+    <div class="w-full flex flex-wrap justify-between items-center mb-8">
+        <p class="text-2xl font-medium py-2 text-white w-full md:w-1/4">Xeta Network Statistics</p>
+        <div class="flex">
+            <div x-data="{active: false}" class="relative text-white text-sm mr-2">
+                <div @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 flex items-center relative">
+                    <span x-text="'Statistic: '+key" class="mr-2"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                    </svg>
 
-<div x-data="loadDetails()">
-    <div class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
-        <div @click="expanded = !expanded" class="flex justify-between items-center cursor-pointer">
-            <div class="flex justify-start items-center">
-                <p class="text-lg py-2 text-gray-100">Details</p>
-
-                <div x-cloak x-show="['token', 'allowance', 'address', 'claim'].includes($store.resource)" x-data="{active: false}" class="relative text-white text-sm ml-2">
-                    <span @click.stop="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize text-xs">Action</span>
-                    <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
-                        <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                            <li @click.stop="action($store.resource+'.update'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Update</li>
-                            <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.transfer'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
-                            <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.resolve'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Resolve</li>
-                            <li x-cloak x-show="$store.resource == 'token'" @click.stop="action('transfer.create'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
-                            <li x-cloak x-show="$store.resource == 'token' && $store.token.reserve" @click.stop="action('token.mint'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Mint</li>
-                        </ul>
+                    <select @change="load(true)" x-model="key" class="opacity-0 absolute top-0 left-0 w-full h-full no-arrow py-1 cursor-pointer text-gray-600 outline-none focus:outline-none">
+                        <template x-for="option in keys">
+                            <option :value="option" x-text="option.split(':')[0][0].toUpperCase()+option.split(':')[0].slice(1)+' ('+option.split(':')[1]+')'" :selected="key == option"></option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+            <div x-data="{active: false}" class="relative text-white text-sm mr-2">
+                <div @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 flex items-center relative">
+                    <span x-text="'Aggregate: '+agg" class="mr-2"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                    <select @change="aggregate()" x-model="agg" class="opacity-0 absolute top-0 left-0 w-full h-full no-arrow py-1 cursor-pointer text-gray-600 outline-none focus:outline-none">
+                        <template x-for="option in ['None', 'Daily Mean', 'Daily Sum', 'Weekly Mean', 'Weekly Sum']">
+                            <option :value="option" x-text="option" :selected="agg == option"></option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+            <span @click="download()" class="text-white text-sm select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900">Download</span>
+            <a :href="encoded" :download="key+'.csv'" class="hidden" id="download"></a>
+        </div>
+    </div>
+    <div class="flex flex-wrap">
+        <div class="w-full mb-4 text-white">
+            <div class="mb-8 rounded-2xl">
+                <div class="relative" id="chart">
+                    <div class="absolute top-4 left-4 block z-50 flex flex-col font-light">
+                        <span x-text="timeTooltip" class="text-gray-400"></span>
+                        <span x-text="valueTooltip" class="text-lg text-gray-300"></span>
                     </div>
                 </div>
             </div>
-
-            
-            <span class="cursor-pointer underline text-gray-200 text-sm font-light">
-                <span x-text="expanded ? 'Close' : 'Open'">Open</span> Details
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="inline ml-1 -mt-0.5" viewBox="0 0 16 16">
-                  <path x-cloak x-show="!expanded" fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-                  <path x-cloak x-show="expanded" fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
-                </svg>
-            </span>
         </div>
-        <table x-cloak x-show="expanded" class="w-full table-fixed font-light text-sm">
-            <thead>
-                <tr>
-                    <th class="text-gray-400 text-left uppercase w-1/3"></th>
-                    <th class="text-gray-400 text-left uppercase w-2/3"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <template x-for="[key, value] in Object.entries(details)">
-                    <tr class="border-b border-gray-800">
-                        <td class="py-2 text-gray-400 capitalize text-sm font-semibold py-2" x-text="key"></td>
-                        <td @click="$el.classList.toggle('truncate')" class="text-right text-white truncate break-all py-2" x-html="value"></td>
-                    </tr>
-                </template>
-            </tbody>
-        </table>
     </div>
 </div>
 
