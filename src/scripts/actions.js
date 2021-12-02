@@ -591,11 +591,11 @@ var Actions = {
     'swap.transfer': {
         title: 'Swap Tokens',
         description: `
-        Swap XETA for pool-tokens, or pool-tokens for XETA.`,
+        Swap tokens instantly.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'token', type: 'hash', required: true},
-            {name: 'amount', type: 'amount', required: true},
+            {name: 'token', type: 'hash', required: true, value: 'transfer.token'},
+            {name: 'amount', type: 'amount', required: true, value: 'transfer.amount'},
         ],
     },
     'swap.deposit': {
