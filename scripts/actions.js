@@ -106,6 +106,7 @@ var Actions = {
             {name: 'candidates', type: 'strings', required: false},
             {name: 'rate', type: 'number', required: false},
             {name: 'percentage', type: 'number', required: false},
+            {name: 'number', type: 'number', required: false},
             {name: 'answers', type: 'strings', required: false},
             {name: 'meta', type: 'object', required: false},
             {name: 'expires', type: 'timestamp', required: false},
