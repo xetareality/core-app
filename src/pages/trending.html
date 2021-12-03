@@ -78,11 +78,11 @@ function trendingPage() {
                                         <span x-text="candle.tokenPreview.symbol"></span>
                                     </a>
                                 </td>
-                                <td class="truncate pr-4 py-2" x-text="formatNumber(candle.close, 8)"></td>
+                                <td class="truncate pr-4 py-2" x-text="formatNumber(parseFloat(candle.close*Constants.xetaPrice, 8)"></td>
                                 <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="formatNumber((candle.change-1)*100, 0)+'%'"></td>
                                 <td class="truncate pr-4 py-2" x-text="formatNumber(candle.turnover, 0)"></td>
                                 <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="formatNumber(candle.tokenPreview.supply, 0)"></td>
-                                <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="'$'+formatNumber(parseFloat(candle.close)*parseInt(candle.tokenPreview.supply)/Constants.xetaPrice, 0)"></td>
+                                <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="'$'+formatNumber(parseFloat(candle.close)*parseInt(candle.tokenPreview.supply)*Constants.xetaPrice, 0)"></td>
                             </tr>
                         </template>
                     </tbody>
