@@ -320,6 +320,7 @@ function tokenExplorer() {
         balances: [],
         address: gup('address'),
         depleted: {},
+        loading: false,
         methods: {
             'transfers': Xeta.transfer.scanTokenCreated,
             'balances': Xeta.balance.scanTokenAmount,
@@ -333,7 +334,8 @@ function tokenExplorer() {
         },
         load(resource) {
             this.resource = resource
-            if (this.depleted[resource]) return
+            if (this.loading || this.depleted[resource]) return
+            this.loading = true
             var last = this[resource].length ? this[resource].slice(-1)[0] : {}
             
             var self = this
@@ -346,7 +348,10 @@ function tokenExplorer() {
                 if (resource == 'balances' && token) data.forEach(function(d) {d.percentage = Big(d.amount).div(token.supply).mul(100).round(4).toString()})
 
                 self[resource] = self[resource].concat(data)
-            }).catch(function(e) {})
+                self.loading = false
+            }).catch(function(e) {
+                self.loading = false
+            })
         },
     }
 }

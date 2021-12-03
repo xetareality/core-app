@@ -685,6 +685,7 @@ function swapPool() {
         address: gup('address'),
         chart: null,
         series: null,
+        loading: false,
         init() {
             Alpine.store('transfer').token = Xeta.config.xetaAddress
             Alpine.store('transfer').amount = '0'
@@ -708,11 +709,13 @@ function swapPool() {
             this.exchangeValue = a.sub(a.mul(fee)).toString()
         },
         load(refresh=false) {
+            if (this.loading) return
             if (this.depleted[this.interval]) {
                 if (refresh) this.plot()
                 return
             }
 
+            this.loading = true
             var last = this.candles[this.interval] ? this.candles[this.interval][0] : null            
             var self = this
 
@@ -722,7 +725,10 @@ function swapPool() {
                 self.candles[self.interval] = data.concat(self.candles[self.interval] ? self.candles[self.interval] : [])
                 if (data.length) self.adjust(self.candles[self.interval])
                 self.plot()
-            }).catch(function(e) {})
+            selfself.loading = false
+            }).catch(function(e) {
+                self.loading = false
+            })
         },
         plot() {
             var self = this
@@ -1081,6 +1087,7 @@ function addressExplorer() {
         balances: [],
         address: gup('address'),
         depleted: {},
+        loading: false,
         methods: {
             'transfersIncoming': Xeta.transfer.scanToCreated,
             'transfersOutgoing': Xeta.transfer.scanFromCreated,
@@ -1124,7 +1131,8 @@ function addressExplorer() {
         load(resource) {
             this[resource] = this[this.resourceFilter]
             var resourceFilter = this.resourceFilter // Static, because this.resourceFilter could change during request
-            if (this.depleted[resourceFilter]) return
+            if (this.loading || this.depleted[resourceFilter]) return
+            this.loading = true
             var last = this[resourceFilter].length ? this[resourceFilter].slice(-1)[0] : {}
             var self = this
 
@@ -1133,7 +1141,10 @@ function addressExplorer() {
                 self[resourceFilter] = self[resourceFilter].concat(data)
                 if (resource != resourceFilter) self[resource] = self[resourceFilter]
                 if (resource == 'tokens') Grid.layout(document.getElementById('grid'), document.getElementById('tokens'))
-            }).catch(function(e) {})
+                self.loading = false
+            }).catch(function(e) {
+                self.loading = false
+            })
         },
     }
 }
