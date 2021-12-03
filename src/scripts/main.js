@@ -108,4 +108,5 @@ function refreshBalances() {
 
 var Constants = {
     pixel: 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=',
+    xetaPrice: 0.01,
 }

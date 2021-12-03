@@ -12,6 +12,7 @@ function swapPool() {
         address: gup('address'),
         chart: null,
         series: null,
+        loading: false,
         init() {
             Alpine.store('transfer').token = Xeta.config.xetaAddress
             Alpine.store('transfer').amount = '0'
@@ -35,11 +36,13 @@ function swapPool() {
             this.exchangeValue = a.sub(a.mul(fee)).toString()
         },
         load(refresh=false) {
+            if (this.loading) return
             if (this.depleted[this.interval]) {
                 if (refresh) this.plot()
                 return
             }
 
+            this.loading = true
             var last = this.candles[this.interval] ? this.candles[this.interval][0] : null            
             var self = this
 
@@ -49,7 +52,10 @@ function swapPool() {
                 self.candles[self.interval] = data.concat(self.candles[self.interval] ? self.candles[self.interval] : [])
                 if (data.length) self.adjust(self.candles[self.interval])
                 self.plot()
-            }).catch(function(e) {})
+            selfself.loading = false
+            }).catch(function(e) {
+                self.loading = false
+            })
         },
         plot() {
             var self = this

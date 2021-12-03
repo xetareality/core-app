@@ -3,11 +3,17 @@ function recentExplorer() {
     return {
         transfers: [],
         depleted: {},
+        loading: false,
         init() {
+            if (this.loading) return
             var self = this
+            this.loading = true
             Xeta.transfer.scanTokenCreated({token: Xeta.config.xetaAddress}, {preview: true}).then(function(data) {
                 self.transfers = data
-            }).catch(function(e) {})
+                self.loading = false
+            }).catch(function(e) {
+                self.loading = false
+            })
         },
     }
 }
