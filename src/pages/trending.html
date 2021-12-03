@@ -1,0 +1,97 @@
+{% extends "src/wrappers/main.html" %}
+
+{% block title %}Trending Tokens{% endblock %}
+{% block description %}{% endblock %}
+
+{% block content %}
+{% include "src/blocks/global/header.html" %}
+<script>
+function trendingPage() {
+    return {
+        depleted: {},
+        candles: {
+            turnoverDaily: [],
+            turnoverWeekly: [],
+            changeDaily: [],
+            changeWeekly: [],
+        },
+        loading: {},
+        dayTime() {
+            return Math.round(Date.now()/1000 - Date.now()/1000 % (60*60*24))
+        },
+        weekTime() {
+            return this.dayTime() - (60*60*24*(new Date().getUTCDay()-1))
+        },
+        init() {
+            this.load('turnoverDaily')
+            this.load('turnoverWeekly')
+            this.load('changeDaily')
+            this.load('changeWeekly')
+        },
+        load(type) {
+            if (this.loading[type] || this.depleted[type]) return
+
+            this.loading[type] = true
+            var last = this.candles[type] ? this.candles[type].slice(-1)[0] : null
+            var self = this
+
+            var interval = type.includes('Daily') ? '1d' : '1w'
+            var time = type.includes('Daily') ? this.dayTime() : this.weekTime()
+
+            var fn = type.replace('Daily', '').replace('Weekly', '')
+            Xeta.candle['scanIntervalTime'+fn[0].toUpperCase()+fn.slice(1)]({...(last ? last : {}), ...{interval: interval, time: time}}, {limit: 10, preview: true}).then(function(data) {
+                if (!data.length) self.depleted[type] = true
+                self.candles[type] = self.candles[type].concat(data)
+                self.loading[type] = false
+            }).catch(function(e) {
+                self.loading[type] = false
+            })
+        }
+    }
+}
+</script>
+<div x-data="trendingPage">
+    <template x-for="type in ['turnoverDaily', 'turnoverWeekly', 'changeDaily', 'changeWeekly']">
+        <div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12 section">
+            <div class="w-full flex flex-wrap justify-between items-center mb-4 px-6">
+                <p class="text-2xl font-medium py-2 text-white w-full capitalize" x-text="'Top '+type.replace('Daily', '').replace('Weekly', '')+' '+type.replace('turnover', '').replace('change', '')"></p>
+            </div>
+            <div>
+                <table class="w-full table-fixed font-light text-sm explorer">
+                    <thead>
+                        <tr class="text-gray-400">
+                            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Token</th>
+                            <th class="truncate py-2 pr-4 text-left uppercase w-1/12">Price</th>
+                            <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Change</th>
+                            <th class="truncate py-2 pr-4 text-left uppercase w-1/12">Turnover</th>
+                            <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Supply</th>
+                            <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Mcap</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="(candle, i) in candles[type]">
+                            <tr class="hover:bg-gray-900 text-white">
+                                <td class="truncate pr-4 py-2">
+                                    <a :href="'/pool/?address='+candle.token" class="hover:text-pink-400">
+                                        <span x-text="i+'. '"></span>
+                                        <img class="h-4 w-4 mx-1 -mt-0.5 inline" :src="candle.tokenPreview ? candle.tokenPreview.preview : Constants.pixel" onerror="this.src = '/media/favicon.png'" />
+                                        <span x-text="candle.tokenPreview.symbol"></span>
+                                    </a>
+                                </td>
+                                <td class="truncate pr-4 py-2" x-text="formatNumber(candle.close, 8)"></td>
+                                <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="formatNumber((candle.change-1)*100, 0)+'%'"></td>
+                                <td class="truncate pr-4 py-2" x-text="formatNumber(candle.turnover, 0)"></td>
+                                <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="formatNumber(candle.tokenPreview.supply, 0)"></td>
+                                <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="'$'+formatNumber(parseFloat(candle.close)*parseInt(candle.tokenPreview.supply)/Constants.xetaPrice, 0)"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+            <div x-show="!depleted[type] && candles[type].length % 10 == 0" class="pt-6 flex justify-center text-sm">
+                <span @click="load(type)" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
+            </div>
+        </div>
+    </template>
+</div>
+{% endblock %}

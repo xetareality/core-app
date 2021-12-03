@@ -1,256 +1,73 @@
 {% extends "src/wrappers/main.html" %}
 
-{% block title %}Pool{% endblock %}
+{% block title %}NFTs{% endblock %}
 {% block description %}{% endblock %}
 
 {% block content %}
 {% include "src/blocks/global/header.html" %}
 <script>
-function statisticsPage() {
+function nftsPage() {
     return {
-        key: 'transfers:total',
-        keys: [
-            'allowances:total',
-            'balances:total',
-            'candles:total',
-            'claims:total',
-            'pools:total',
-            'statistics:total',
-            'tokens:total',
-            'transactions:total',
-            'transfers:total',
-            'wallets:total',
-
-            'transactions:count',
-            'sponsored:count',
-            'sponsoredFee:sum',
-            'consumedFee:sum',
-            'errors:count',
-            'confirmationTime:sum',
-            'confirmed:count',
-            'transfers:count',
-            'transferAmount:sum',
-            'xetaTransfers:count',
-            'xetaAmount:sum',
-            
-            'instructions:count',
-            'tokenTransfers:count',
-            'claimTransfers:count',
-            
-            'accountCalls:count',
-            'allowanceCalls:count',
-            'claimCalls:count',
-            'poolCalls:count',
-            'tokenCalls:count',
-            'transferCalls:count',
-            
-            'auctionCalls:count',
-            'launchCalls:count',
-            'lendingCalls:count',
-            'lockCalls:count',
-            'lootCalls:count',
-            'lotteryCalls:count',
-            'royaltyCalls:count',
-            'stakingCalls:count',
-            'swapCalls:count',
-            'voteCalls:count',
-            
-            'swapAmount:sum',
-            'swapXeta:sum',
-            'lendingAmount:sum',
-            'stakingAmount:sum',
-        ],
-        agg: 'None',
-        statistics: {},
+        pools: {
+            expiring: [],
+            bids: [],
+            transfers: [],
+            recent: [],
+        },
         depleted: {},
-        chart: null,
-        series: null,
-        timeTooltip: '',
-        valueTooltip: '',
-        loading: false,
-        aggregated: [],
-        encoded: '',
+        loading: {},
         init() {
-            this.load()
-            this.render()
+            this.load('expiring')
+            this.load('bids')
+            this.load('transfers')
+            this.load('recent')
         },
-        load(refresh=false) {
-            if (this.loading) return
-            if (this.depleted[this.key]) {
-                if (refresh) this.agg == 'None' ? this.plot() : this.aggregate()
-                return
-            }
+        load(type) {
+            if (this.loading[type] || this.depleted[type] || this.pools[type].length % 10 != 0) return
 
-            this.loading = true
-            var last = this.statistics[this.key] ? this.statistics[this.key][0] : null
+            this.loading[type] = true
+            var last = this.pools[type] ? this.pools[type].slice(-1)[0] : null
             var self = this
 
-            Xeta.statistic.scan({...(last ? last : {}), ...{key: this.key}}, {limit: 5}).then(function(data) {
-                if (!data.length) self.depleted[self.key] = true
-                data = data.sort(function(a, b) {return a.time-b.time}) // Sort asc
-                data = data.map(function(d) {return {time: d.time, value: d.value}})
-                self.statistics[self.key] = data.concat(self.statistics[self.key] ? self.statistics[self.key] : [])
-
-                self.agg == 'None' ? self.plot() : self.aggregate()
-                self.loading = false
-            }).catch(function(e) {})
-        },
-        plot(data) {
-            this.series.setData(data ? data : this.statistics[this.key])
-            var self = this
-            setTimeout(function() {
-                self.series.setData(data ? data : self.statistics[self.key])
-            }, 0)
-        },
-        aggregate() {
-            var sums = {}
-            var counts = {}
-
-            if (this.agg == 'None') return this.plot(null)
-            else {
-                var daily = this.agg.includes('Daily')
-                this.statistics[this.key].forEach(function(d) {
-                    var key = d.time - d.time % 300 // 60*60*24*(daily ? 1 : 7)
-                    sums[key] = sums[key] ? sums[key]+d.value : d.value
-                    counts[key] = counts[key] ? counts[key]+1 : 1
-                })
-            }
-
-            var mean = this.agg.includes('Mean')
-            if (!mean) this.aggregated = Object.entries(sums).map(function(e) {return {time: parseInt(e[0]), value: e[1]}})
-            else this.aggregated = Object.entries(sums).map(function(e) {return {time: parseInt(e[0]), value: e[1]/(counts[e[0]] ? counts[e[0]] : 1)}})
-            this.plot(this.aggregated)
-        },
-        render() {
-            this.chart = LightweightCharts.createChart(document.getElementById('chart'), {
-                width: document.getElementById('inner-width').offsetWidth-48,
-                height: (document.getElementById('inner-width').offsetWidth-48)/2,
-                layout: {
-                    backgroundColor: 'rgba(0, 0, 0, 1)',
-                    textColor: 'rgba(255, 255, 255, 0.75)',
-                },
-                grid: {
-                    vertLines: {
-                        color: 'rgba(255, 255, 255, 0.2)',
-                    },
-                    horzLines: {
-                        color: 'rgba(255, 255, 255, 0.2)',
-                    },
-                },
-                crosshair: {
-                    horzLine: {
-                        visible: false,
-                        labelVisible: false
-                    },
-                    vertLine: {
-                        visible: true,
-                        style: 0,
-                        width: 1,
-                        color: 'rgba(32, 38, 46, 1)',
-                        labelVisible: false,
-                    }
-                },
-                rightPriceScale: {
-                    borderColor: 'rgba(255, 255, 255, 0)',
-                },
-                timeScale: {
-                    borderColor: 'rgba(255, 255, 255, 0)',
-                    timeVisible: true,
-                    secondsVisible: false,
-                },
+            var fn = 'scanProgram'+{expiring: 'Expires', bids: 'XetaBalance', transfers: 'TransfersCount', recent: 'Created'}[type]
+            Xeta.pool[fn]({...(last ? last : {}), ...{program: 'auction'}}, {limit: 10, preview: true}).then(function(data) {
+                if (!data.length) self.depleted[type] = true
+                self.pools[type] = self.pools[type].concat(data)
+                self.loading[type] = false
+            }).catch(function(e) {
+                self.loading[type] = false
             })
-
-            this.series = this.chart.addAreaSeries({  
-                topColor: 'rgba(139,92,246,0.5)', 
-                bottomColor: 'rgba(139,92,246,0.0)',
-                lineColor: 'rgba(139,92,246,0.5)',
-                lineWidth: 2
-            })
-
-            var self = this
-            this.chart.subscribeCrosshairMove(function(param) {
-                try {
-                    if (param.time) self.timeTooltip = new Date(param.time*1000).toLocaleString()
-                    else self.timeTooltip = ''
-                    var val = param.seriesPrices.values().next().value
-                    if (val) self.valueTooltip = val+' '+self.key.split(':')[0][0].toUpperCase()+self.key.split(':')[0].slice(1)+' ('+self.key.split(':')[1]+')'
-                    else self.valueTooltip = ''
-                } catch (e) {}
-            })
-
-            this.chart.timeScale().subscribeVisibleTimeRangeChange(function(range) {
-                if (!self.depleted[self.key]) {
-                    var last = self.statistics[self.key] ? self.statistics[self.key][0] : null
-                    if (range.from > last.time) return
-                    else self.load()
-                }
-            })
-        },
-        download(el) {
-            var rows = [['timestamp', this.key]].concat((this.aggregated.length ? this.aggregated : this.statistics[this.key].length ? this.statistics[this.key] : []).map(function(data) {
-                return [String(data.time), String(data.value)]
-            }))
-
-            var csv = "data:text/csv;charset=utf-8,"
-            rows.forEach(function(row) {
-                csv += row.join(',') + '\r\n'
-            })
-
-            this.encoded = encodeURI(csv)
-            setTimeout(function() {
-                document.getElementById('download').click()
-            }, 0)
         }
     }
 }
 </script>
-<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-<div x-data="statisticsPage" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
-    <div class="w-full flex flex-wrap justify-between items-center mb-8">
-        <p class="text-2xl font-medium py-2 text-white w-full md:w-1/4">Xeta Network Statistics</p>
-        <div class="flex">
-            <div x-data="{active: false}" class="relative text-white text-sm mr-2">
-                <div @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 flex items-center relative">
-                    <span x-text="'Statistic: '+key" class="mr-2"></span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                      <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-                    </svg>
 
-                    <select @change="load(true)" x-model="key" class="opacity-0 absolute top-0 left-0 w-full h-full no-arrow py-1 cursor-pointer text-gray-600 outline-none focus:outline-none">
-                        <template x-for="option in keys">
-                            <option :value="option" x-text="option.split(':')[0][0].toUpperCase()+option.split(':')[0].slice(1)+' ('+option.split(':')[1]+')'" :selected="key == option"></option>
-                        </template>
-                    </select>
-                </div>
-            </div>
-            <div x-data="{active: false}" class="relative text-white text-sm mr-2">
-                <div @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 flex items-center relative">
-                    <span x-text="'Aggregate: '+agg" class="mr-2"></span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                      <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-                    </svg>
-                    <select @change="aggregate()" x-model="agg" class="opacity-0 absolute top-0 left-0 w-full h-full no-arrow py-1 cursor-pointer text-gray-600 outline-none focus:outline-none">
-                        <template x-for="option in ['None', 'Daily Mean', 'Daily Sum', 'Weekly Mean', 'Weekly Sum']">
-                            <option :value="option" x-text="option" :selected="agg == option"></option>
-                        </template>
-                    </select>
-                </div>
-            </div>
-            <span @click="download()" class="text-white text-sm select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900">Download</span>
-            <a :href="encoded" :download="key+'.csv'" class="hidden" id="download"></a>
-        </div>
-    </div>
-    <div class="flex flex-wrap">
-        <div class="w-full mb-4 text-white">
-            <div class="mb-8 rounded-2xl">
-                <div class="relative" id="chart">
-                    <div class="absolute top-4 left-4 block z-50 flex flex-col font-light">
-                        <span x-text="timeTooltip" class="text-gray-400"></span>
-                        <span x-text="valueTooltip" class="text-lg text-gray-300"></span>
-                    </div>
+<div x-data="nftsPage">
+    <template x-for="type in ['expiring', 'bids', 'transfers', 'recent']">
+        <div class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+            <p class="text-2xl font-medium py-2 text-white w-full mb-2" x-text="{expiring: 'Expiring Soon', bids: 'Highest Bids', transfers: 'Most Popular', recent: 'Recently Added'}[type]"></p>
+            <div @scroll.debounce="$el.scrollLeft > 0.35*$el.clientWidth ? load(type) : null" class="flex overflow-x-scroll disable-scrollbar">
+                <div class="flex flex-nowrap">
+                    <template x-for="pool in pools[type]">
+                        <div class="w-48 inline-block">
+                            <div class="mx-1.5">
+                                <a :href="'/pool/?address='+pool.address" class="block rounded-2xl bg-gray-900 bg-opacity-50 shadow hover:bg-opacity-100 transition-all">
+                                    <div class="rounded-2xl rounded-b-none overflow-hidden">
+                                        <img class="h-32 w-full mb-2 object-center object-cover" :src="pool.tokenPreview && pool.tokenPreview.preview ? pool.tokenPreview.preview : Constants.pixel" onerror="this.src = Constants.pixel">
+                                    </div>
+                                    <div class="px-3 py-3">
+                                        <p class="text-sm text-white py-0.5 text-center tracking-wider" x-text="pool.name ? pool.name : pool.tokenPreview.name"></p>
+                                        <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-html="Wrap.xeta(pool.xetaBalance)"></p>
+                                        <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-text="formatNumber(pool.transfersCount, 0)+' Bids'"></p>
+                                        <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-text="'Expires '+formatTime(pool.expires)"></p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </template>
                 </div>
             </div>
         </div>
-    </div>
+    </template>
 </div>
 {% endblock %}
