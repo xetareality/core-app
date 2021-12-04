@@ -61,17 +61,23 @@
         </div>
         <div class="w-full justify-center md:justify-end md:w-3/5 flex flex items-center font-light">
             <nav class="flex text-sm mr-4">
-                <a href="/" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800">
-                    <span>Network Stats</span>
-                </a>
-                <a href="javascript:void(0), alert('Coming soon')" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800">
-                    <span>Tokens</span>
-                </a>
-                <a href="javascript:void(0), alert('Coming soon')" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800">
+                <div x-data="{active: false}" class="relative py-2">
+                    <span @click="active = !active" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">Tokens</span>
+                    <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
+                        <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                            <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center"><a href="/pages/tokens">By Market Cap</a></li>
+                            <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center"><a href="/pages/trending">By Trending</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <a href="/pages/nfts" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">
                     <span>NFTs</span>
                 </a>
-                <a href="https://xetareality.com" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800">
-                    <span>About Xeta</span>
+                <a href="/pages/statistics" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">
+                    <span>Stats</span>
+                </a>
+                <a href="https://xetareality.com" target="_blank" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">
+                    <span>About</span>
                 </a>
             </nav>
 
