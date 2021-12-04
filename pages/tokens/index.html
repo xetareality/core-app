@@ -70,9 +70,15 @@
                         </ul>
                     </div>
                 </div>
-                <a href="/pages/nfts" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">
-                    <span>NFTs</span>
-                </a>
+                <div x-data="{active: false}" class="relative py-2">
+                    <span @click="active = !active" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">NFTs</span>
+                    <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
+                        <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                            <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center"><a href="/pages/collections">Top Collections</a></li>
+                            <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center"><a href="/pages/auctions">Top Auctions</a></li>
+                        </ul>
+                    </div>
+                </div>
                 <a href="/pages/statistics" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">
                     <span>Stats</span>
                 </a>
@@ -161,7 +167,7 @@ function initSearch() {
     </div>
 </div>
 <script>
-function trendingPage() {
+function tokensPage() {
     return {
         pools: [],
         depleted: false,
@@ -187,7 +193,7 @@ function trendingPage() {
     }
 }
 </script>
-<div x-data="trendingPage">
+<div x-data="tokensPage">
     <div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12 section">
         <div class="w-full flex flex-wrap justify-between items-center mb-4 px-6">
             <p class="text-2xl font-medium py-2 text-white w-full">Tokens by Market Capitalization</p>
@@ -208,7 +214,7 @@ function trendingPage() {
                     <template x-for="(pool, i) in pools">
                         <tr class="hover:bg-gray-900 text-white">
                             <td class="truncate pr-4 py-2">
-                                <a :href="'/pool/?address='+pool.token" class="hover:text-pink-400">
+                                <a :href="'/pool/?address='+pool.token" class="hover:text-pink-400 flex items-center block">
                                     <span x-text="i+'. '"></span>
                                     <img class="h-4 w-4 mx-1 -mt-0.5 inline" :src="pool.tokenPreview ? pool.tokenPreview.preview : Constants.pixel" onerror="this.src = '/media/favicon.png'" />
                                     <span x-text="pool.tokenPreview.symbol"></span>
