@@ -6,7 +6,7 @@
 {% block content %}
 {% include "src/blocks/global/header.html" %}
 <script>
-function nftsPage() {
+function auctionsPage() {
     return {
         pools: {
             expiring: [],
@@ -42,7 +42,7 @@ function nftsPage() {
 }
 </script>
 
-<div x-data="nftsPage">
+<div x-data="auctionsPage">
     <template x-for="type in ['expiring', 'bids', 'transfers', 'recent']">
         <div class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
             <p class="text-2xl font-medium py-2 text-white w-full mb-2" x-text="{expiring: 'Ending Soon', bids: 'Highest Bids', transfers: 'Most Popular', recent: 'Recently Added'}[type]"></p>
