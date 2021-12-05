@@ -17,10 +17,10 @@ function loadDetails() {
                 }
 
                 for (var k in data) {
-                    if (['amount', 'maxAmount', 'minAmount', 'tokenBalance', 'tokenTurnover'].includes(k)) {
-                        self.details[k] = Wrap.amount(data[k], data.token, data.tokenPreview)
+                    if (['amount', 'maxAmount', 'minAmount', 'tokenBalance', 'tokenTurnover', 'supply', 'reserve'].includes(k)) {
+                        self.details[k] = Wrap.amount(data[k], data.token, data.tokenPreview, 8)
                     } else if (['fee', 'xetaBalance', 'xetaTurnover'].includes(k)) {
-                        self.details[k] = Wrap.xeta(data[k])
+                        self.details[k] = Wrap.xeta(data[k], 8)
                     } else if (['created', 'expires', 'unlocks'].includes(k)) {
                         if (Date.now()-data[k] > 30*24*60*60*1000) self.details[k] = new Date(data[k]).toLocaleString()
                         else self.details[k] = formatTime(new Date(data[k]))+' ('+new Date(data[k]).toLocaleString()+')'
