@@ -50,6 +50,10 @@
                 <span x-text="$store.pool.claimsLimit ? formatNumber($store.pool.claimsLimit) : $store.pool.mechanism == 'nft' ? '1' : 'Everyone Wins'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Max. Participants</span>
+                <span x-text="$store.pool.transfersLimit ? formatNumber($store.pool.transfersLimit) : 'Unlimited'"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Current Amount per Winner</span>
                 <span x-html="$store.pool.mechanism == 'nft' ? formatNumber(1) : Wrap.amount(parseFloat($store.pool.tokenBalance)/parseFloat($store.pool.claimsLimit ? $store.pool.claimsLimit : $store.pool.transfersCount ? $store.pool.transfersCount : 1), $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
