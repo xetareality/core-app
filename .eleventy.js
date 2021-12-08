@@ -12,7 +12,6 @@ module.exports = function (eleventyConfig) {
 
     eleventyConfig.addShortcode('version', function () {return now})
     eleventyConfig.addTransform('htmlmin', function (content, outputPath) {
-        
         if (process.env.ELEVENTY_PRODUCTION && outputPath && outputPath.endsWith('.html')) {
             let minified = htmlmin.minify(content, {
                 useShortDoctype: true,
@@ -25,6 +24,13 @@ module.exports = function (eleventyConfig) {
 
         return content
     })
+
+    eleventyConfig.browserSyncConfig = {
+        https: {
+            key: './localhost-key.pem',
+            cert: './localhost.pem',
+        }
+    }
 
     return {
         htmlTemplateEngine: 'njk',

@@ -82,7 +82,7 @@ function hideModal() {
     Alpine.store('modal', '')
 }
 
-function setData(id, data, reinit) {
+function setData(id, data) {
     setTimeout(function() {
         var changed = false
         for (key of Object.keys(data)) {
@@ -92,7 +92,7 @@ function setData(id, data, reinit) {
 
         // Only re-init if settable data has changed
         // This allows to retain form inputs on accidental closures
-        if (reinit || changed) document.getElementById(id)._x_dataStack[0].init()
+        if (changed) document.getElementById(id)._x_dataStack[0].init()
     }, 0)
 }
 

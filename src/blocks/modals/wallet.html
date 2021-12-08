@@ -16,8 +16,7 @@ function walletModal() {
             var keys = await Xeta.crypto.generateKeypair()
             this.publicKey = keys[0]
             this.privateKey = keys[1]
-            Alpine.sstore('publicKey', this.publicKey)
-            Alpine.sstore('privateKey', this.privateKey)
+            connectWallet(this.publicKey, this.privateKey)
         },
         /**
          * Create wallet
@@ -35,10 +34,7 @@ function walletModal() {
                     self.publicKey = data.publicKey
                     self.secret = null
                     self.transacting = false
-
-                    Alpine.sstore('publicKey', data.publicKey)
-                    Alpine.sstore('privateKey', data.privateKey)
-                    connectWallet()
+                    connectWallet(data.publicKey, data.privateKey)
                 }).catch(function(e) {
                     self.transacting = false
                     alert(e)
@@ -60,10 +56,7 @@ function walletModal() {
                     self.publicKey = data.publicKey
                     self.secret = null
                     self.transacting = false
-
-                    Alpine.sstore('publicKey', data.publicKey)
-                    Alpine.sstore('privateKey', data.privateKey)
-                    connectWallet()
+                    connectWallet(data.publicKey, data.privateKey)
                     hideModal()
                 }).catch(function(e) {
                     self.transacting = false
@@ -75,11 +68,13 @@ function walletModal() {
          * Import keys
          */
         async importKeys() {
-            Alpine.sstore('publicKey', this.publicKey)
-            Alpine.sstore('privateKey', this.privateKey)
-            connectWallet()
-            hideModal()
+            var privateKey = this.privateKey
             this.privateKey = null
+
+            Xeta.crypto.generatePublic(privateKey).then(function(publicKey) {
+                connectWallet(publicKey, privateKey)
+                hideModal()
+            })
         }
     }
 }
@@ -101,7 +96,7 @@ function walletModal() {
             </div>
             <div x-cloak x-show="!transacting">
                 <div x-show="!selection" class="flex flex-wrap px-2 lg:px-8 text-white font-light">
-                    <p class="w-full px-4 py-4 text-2xl text-center">Create New Wallet</p>
+                    <p class="w-full px-4 py-4 text-2xl text-center">Create New XETA Wallet</p>
 
                     <div class="w-1/2 mb-4">
                         <div @click="await generateKeys()" class="mx-4 cursor-pointer rounded-2xl bg-gray-900 bg-opacity-40 hover:bg-black shadow p-4 text-center">
@@ -116,12 +111,12 @@ function walletModal() {
                         </div>
                     </div>
 
-                    <p class="w-full px-4 py-4 text-2xl text-center">Import Existing Wallet</p>
+                    <p class="w-full px-4 py-4 text-2xl text-center">Import Existing XETA Wallet</p>
 
                     <div class="w-1/2 mb-4">
                         <div @click="selection = 'import'" class="mx-4 cursor-pointer rounded-2xl bg-gray-900 bg-opacity-40 hover:bg-black shadow p-4 text-center">
                             <p class="text-lg mb-2">Self-managed wallet keys</p>
-                            <p class="text-sm">Import wallet via public key. Choose this option if you've created a Xeta private/public key previously.</p>
+                            <p class="text-sm">Import wallet via private key. Choose this option if you've created a Xeta private/public key previously.</p>
                         </div>
                     </div>
                     <div class="w-1/2 mb-4">
@@ -184,11 +179,11 @@ function walletModal() {
                 <form x-data x-show="selection == 'import'" class="flex flex-wrap w-full px-2 lg:px-8 py-8 text-white font-light">
                     <p @click="selection = null" class="cursor-pointer text-gray-200 mb-4 underline">← Go back</p>
 
-                    <div class="mb-6 w-full">
+                    <!-- <div class="mb-6 w-full">
                         <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your public key (public wallet address)</label>
                         <input x-model="publicKey" data-rules='["required", "minLength:32", "maxLength:44"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
-                    </div>
+                    </div> -->
 
                     <div class="mb-6 w-full">
                         <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your private key</label>

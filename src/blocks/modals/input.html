@@ -9,11 +9,11 @@ function inputModal() {
         values: {},
         init() {
             var self = this
-            this.values = {}
-
             this.inputs.forEach(function(input) {
-                if (input.value) self.values[input.name] = Alpine.store(input.value.split('.')[0])[input.value.split('.')[1]]
-                else self.values[input.name] = null
+                if (self.values[input.name] == null) {
+                    if (input.value) self.values[input.name] = Alpine.store(input.value.split('.')[0])[input.value.split('.')[1]]
+                    else self.values[input.name] = null
+                }
             })
         },
         /**
@@ -108,7 +108,7 @@ function inputModal() {
                                 />
                                 <p class="text-gray-200 text-xs mt-2 hidden"></p>
                             </div>
-                        </template>                        
+                        </template>
 
                         <template x-if="['integer', 'timestamp'].includes(input.type)">
                             <div>

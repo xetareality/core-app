@@ -19,6 +19,7 @@
                 </ul>
             </div>
         </div>
+        <p x-cloak x-show="$store.pool.description" class="font-ligh pt-1 flex text-gray-200" x-text="$store.pool.description"></p>
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
@@ -26,8 +27,7 @@
             
             <div x-cloak x-show="$store.pool.mechanism == 'ft'" class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                 <p class="text-3xl text-white py-4 tracking-wider">
-                    <span x-text="formatNumber($store.pool.tokenBalance)"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.ticker ? $store.pool.tokenPreview.ticker : ''"></span>
+                    <span x-html="Wrap.amount($store.pool.tokenBalance, $store.pool.token, $store.pool.tokenPreview)"></span>
                 </p>
             </div>
 
@@ -39,7 +39,7 @@
                     <div class="bg-black opacity-50 w-full h-full absolute rounded-2xl z-10"></div>
                 </div>
 
-                <div class="border-b border-gray-800 pb-2 mb-2">
+                <div x-cloak x-show="$store.pool.mechanism == 'nft'" class="border-b border-gray-800 pb-2 mb-2">
                     <p x-cloak x-show="$store.pool.tokenPreview && $store.pool.tokenPreview.name" class="text-xl my-2 text-gray-200 font-normal text-white" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''"></p>
                     <p x-cloak x-show="$store.pool.tokenPreview && $store.pool.tokenPreview.description" class="font-ligh pb-2 flex text-gray-200" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.description : ''"></p>
                 </div>
@@ -48,6 +48,10 @@
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Number of Winners</span>
                 <span x-text="$store.pool.claimsLimit ? formatNumber($store.pool.claimsLimit) : $store.pool.mechanism == 'nft' ? '1' : 'Everyone Wins'"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Current Amount per Winner</span>
+                <span x-html="$store.pool.mechanism == 'nft' ? formatNumber(1) : Wrap.amount(parseFloat($store.pool.tokenBalance)/parseFloat($store.pool.claimsLimit ? $store.pool.claimsLimit : $store.pool.transfersCount ? $store.pool.transfersCount : 1), $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Current Participants</span>
