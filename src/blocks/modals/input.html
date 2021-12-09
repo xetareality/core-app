@@ -51,7 +51,7 @@ function inputModal() {
         submit() {  
             if (this.transacting) return
             if (!Xeta.config.privateKey) {
-                alert('wallet:disconnected')
+                alert('Please (re)connect your wallet.')
                 return
             }
 

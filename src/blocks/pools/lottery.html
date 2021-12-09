@@ -23,7 +23,7 @@
     </div>
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
-            <p class="text-xl mb-4 text-gray-400 font-normal">Participate to win:</p>
+            <p class="text-xl mb-4 text-gray-400 font-normal">Pool currently holds:</p>
             
             <div x-cloak x-show="$store.pool.mechanism == 'ft'" class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                 <p class="text-3xl text-white py-4 tracking-wider">
@@ -55,7 +55,7 @@
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Current Amount per Winner</span>
-                <span x-html="$store.pool.mechanism == 'nft' ? formatNumber(1) : Wrap.amount(parseFloat($store.pool.tokenBalance)/parseFloat($store.pool.claimsLimit ? $store.pool.claimsLimit : $store.pool.transfersCount ? $store.pool.transfersCount : 1), $store.pool.token, $store.pool.tokenPreview)"></span>
+                <span x-html="$store.pool.mechanism == 'nft' ? formatNumber(1) : Wrap.amount(parseFloat($store.pool.tokenBalance)/parseFloat($store.pool.claimsLimit ? ($store.pool.claimsLimit - ($store.pool.claimsCount ? $store.pool.claimsCount : 0)) : $store.pool.transfersCount ? $store.pool.transfersCount : 1), $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Current Participants</span>

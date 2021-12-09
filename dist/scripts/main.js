@@ -100,7 +100,7 @@ function disconnectWallet() {
 function refreshBalances() {
     Xeta.balance.readAddressToken({address: Alpine.sstore('publicKey'), token: Xeta.config.xetaAddress}).then(function(data) {
         Alpine.sstore('xetaBalance', data.amount)
-    }).catch(function(e) {alert(e)})
+    }).catch(function(e) {throw e})
 }
 
 var Constants = {
