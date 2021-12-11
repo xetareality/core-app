@@ -168,7 +168,7 @@ function homePreview() {
             var isXeta = this.path[0] && this.path[0].includes('XETA')
             var base = parseFloat(this.prices[this.path[0] && this.path[0].includes('XETA') ? 'xeta' : this.path[0].toLowerCase()])
             var quote = parseFloat(this.prices[this.path[1] && this.path[1].includes('XETA') ? 'xeta' : this.path[1].toLowerCase()])
-            var slippage = base == quote ? 1 : 0.9875
+            var slippage = base == quote ? 0.985 : 0.975
             this.exchange = isXeta ? formatNumber(this.amount*quote*slippage, 4) : formatNumber(this.amount/base*slippage)
         }
     }
@@ -188,7 +188,7 @@ function homePreview() {
             <a href="https://xetareality.com" target="_blank" class="text-lg cursor-pointer block underline text-gray-100 hover:text-pink-400 tracking-wider">Visit Website →</a>
             <a href="https://xetareality.com/whitepaper.pdf" target="_blank" class="text-sm block cursor-pointer text-gray-300 hover:text-pink-400 tracking-wider">Read Whitepaper</a>
         </div>
-        <!-- <div class="w-full md:w-2/5 px-8">
+        <div class="w-full md:w-2/5 px-8">
             <div class="shadow bg-black bg-opacity-80 rounded-2xl px-8 py-8 shadow-2xl">
                 <p class="text-lg text-gray-100 flex items-center justify-center">
                     <span>Bridge BNB, ETH</span>
@@ -254,7 +254,7 @@ function homePreview() {
                     <span @click="bridge()" x-text="'Swap '+path[0]+' to '+path[1]" class="cursor-pointer text-white rounded-2xl text-center bg-pink-700 hover:bg-pink-600 transition-all px-6 py-2 block mt-4"></span>
                 </div>
             </div>
-        </div> -->
+        </div>
     </div>
 
     <div class="rounded-2xl mt-6 flex flex-wrap relative z-20">
