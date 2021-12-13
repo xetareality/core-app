@@ -1,1 +1,18 @@
-<table class="w-full table-fixed font-light text-sm explorer"><thead><tr class="text-gray-400"><th class="truncate py-2 pr-4 text-left uppercase w-5/12">Hash</th><th class="truncate py-2 pr-4 text-left uppercase w-5/12">Sender</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12">Created</th></tr></thead><tbody><template x-for="transaction in transactions"><tr class="hover:bg-gray-900 text-white"><td class="truncate pr-4 py-2" x-html="Wrap.transaction(transaction.hash)"></td><td class="truncate pr-4 py-2" x-html="Wrap.address(transaction.sender)"></td><td class="truncate pr-4 py-2" x-text="formatTime(transaction.created)"></td></tr></template></tbody></table>
+<table class="w-full table-fixed font-light text-sm explorer">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-5/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-5/12">Sender</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="transaction in transactions">
+            <tr class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.transaction(transaction.hash)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.address(transaction.sender)"></td>
+                <td class="truncate pr-4 py-2" x-text="formatTime(transaction.created)"></td>
+            </tr>
+        </template>
+    </tbody>
+</table>
