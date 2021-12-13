@@ -281,6 +281,7 @@ function homePreview() {
             var error
             if (Xeta.config.dev) error = 'Bridge swaps are only supported on mainnet. Please switch.'
             if (parseFloat(this.amount) < 0.01) error = 'Amount muss be at least 0.01.'
+            if (this.path[0].includes('XETA') && parseFloat(this.amount) < 100) error = 'Amount muss be at least 100 XETA.'
             
             if (error) {
                 alert(error)
