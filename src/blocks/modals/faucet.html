@@ -3,7 +3,7 @@ function faucetModal() {
     return {
         transacting: false,
         selection: null,
-        wallet: Alpine.sstore('publicKey'),
+        wallet: Alpine.sstore('publicKey') || '',
         email: null,
         key: null,
         tweeted: null,
@@ -53,6 +53,7 @@ function faucetModal() {
                     if (status == 200) {
                         alert('Your request was processed successfully - enjoy!')
                         hideModal()
+                        window.location.href = '/address/?address='+self.wallet
                     } else {
                         alert(data)
                     }
