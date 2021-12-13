@@ -30,14 +30,14 @@
         <link rel="stylesheet" href="/styles/main.css">
         <link rel="stylesheet" href="/styles/custom.css">
 
+        <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+        <script>window.TrackJS && TrackJS.install({token: "317478ac92da4e91b1ab24b27339ecee"})</script>
+
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTL2PW36PM"></script>
         <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-
-            gtag('config', 'G-CTL2PW36PM');
+            window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());gtag('config', 'G-CTL2PW36PM');
         </script>
 
         {% block head %}{% endblock %}

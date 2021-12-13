@@ -1,1 +1,48 @@
-<script>function recentExplorer(){return{transfers:[],depleted:{},loading:!1,init(){var e;this.loading||((e=this).loading=!0,Xeta.transfer.scanTokenCreated({token:Xeta.config.xetaAddress},{preview:!0}).then(function(n){e.transfers=n,e.loading=!1}).catch(function(n){e.loading=!1}))}}}</script><div x-data="recentExplorer"><div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12 section"><p class="text-lg py-2 px-6 text-gray-100">Recent Transfers</p><table class="w-full table-fixed font-light text-sm explorer"><thead><tr class="text-gray-400"><th class="truncate py-2 pr-4 text-left uppercase w-2/12">Hash</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12">Created</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th><th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">From</th><th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">To</th></tr></thead><tbody><template x-for="transfer in transfers"><tr class="text-white"><td class="truncate pr-4 py-2" x-html="Wrap.transfer(transfer.hash)"></td><td class="truncate pr-4 py-2" x-text="formatTime(transfer.created)"></td><td class="truncate pr-4 py-2" x-html="Wrap.amount(transfer.amount, transfer.token, transfer.tokenPreview)"></td><td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.from)"></td><td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.to)"></td></tr></template></tbody></table></div></div>
+<script>
+function recentExplorer() {
+    return {
+        transfers: [],
+        depleted: {},
+        loading: false,
+        init() {
+            if (this.loading) return
+            var self = this
+            this.loading = true
+            Xeta.transfer.scanTokenCreated({token: Xeta.config.xetaAddress}, {preview: true}).then(function(data) {
+                self.transfers = data
+                self.loading = false
+            }).catch(function(e) {
+                self.loading = false
+            })
+        },
+    }
+}
+</script>
+
+<div x-data="recentExplorer">
+    <div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12 section">
+        <p class="text-lg py-2 px-6 text-gray-100">Recent Transfers</p>
+        <table class="w-full table-fixed font-light text-sm explorer">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Created</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">From</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">To</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="transfer in transfers">
+            <tr class="text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.transfer(transfer.hash)"></td>
+                <td class="truncate pr-4 py-2" x-text="formatTime(transfer.created)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(transfer.amount, transfer.token, transfer.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.from)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.to)"></td>
+            </tr>
+        </template>
+    </tbody>
+</table>
+    </div>
+</div>
