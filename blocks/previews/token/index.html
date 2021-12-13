@@ -1,4 +1,5 @@
-<script>function tokenPreview() {
+<script>
+function tokenPreview() {
     return {
         token: {},
         init() {
@@ -9,4 +10,31 @@
             })
         }
     }
-}</script><div x-cloak x-show="Object.keys(token).length && token.name && !token.supply" x-data="tokenPreview"><div class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section"><p class="text-lg py-2 text-gray-100 capitalize" x-text="window.location.pathname.slice(1, -1)"></p><div class="flex flex-wrap"><div class="w-full text-white"><div x-cloak x-show="token.preview" class="text-center rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative mb-6" style="background-image: url(/media/pattern01.jpeg)"><div class="w-full md:w-1/2 md:py-8 z-50"><img class="rounded-2xl w-full object-center object-cover shadow" :src="token.preview ? token.preview : Constants.pixel" onerror="this.remove()"></div><div class="bg-black opacity-50 w-full h-full absolute rounded-2xl z-10"></div></div><div><p x-cloak x-show="token.name" class="text-xl my-2 text-gray-200 font-normal text-white" x-text="token.name"></p><p x-cloak x-show="token.description" class="font-ligh pb-2 flex text-gray-200" x-text="token.description"></p><ul x-cloak x-show="token.links" class="flex justify-start font-light text-sm list-none pb-4"><template x-for="link in (token.links ? token.links : [])"><li><a x-text="link.split('?')[0]" rel="nofollow noopener" :href="link" class="underline hover:text-pink-400 truncate pb-1 mr-2"></a></li></template></ul></div></div></div></div></div>
+}
+</script>
+
+<div x-cloak x-show="Object.keys(token).length && token.name && !token.supply" x-data="tokenPreview">
+    <div class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+        <p class="text-lg py-2 text-gray-100 capitalize" x-text="window.location.pathname.slice(1, -1)"></p>
+        <div class="flex flex-wrap">
+            <div class="w-full text-white">
+                <div x-cloak x-show="token.preview" class="text-center rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative mb-6" style="background-image: url(/media/pattern01.jpeg)">
+                    <div class="w-full md:w-1/2 md:py-8 z-50">
+                        <img class="rounded-2xl w-full object-center object-cover shadow" :src="token.preview ? token.preview : Constants.pixel" onerror="this.remove()">
+                    </div>
+                    <div class="bg-black opacity-50 w-full h-full absolute rounded-2xl z-10"></div>
+                </div>
+
+                <div>
+                    <p x-cloak x-show="token.name" class="text-xl my-2 text-gray-200 font-normal text-white" x-text="token.name"></p>
+                    <p x-cloak x-show="token.description" class="font-ligh pb-2 flex text-gray-200" x-text="token.description"></p>
+                    <ul x-cloak x-show="token.links" class="flex justify-start font-light text-sm list-none pb-4">
+                        <template x-for="link in (token.links ? token.links : [])">
+                            <li><a x-text="link.split('?')[0]" rel="nofollow noopener" :href="link" class="underline hover:text-pink-400 truncate pb-1 mr-2"></a></li>
+                        </template>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
