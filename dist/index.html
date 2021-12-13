@@ -278,7 +278,14 @@ function homePreview() {
             })
         },
         bridge() {
-            if (Xeta.config.dev) alert('Bridge swaps are only supported on mainnet. Please switch.')
+            var error
+            if (Xeta.config.dev) error = 'Bridge swaps are only supported on mainnet. Please switch.'
+            if (parseFloat(this.amount) < 0.01) error = 'Amount muss be at least 0.01.'
+            
+            if (error) {
+                alert(error)
+                return
+            }
 
             if (['ETH', 'BNB'].includes(this.path[0]) && this.path[1] == 'XETA') this.eth2xeta()
             else if (this.path[0] == 'XETA(BSC)' && this.path[1] == 'XETA') this.tokens2xeta()
@@ -289,7 +296,7 @@ function homePreview() {
             this.web3.eth.sendTransaction({
                 from: this.account,
                 to: Constants.ethBridge,
-                value: this.web3.utils.toWei(String(this.amount), 'ether'),
+                value: this.web3.utils.toWei(String((parseFloat(this.amount)*1e4/1e4)), 'ether'),
                 data: this.web3.utils.toHex(Xeta.config.publicKey),
                 gas: 50000,
             })
@@ -301,7 +308,7 @@ function homePreview() {
             if (this.chainId != 56) return
             var data = contract.methods.transfer(
                 Constants.ethBridge,
-                this.web3.utils.toWei(String(this.amount), 'gwei'),
+                this.web3.utils.toWei(String((parseFloat(this.amount)*1e4/1e4)), 'gwei'),
                 Xeta.config.publicKey,
             ).encodeABI().replace('0x56b8c724', '0xa9059cbb')
 
@@ -318,7 +325,7 @@ function homePreview() {
             action('transfer.create', {
                 from: Xeta.config.publicKey,
                 to: Constants.xetaBridge,
-                amount: this.amount,
+                amount: String((parseFloat(this.amount)*1e4/1e4)),
                 token: Xeta.config.xetaAddress,
                 message: JSON.stringify([this.path[1], this.account]),
             })
@@ -327,7 +334,7 @@ function homePreview() {
             action('transfer.create', {
                 from: Xeta.config.publicKey,
                 to: Constants.xetaBridge,
-                amount: this.amount,
+                amount: String((parseFloat(this.amount)*1e4/1e4)),
                 token: Xeta.config.xetaAddress,
                 message: JSON.stringify(['XETA', this.account]),
             })
@@ -346,8 +353,11 @@ function homePreview() {
 
 <script type="text/javascript" src="https://unpkg.com/web3@1.2.11/dist/web3.min.js"></script>
 
-<div x-data="homePreview" class="bg-black bg-opacity-100 rounded-2xl px-12 py-6 mb-4 lg:mb-6 bg-center bg-cover relative section z-0" style="background-image: url(https://xetareality.com/img/banner1.jpeg)">
+<div x-data="homePreview" class="bg-black bg-opacity-100 rounded-2xl px-12 py-6 mb-4 lg:mb-6 bg-center bg-cover relative section z-0 overflow-hidden" style="background-image: url(https://xetareality.com/img/banner1.jpeg)">
     <div class="bg-black opacity-50 absolute top-0 left-0 w-full h-full z-10 rounded-2xl"></div>
+    <div @click="showModal('faucetModal')" class="bg-pink-800 hover:bg-pink-700 w-64 h-64 transform -rotate-45 absolute -left-44 -top-44 z-20 flex items-end justify-center cursor-pointer">
+        <span class="text-xs font-medium mb-1.5 text-center uppercase text-gray-200">Get<br>Free XETA</span>
+    </div>
     <div class="flex flex-wrap z-20 relative mt-6">
         <div class="w-full md:w-3/5">
             <p class="text-2xl py-2 text-gray-100 tracking-wider">Xeta Reality Blockchain</p>
@@ -410,7 +420,7 @@ function homePreview() {
                               <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
                             </svg>
                             <span x-html="path[1] && path[1].includes('XETA') ? Wrap.xetaPreview() : Wrap.tokenPreview(path[1] == 'BNB' ? {symbol: 'BNB', preview: '/media/bnb.png'} : {symbol: 'ETH', preview: '/media/eth.png'})"></span>
-                            <select @change="path = JSON.parse($el.value)" class="opacity-0 absolute top-0 left-0 w-full h-full no-arrow py-1 cursor-pointer text-gray-600 outline-none focus:outline-none">
+                            <select @change="path = JSON.parse($el.value), rate()" class="opacity-0 absolute top-0 left-0 w-full h-full no-arrow py-1 cursor-pointer text-gray-600 outline-none focus:outline-none">
                                 <template x-for="option in bridges">
                                     <option :value="JSON.stringify(option)" x-text="option[0]+' to '+option[1]" :selected="JSON.stringify(path) == JSON.stringify(option)"></option>
                                 </template>
@@ -987,6 +997,135 @@ function inputModal() {
                     <button @click.prevent="validForm($root) ? submit() : ''" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-800 transition-all w-full focus:ring focus:ring-purple-500">Submit</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+        <script>
+function faucetModal() {
+    return {
+        transacting: false,
+        selection: null,
+        wallet: Alpine.sstore('publicKey'),
+        email: null,
+        key: null,
+        tweeted: null,
+        request() {
+            if (!this.transacting) {
+                var self = this;
+                this.transacting = true
+
+                try {
+                    if (!this.email || !this.email.includes('@gmail.com')) throw Error('email:invalid')
+                    Xeta.models.validFormats({wallet: this.wallet}, {wallet: ['hash']})
+                } catch (e) {
+                    alert(e.message)
+                    this.transacting = false
+                    return
+                }
+
+                ajax(Xeta.config.interface+'/faucet', {email: this.email, wallet: this.wallet}, function(data, status) {
+                    if (status == 200 || data == 'email:sent') {
+                        self.selection = 'confirm'
+                    } else {
+                        alert(data)
+                    }
+
+                    self.transacting = false
+                }, function(error) {
+                    self.transacting = false
+                    alert(error)
+                })
+            }
+        },
+        confirm() {
+            if (!this.transacting) {
+                var self = this;
+                this.transacting = true
+
+                try {
+                    if (!this.email || !this.wallet || !this.key) throw Error('input:invalid')
+                    if (!this.tweeted) throw Error('tweet:missing')
+                } catch (e) {
+                    alert(e.message)
+                    this.transacting = false
+                    return
+                }
+
+                ajax(Xeta.config.interface+'/confirm', {email: this.email, wallet: this.wallet, key: this.key}, function(data, status) {
+                    if (status == 200) {
+                        alert('Your request was processed successfully - enjoy!')
+                        hideModal()
+                    } else {
+                        alert(data)
+                    }
+                    
+                    self.transacting = false
+                }, function(error) {
+                    self.transacting = false
+                    alert(error)
+                })
+            }
+        },
+    }
+}
+</script>
+<div x-cloak name="faucetModal" id="faucet-modal" x-show.transition.opacity="$store.modal == 'faucetModal'" x-data="faucetModal" class="z-50 fixed w-full h-full top-0 left-0">
+    <div @click="hideModal()" class="backdrop absolute w-full h-full bg-black opacity-75 z-0"></div>
+
+    <div @click="hideModal()" class="relative cursor-pointer flex w-full justify-center py-4 text-white text-sm z-50">
+        <svg class="fill-current text-white mt-0.5" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+            <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+        </svg>
+        <span class="ml-1">Close</span>
+    </div>
+
+    <div class="overflow-scroll max-h-full mx-auto w-full md:w-1/2 pb-32 z-50 relative">
+        <div class="rounded-2xl shadow w-full relative bg-pink-900 px-2 lg:px-8 py-4 bg-top bg-cover" style="background-image: url(/media/background.jpg)">
+            <div x-cloak x-show="transacting" class="flex justify-center">
+                <div class="spinner"></div>
+            </div>
+            <div x-cloak x-show="!transacting">
+                <div class="flex flex-wrap px-2 lg:px-8 text-white font-light">
+                    <p class="w-full px-4 py-4 text-2xl text-center">Request Free XETA Tokens</p>
+                    <p class="w-full px-4 pb-2 text-sm text-center text-white">If you have a Gmail email address, you are eligible to receive 10 XETA tokens on Mainnet, and 1000 XETA tokens on Testnet.</p>
+                    <p x-cloak x-show="Alpine.store('publicKey')" class="w-full px-4 text-sm text-center text-white">Connected Wallet: <span x-text="Alpine.sstore('publicKey')"></span></p>
+
+                    <form x-data x-show="!selection" class="flex flex-wrap w-full px-2 lg:px-8 py-8 text-white font-light">
+                        <div class="mb-6 w-full">
+                            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your Gmail Address</label>
+                            <input x-model="email" data-rules='["required"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
+                            <p class="text-gray-200 text-xs mt-2 hidden"></p>
+                        </div>
+
+                        <div class="mb-6 w-full">
+                            <label class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your XETA Public Key Address <span @click="showModal('walletModal')" class="text-gray-200 text-xs font-semibold uppercase underline cursor-pointer">Create New XETA Wallet or Connect Existing</span></label>
+                            <input x-model="wallet" data-rules='["required"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
+                            <p class="text-gray-200 text-xs mt-2 hidden"></p>
+                        </div>
+
+                        <div class="w-full">
+                            <button @click.prevent="validForm($root) && email && wallet ? request() : null" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full">Confirm Email</button>
+                        </div>
+                    </form>
+
+                    <form x-data x-show="selection == 'confirm'" class="flex flex-wrap w-full px-2 lg:px-8 py-8 text-white font-light">
+                        <div class="mb-6 w-full">
+                            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your Email Confirmation Code</label>
+                            <input x-model="key" data-rules='["required"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
+                            <p class="text-gray-200 text-xs mt-2 hidden"></p>
+                        </div>
+
+                        <div class="mb-6 w-full">
+                            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Tag XetaReality on Twitter</label>
+                            <a @click="tweeted = true" href="https://twitter.com/intent/tweet?text=Hey%20@XetaReality,%20thanks%20for%20the%20free%20tokens!" target="_blank" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-blue-500 hover:bg-blue-700 text-lg font-light transition-all w-full">Share a Tweet</a>
+                        </div>
+                        
+                        <div class="w-full">
+                            <button @click.prevent="validForm($root) && key && tweeted ? confirm() : alert('Enter your confirmation code and share a tweet to receive tokens.')" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full">Receive Tokens</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

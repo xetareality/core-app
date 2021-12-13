@@ -110,7 +110,14 @@ function homePreview() {
             })
         },
         bridge() {
-            if (Xeta.config.dev) alert('Bridge swaps are only supported on mainnet. Please switch.')
+            var error
+            if (Xeta.config.dev) error = 'Bridge swaps are only supported on mainnet. Please switch.'
+            if (parseFloat(this.amount) < 0.01) error = 'Amount muss be at least 0.01.'
+            
+            if (error) {
+                alert(error)
+                return
+            }
 
             if (['ETH', 'BNB'].includes(this.path[0]) && this.path[1] == 'XETA') this.eth2xeta()
             else if (this.path[0] == 'XETA(BSC)' && this.path[1] == 'XETA') this.tokens2xeta()
@@ -121,7 +128,7 @@ function homePreview() {
             this.web3.eth.sendTransaction({
                 from: this.account,
                 to: Constants.ethBridge,
-                value: this.web3.utils.toWei(String(this.amount), 'ether'),
+                value: this.web3.utils.toWei(String((parseFloat(this.amount)*1e4/1e4)), 'ether'),
                 data: this.web3.utils.toHex(Xeta.config.publicKey),
                 gas: 50000,
             })
@@ -133,7 +140,7 @@ function homePreview() {
             if (this.chainId != 56) return
             var data = contract.methods.transfer(
                 Constants.ethBridge,
-                this.web3.utils.toWei(String(this.amount), 'gwei'),
+                this.web3.utils.toWei(String((parseFloat(this.amount)*1e4/1e4)), 'gwei'),
                 Xeta.config.publicKey,
             ).encodeABI().replace('0x56b8c724', '0xa9059cbb')
 
@@ -150,7 +157,7 @@ function homePreview() {
             action('transfer.create', {
                 from: Xeta.config.publicKey,
                 to: Constants.xetaBridge,
-                amount: this.amount,
+                amount: String((parseFloat(this.amount)*1e4/1e4)),
                 token: Xeta.config.xetaAddress,
                 message: JSON.stringify([this.path[1], this.account]),
             })
@@ -159,7 +166,7 @@ function homePreview() {
             action('transfer.create', {
                 from: Xeta.config.publicKey,
                 to: Constants.xetaBridge,
-                amount: this.amount,
+                amount: String((parseFloat(this.amount)*1e4/1e4)),
                 token: Xeta.config.xetaAddress,
                 message: JSON.stringify(['XETA', this.account]),
             })
@@ -178,8 +185,11 @@ function homePreview() {
 
 <script type="text/javascript" src="https://unpkg.com/web3@1.2.11/dist/web3.min.js"></script>
 
-<div x-data="homePreview" class="bg-black bg-opacity-100 rounded-2xl px-12 py-6 mb-4 lg:mb-6 bg-center bg-cover relative section z-0" style="background-image: url(https://xetareality.com/img/banner1.jpeg)">
+<div x-data="homePreview" class="bg-black bg-opacity-100 rounded-2xl px-12 py-6 mb-4 lg:mb-6 bg-center bg-cover relative section z-0 overflow-hidden" style="background-image: url(https://xetareality.com/img/banner1.jpeg)">
     <div class="bg-black opacity-50 absolute top-0 left-0 w-full h-full z-10 rounded-2xl"></div>
+    <div @click="showModal('faucetModal')" class="bg-pink-800 hover:bg-pink-700 w-64 h-64 transform -rotate-45 absolute -left-44 -top-44 z-20 flex items-end justify-center cursor-pointer">
+        <span class="text-xs font-medium mb-1.5 text-center uppercase text-gray-200">Get<br>Free XETA</span>
+    </div>
     <div class="flex flex-wrap z-20 relative mt-6">
         <div class="w-full md:w-3/5">
             <p class="text-2xl py-2 text-gray-100 tracking-wider">Xeta Reality Blockchain</p>
@@ -242,7 +252,7 @@ function homePreview() {
                               <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
                             </svg>
                             <span x-html="path[1] && path[1].includes('XETA') ? Wrap.xetaPreview() : Wrap.tokenPreview(path[1] == 'BNB' ? {symbol: 'BNB', preview: '/media/bnb.png'} : {symbol: 'ETH', preview: '/media/eth.png'})"></span>
-                            <select @change="path = JSON.parse($el.value)" class="opacity-0 absolute top-0 left-0 w-full h-full no-arrow py-1 cursor-pointer text-gray-600 outline-none focus:outline-none">
+                            <select @change="path = JSON.parse($el.value), rate()" class="opacity-0 absolute top-0 left-0 w-full h-full no-arrow py-1 cursor-pointer text-gray-600 outline-none focus:outline-none">
                                 <template x-for="option in bridges">
                                     <option :value="JSON.stringify(option)" x-text="option[0]+' to '+option[1]" :selected="JSON.stringify(path) == JSON.stringify(option)"></option>
                                 </template>
