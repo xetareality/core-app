@@ -906,5 +906,134 @@ function inputModal() {
         </div>
     </div>
 </div>
+        <script>
+function faucetModal() {
+    return {
+        transacting: false,
+        selection: null,
+        wallet: Alpine.sstore('publicKey'),
+        email: null,
+        key: null,
+        tweeted: null,
+        request() {
+            if (!this.transacting) {
+                var self = this;
+                this.transacting = true
+
+                try {
+                    if (!this.email || !this.email.includes('@gmail.com')) throw Error('email:invalid')
+                    Xeta.models.validFormats({wallet: this.wallet}, {wallet: ['hash']})
+                } catch (e) {
+                    alert(e.message)
+                    this.transacting = false
+                    return
+                }
+
+                ajax(Xeta.config.interface+'/faucet', {email: this.email, wallet: this.wallet}, function(data, status) {
+                    if (status == 200 || data == 'email:sent') {
+                        self.selection = 'confirm'
+                    } else {
+                        alert(data)
+                    }
+
+                    self.transacting = false
+                }, function(error) {
+                    self.transacting = false
+                    alert(error)
+                })
+            }
+        },
+        confirm() {
+            if (!this.transacting) {
+                var self = this;
+                this.transacting = true
+
+                try {
+                    if (!this.email || !this.wallet || !this.key) throw Error('input:invalid')
+                    if (!this.tweeted) throw Error('tweet:missing')
+                } catch (e) {
+                    alert(e.message)
+                    this.transacting = false
+                    return
+                }
+
+                ajax(Xeta.config.interface+'/confirm', {email: this.email, wallet: this.wallet, key: this.key}, function(data, status) {
+                    if (status == 200) {
+                        alert('Your request was processed successfully - enjoy!')
+                        hideModal()
+                    } else {
+                        alert(data)
+                    }
+                    
+                    self.transacting = false
+                }, function(error) {
+                    self.transacting = false
+                    alert(error)
+                })
+            }
+        },
+    }
+}
+</script>
+<div x-cloak name="faucetModal" id="faucet-modal" x-show.transition.opacity="$store.modal == 'faucetModal'" x-data="faucetModal" class="z-50 fixed w-full h-full top-0 left-0">
+    <div @click="hideModal()" class="backdrop absolute w-full h-full bg-black opacity-75 z-0"></div>
+
+    <div @click="hideModal()" class="relative cursor-pointer flex w-full justify-center py-4 text-white text-sm z-50">
+        <svg class="fill-current text-white mt-0.5" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+            <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+        </svg>
+        <span class="ml-1">Close</span>
+    </div>
+
+    <div class="overflow-scroll max-h-full mx-auto w-full md:w-1/2 pb-32 z-50 relative">
+        <div class="rounded-2xl shadow w-full relative bg-pink-900 px-2 lg:px-8 py-4 bg-top bg-cover" style="background-image: url(/media/background.jpg)">
+            <div x-cloak x-show="transacting" class="flex justify-center">
+                <div class="spinner"></div>
+            </div>
+            <div x-cloak x-show="!transacting">
+                <div class="flex flex-wrap px-2 lg:px-8 text-white font-light">
+                    <p class="w-full px-4 py-4 text-2xl text-center">Request Free XETA Tokens</p>
+                    <p class="w-full px-4 pb-2 text-sm text-center text-white">If you have a Gmail email address, you are eligible to receive 10 XETA tokens on Mainnet, and 1000 XETA tokens on Testnet.</p>
+                    <p x-cloak x-show="Alpine.store('publicKey')" class="w-full px-4 text-sm text-center text-white">Connected Wallet: <span x-text="Alpine.sstore('publicKey')"></span></p>
+
+                    <form x-data x-show="!selection" class="flex flex-wrap w-full px-2 lg:px-8 py-8 text-white font-light">
+                        <div class="mb-6 w-full">
+                            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your Gmail Address</label>
+                            <input x-model="email" data-rules='["required"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
+                            <p class="text-gray-200 text-xs mt-2 hidden"></p>
+                        </div>
+
+                        <div class="mb-6 w-full">
+                            <label class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your XETA Public Key Address <span @click="showModal('walletModal')" class="text-gray-200 text-xs font-semibold uppercase underline cursor-pointer">Create New XETA Wallet or Connect Existing</span></label>
+                            <input x-model="wallet" data-rules='["required"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
+                            <p class="text-gray-200 text-xs mt-2 hidden"></p>
+                        </div>
+
+                        <div class="w-full">
+                            <button @click.prevent="validForm($root) && email && wallet ? request() : null" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full">Confirm Email</button>
+                        </div>
+                    </form>
+
+                    <form x-data x-show="selection == 'confirm'" class="flex flex-wrap w-full px-2 lg:px-8 py-8 text-white font-light">
+                        <div class="mb-6 w-full">
+                            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your Email Confirmation Code</label>
+                            <input x-model="key" data-rules='["required"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
+                            <p class="text-gray-200 text-xs mt-2 hidden"></p>
+                        </div>
+
+                        <div class="mb-6 w-full">
+                            <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Tag XetaReality on Twitter</label>
+                            <a @click="tweeted = true" href="https://twitter.com/intent/tweet?text=Hey%20@XetaReality,%20thanks%20for%20the%20free%20tokens!" target="_blank" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-blue-500 hover:bg-blue-700 text-lg font-light transition-all w-full">Share a Tweet</a>
+                        </div>
+                        
+                        <div class="w-full">
+                            <button @click.prevent="validForm($root) && key && tweeted ? confirm() : alert('Enter your confirmation code and share a tweet to receive tokens.')" type="submit" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full">Receive Tokens</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
     </body>
 </html>
