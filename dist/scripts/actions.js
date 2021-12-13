@@ -98,8 +98,8 @@ var Actions = {
         Create a new pool for a token.
         The configuration is final and once launched, cannot be changed.`,
         inputs: [
-            {name: 'program', type: 'string', required: true},
             {name: 'token', type: 'string', required: true, value: 'token.address'},
+            {name: 'program', type: 'string', required: true},
             {name: 'name', type: 'string', required: false},
             {name: 'description', type: 'string', required: false},
             {name: 'mechanism', type: 'string', required: false},
@@ -187,10 +187,10 @@ var Actions = {
         Create a new transfer.
         Transfer an NFT by leaving the amount empty.`,
         inputs: [
-            {name: 'from', type: 'hash', required: false},
             {name: 'to', type: 'hash', required: true},
             {name: 'token', type: 'hash', required: true, value: 'token.address'},
             {name: 'amount', type: 'amount', required: false},
+            {name: 'from', type: 'hash', required: false},
             {name: 'message', type: 'string', required: false},
         ]
     },

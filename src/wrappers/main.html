@@ -48,6 +48,25 @@
         </script>
 
         {% block head %}{% endblock %}
+
+        <meta name="robots" content="max-image-preview:large">
+        <meta property="og:site_name" content="Xeta Reality">
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="Xeta Reality Network">
+        <meta property="og:description" content="">
+        <meta property="og:image" content="">
+
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="@XetaReality">
+        <meta name="twitter:creator" content="@XetaReality">
+        <meta name="twitter:title" content="Xeta Reality Network">
+        <meta name="twitter:description" content="">
+        <meta name="twitter:image" content="">
+
+        <script>
+        document.querySelector("meta[name='twitter:image']").setAttribute('content', 'https://image.thum.io/get/width/800/crop/600/'+window.location.href)
+        document.querySelector("meta[property='og:image']").setAttribute('content', 'https://image.thum.io/get/width/800/crop/600/'+window.location.href)
+        </script>
     </head>
     <body>
         <div class="flex flex-col mx-auto w-full min-h-screen text-gray-300 relative bg-center bg-cover" style="background-image: url(/media/background.jpg)">
