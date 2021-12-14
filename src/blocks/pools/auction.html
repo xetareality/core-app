@@ -21,10 +21,10 @@
     <div class="flex flex-wrap">
         <div class="w-full mb-4 text-white">
             <div x-cloak x-show="$store.pool.tokenPreview && $store.pool.tokenPreview.preview" class="text-center rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative mb-6" style="background-image: url(/media/pattern01.jpeg)">
-                <div class="w-full lg:w-1/2 lg:py-8 z-50">
-                    <img class="rounded-2xl w-full object-center object-cover shadow" :src="$store.pool.tokenPreview ? $store.pool.tokenPreview.preview : Constants.pixel" onerror="this.remove()">
+                <div class="w-full lg:w-3/5 lg:py-8 z-40">
+                    <img class="rounded-2xl w-full object-center object-cover shadow-4xl" :src="$store.pool.tokenPreview ? $store.pool.tokenPreview.preview : Constants.pixel" onerror="this.remove()">
                 </div>
-                <div class="bg-black opacity-50 w-full h-full absolute rounded-2xl z-10"></div>
+                <div class="bg-gradient-to-r from-black via-gray-800 to-black opacity-90 w-full h-full absolute rounded-2xl z-10"></div>
             </div>
 
             <div class="border-b border-gray-800 pb-2 mb-2">
@@ -32,17 +32,17 @@
                 <p x-cloak x-show="$store.pool.tokenPreview && $store.pool.tokenPreview.description" class="font-ligh pb-2 flex text-gray-200" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.description : ''"></p>
             </div>
 
-            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+            <p x-cloak x-show="$store.pool.xetaTarget" class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Target Bid</span>
-                <span x-html="Wrap.xeta($store.pool.xetaTarget)"></span>
+                <span x-html="Wrap.xeta($store.pool.xetaTarget, 2)"></span>
             </p>
-            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+            <p x-cloak x-show="$store.pool.xetaLimit" class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Instant-Buy Bid</span>
-                <span x-html="Wrap.xeta($store.pool.xetaLimit)"></span>
+                <span x-html="Wrap.xeta($store.pool.xetaLimit, 2)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Highest Bid</span>
-                <span x-html="Wrap.xeta($store.pool.xetaBalance)"></span>
+                <span x-html="Wrap.xeta($store.pool.xetaBalance, 2)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Highest Bidder</span>
