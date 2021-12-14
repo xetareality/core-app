@@ -31,11 +31,12 @@ function tokenExplorer() {
                 if (!data.length) self.depleted[resource] = true
 
                 // Calculate percentages
-                if (resource == 'balances' && token) data.forEach(function(d) {d.percentage = Big(d.amount).div(token.supply).mul(100).round(4).toString()})
+                if (resource == 'balances' && token && token.supplpy) data.forEach(function(d) {d.percentage = Big(d.amount).div(token.supply).mul(100).round(4).toString()})
 
                 self[resource] = self[resource].concat(data)
                 self.loading = false
             }).catch(function(e) {
+                throw e
                 self.loading = false
             })
         },
