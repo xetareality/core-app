@@ -114,7 +114,9 @@ function homePreview() {
             if (Xeta.config.dev) error = 'Bridge swaps are only supported on mainnet. Please switch.'
             if (parseFloat(this.amount) < 0.01) error = 'Amount muss be at least 0.01.'
             if (this.path[0].includes('XETA') && parseFloat(this.amount) < 100) error = 'Amount muss be at least 100 XETA.'
-            
+            if (!Xeta.config.publicKey || !Alpine.store('publicKey')) error = 'Please reconnect your Xeta wallet.'
+            if (!this.account) error = 'Please reconnect your BSC/ETH wallet.'
+                
             if (error) {
                 alert(error)
                 return

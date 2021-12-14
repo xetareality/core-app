@@ -1,1 +1,22 @@
-<table class="w-full table-fixed font-light text-sm explorer"><thead><tr class="text-gray-400"><th class="truncate py-2 pr-4 text-left uppercase w-2/12">Hash</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12">Created</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th><th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">From</th><th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">To</th></tr></thead><tbody><template x-for="transfer in transfers"><tr class="text-white"><td class="truncate pr-4 py-2" x-html="Wrap.transfer(transfer.hash)"></td><td class="truncate pr-4 py-2" x-text="formatTime(transfer.created)"></td><td class="truncate pr-4 py-2" x-html="Wrap.amount(transfer.amount, transfer.token, transfer.tokenPreview)"></td><td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.from)"></td><td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.to)"></td></tr></template></tbody></table>
+<table class="w-full table-fixed font-light text-sm explorer">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Created</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">From</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">To</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="transfer in transfers">
+            <tr class="text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.transfer(transfer.hash)"></td>
+                <td class="truncate pr-4 py-2" x-text="formatTime(transfer.created)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(transfer.amount, transfer.token, transfer.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.from)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.to)"></td>
+            </tr>
+        </template>
+    </tbody>
+</table>
