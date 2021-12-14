@@ -13,6 +13,8 @@ function recentExplorer() {
                 self.loading = false
             }).catch(function(e) {
                 self.loading = false
+                if (e.message == 'quota:limited') window.location.href = '/pages/quota'
+                else throw e
             })
         },
     }

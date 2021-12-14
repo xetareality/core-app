@@ -36,8 +36,9 @@ function tokenExplorer() {
                 self[resource] = self[resource].concat(data)
                 self.loading = false
             }).catch(function(e) {
-                throw e
                 self.loading = false
+                if (e.message == 'quota:limited') window.location.href = '/pages/quota'
+                else throw e
             })
         },
     }

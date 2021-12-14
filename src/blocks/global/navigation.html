@@ -1,6 +1,6 @@
 <header x-data id="page-header" class="flex flex-none items-center bg-black">
     <div class="flex flex-wrap justify-between container xl:max-w-6xl mx-auto px-4 lg:px-8 py-2">
-        <div class="hidden md:flex w-full justify-center mb-2 md:mb-0 md:justify-start md:w-2/5 flex items-center">
+        <div class="hidden lg:flex w-full justify-center mb-2 lg:mb-0 lg:justify-start lg:w-2/5 flex items-center">
             <a href="/" class="flex text tracking-wide text-gray-100 hover:text-pink-400">
                 <img class="w-6 h-6 mr-2" src="/media/favicon.png" />
                 <span class="inline">Xeta Blockchain Explorer</span>
@@ -13,10 +13,13 @@
                 <span class="ml-2 text-xs text-gray-200 select-none">Testnet</span>
             </div>
         </div>
-        <div class="w-full justify-between md:justify-end md:w-3/5 flex flex items-center font-light">
-            <nav class="flex text-sm mr-4">
-                <div x-data="{active: false}" class="relative py-2">
-                    <span @click="active = !active" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">Tokens</span>
+        <div class="w-full justify-between lg:justify-end lg:w-3/5 flex items-center font-light">
+            <nav class="flex flex-wrap text-sm lg:mr-4">
+                <a href="/" class="lg:hidden cursor-pointer px-2 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-base">
+                    <span>Home</span>
+                </a>
+                <div x-data="{active: false}" class="relative text-xs lg:text-base">
+                    <span @click="active = !active" class="block cursor-pointer px-2 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">Tokens</span>
                     <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
                         <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                             <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center"><a href="/pages/tokens">By Market Cap</a></li>
@@ -24,8 +27,8 @@
                         </ul>
                     </div>
                 </div>
-                <div x-data="{active: false}" class="relative py-2">
-                    <span @click="active = !active" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">NFTs</span>
+                <div x-data="{active: false}" class="relative text-xs lg:text-base">
+                    <span @click="active = !active" class="block cursor-pointer px-2 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">NFTs</span>
                     <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
                         <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                             <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center"><a href="/pages/collections">Top Collections</a></li>
@@ -33,21 +36,19 @@
                         </ul>
                     </div>
                 </div>
-                <a href="/pages/statistics" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">
+                <a href="/pages/statistics" class="cursor-pointer px-2 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-base">
                     <span>Stats</span>
                 </a>
-                <a href="https://xetareality.com" target="_blank" class="cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">
+                <a href="https://xetareality.com" target="_blank" class="cursor-pointer px-2 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-base">
                     <span>About</span>
                 </a>
             </nav>
 
             <div class="text-sm flex">
-                <span @click="showModal('walletModal')" x-show="!Alpine.sstore('publicKey')" class="cursor-pointer font-medium px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white">
-                    <span>Connect Wallet</span>
-                </span>
+                <span @click="showModal('walletModal')" x-show="!Alpine.sstore('publicKey')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white">Connect</span>
 
-                <div x-cloak x-show="Alpine.sstore('publicKey')" @click="showModal('actionsModal')" class="cursor-pointer font-medium px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white">
-                    <span x-text="'Wallet: '+String(Alpine.sstore('publicKey')).slice(0, 10)+'...'"></span>
+                <div x-cloak x-show="Alpine.sstore('publicKey')" @click="showModal('actionsModal')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white">
+                    <span x-text="String(Alpine.sstore('publicKey')).slice(0, 10)+'...'"></span>
                 </div>
             </div>
         </div>

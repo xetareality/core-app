@@ -27,10 +27,10 @@ function initSearch() {
 </script>
 
 <div x-data class="flex flex-wrap items-center mb-4 lg:mb-8">
-    <h1 class="text-2xl w-full md:w-1/3 pr-4 py-4 md:py-1 text-gray-100 tracking-wider font-light capitalize" x-text="$store.resource ? $store.resource.split('/').slice(-1)[0] : 'Xeta Explorer'"></h1>
-    <div class="w-full md:w-2/3">
+    <h1 class="text-2xl w-full lg:w-1/3 pr-4 py-4 lg:py-1 text-gray-100 tracking-wider font-light capitalize" x-text="$store.resource ? $store.resource.split('/').slice(-1)[0] : 'Xeta Explorer'"></h1>
+    <div class="w-full lg:w-2/3">
         <div class="" x-data="initSearch()">
-            <div class="w-full flex w-full justify-end relative">
+            <div class="w-full flex justify-end relative">
                 <input @keyup.debounce="search()" x-model.debounce="query" @focus="active = true, query.length ? search() : null" @blur.outside="active = false, results = []" placeholder="Search (for Tokens, NFTs, Transactions, Pools, Addresses...)" type="input" class="font-light placeholder-gray-100 rounded-2xl shadow border-pink-500 focus:border-pink-400 border-2 transition-all px-4 py-2 bg-transparent text-lg text-gray-100 outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500">
                 
                 <div x-cloak x-show="active && results.length" @click.away="active = false" class="absolute top-0 left-0 mt-12 w-full flex justify-center">
@@ -38,7 +38,7 @@ function initSearch() {
                         <ul class="w-full flex flex-wrap justify-between overflow-y-scroll" style="max-height: 300px;">
                             <template x-for="result in results">
                                 <li @click="window.location.href = result.path" class="w-full">
-                                    <div class="cursor-pointer rounded-2xl overflow-hidden w-full block hover:bg-gray-800 px-4 py-2 flex justify-start items-center border-b border-gray-700">
+                                    <div class="cursor-pointer rounded-2xl overflow-hidden w-full block hover:bg-black transition-all px-4 py-2 flex justify-start items-center border-b border-gray-700">
                                         <div class="mr-3">
                                             <img class="w-8 h-8" :class="{'opacity-20': !result.preview}" :src="result.preview ? result.preview : '/media/empty.png'" onerror="this.src = '/media/empty.png'" />
                                         </div>
@@ -49,7 +49,7 @@ function initSearch() {
                                                 <span class="text-xs text-gray-200 break-words" x-text="result.name ? '('+result.name.slice(0,50)+')' : ''"></span>
                                             </p>
                                             
-                                            <span class="block text-sm text-gray-200 break-words underline" x-text="result.key"></span>
+                                            <span class="block text-sm text-gray-200 break-words" x-text="result.key"></span>
                                         </div>
                                     </div>
                                 </li>

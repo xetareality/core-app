@@ -19,7 +19,7 @@ function tokenPreview() {
         <div class="flex flex-wrap">
             <div class="w-full text-white">
                 <div x-cloak x-show="token.preview" class="text-center rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative mb-6" style="background-image: url(/media/pattern01.jpeg)">
-                    <div class="w-full md:w-1/2 md:py-8 z-50">
+                    <div class="w-full lg:w-1/2 lg:py-8 z-50">
                         <img class="rounded-2xl w-full object-center object-cover shadow" :src="token.preview ? token.preview : Constants.pixel" onerror="this.remove()">
                     </div>
                     <div class="bg-black opacity-50 w-full h-full absolute rounded-2xl z-10"></div>

@@ -1,0 +1,16 @@
+{% extends "src/wrappers/main.html" %}
+
+{% block title %}Quota Limited{% endblock %}
+{% block description %}{% endblock %}
+
+{% block content %}
+
+<div x-data="page">
+    <div class="bg-black rounded-2xl py-4 section">
+        <div class="w-full flex flex-wrap justify-between items-center mb-4 px-6">
+            <p class="text-2xl font-medium py-2 text-white w-full">Request Quota Limit</p>
+            <p class="mt-2 text-white w-full">It looks like you've been making a lot of requests lately (for example, by refreshing the page). Please wait a few minutes.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,2 +1,273 @@
-<script>function addressExplorer(){return{resource:"transfers",resourceFilter:"transfers",transfersFilter:"incoming",claimsFilter:"address"==Alpine.store("resource")?"holding":"issued",allowancesFilter:"spendable",transfers:[],transfersOutgoing:[],transfersIncoming:[],transactions:[],tokens:[],pools:[],claims:[],claimsIssued:[],claimsHolding:[],allowances:[],allowancesGranted:[],allowancesSpendable:[],balances:[],address:gup("address"),depleted:{},loading:!1,methods:{transfersIncoming:Xeta.transfer.scanToCreated,transfersOutgoing:Xeta.transfer.scanFromCreated,transactions:Xeta.transaction.scanSenderCreated,tokens:Xeta.token.scanOwnerCreated,pools:Xeta.pool.scanCreatorCreated,claimsHolding:Xeta.claim.scanHolderCreated,claimsIssued:Xeta.claim.scanIssuerCreated,balances:Xeta.balance.scanAddressAmount,allowancesGranted:Xeta.allowance.scanAddressCreated,allowancesSpendable:Xeta.allowance.scanSpenderCreated},inputs:{transfersIncoming:"to",transfersOutgoing:"from",transactions:"sender",tokens:"owner",pools:"creator",claimsHolding:"holder",claimsIssued:"issuer",balances:"address",allowancesGranted:"address",allowancesSpendable:"spender"},init(){var a=this;document.addEventListener("resourceLoaded",function(e){"pool"==Alpine.store("resource")&&"loot"==Alpine.store("pool").program&&(a.resource="tokens");var s=Alpine.store("address");try{s.token.meta.default&&(a.resource=s.token.meta.default)}catch(e){}a.change(a.resource)})},change(e){this.resource=e;var s=this[e+"Filter"];this.resourceFilter=e+(s?s[0].toUpperCase()+s.slice(1):""),this.load(e)},load(s){this[s]=this[this.resourceFilter];var e,a,t=this.resourceFilter;this.loading||this.depleted[t]||(this.loading=!0,e=this[t].length?this[t].slice(-1)[0]:{},(a=this).methods[t]({...e,[this.inputs[t]]:this.address},{preview:!0}).then(function(e){e.length||(a.depleted[t]=!0),a[t]=a[t].concat(e),s!=t&&(a[s]=a[t]),"tokens"==s&&Grid.layout(document.getElementById("grid"),document.getElementById("tokens")),a.loading=!1}).catch(function(e){throw e}))}}}</script><div x-data="addressExplorer"><div class="bg-black rounded-2xl px-2 pt-2 mb-2 text-sm font-light text-gray-200 section"><div class="flex flex-wrap"><template x-for="type in (
-                $store.resource == 'address' ? ['transfers', 'balances', 'tokens', 'transactions', 'pools', 'claims', 'allowances'] : $store.resource == 'pool' ? ['transfers', 'balances', 'tokens', 'claims'] : [])"><div @click="change(type)" :class="{'border-pink-700': resource == type}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer capitalize" x-text="type"></div></template></div></div><div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12"><div class="flex justify-between items-center px-6"><p class="text-lg py-2 text-gray-100 capitalize" x-text="resource"></p><div x-cloak x-show="['transfers', 'claims', 'allowances'].includes(resource)" x-data="{active: false}" class="relative text-white text-sm"><span @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize text-xs" x-text="$data[resource+'Filter']"></span><div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50"><ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl"><template x-for="[key, type] in Object.entries({incoming: 'transfers', outgoing: 'transfers', issued: 'claims', holding: 'claims', granted: 'allowances', spendable: 'allowances'})"><li x-cloak x-show="type == resource" @click="$data[type+'Filter'] = key, change(type), active = false" x-text="key" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs"></li></template></ul></div></div></div><div x-cloak x-show="resource == 'transfers'"><table class="w-full table-fixed font-light text-sm explorer"><thead><tr class="text-gray-400"><th class="truncate py-2 pr-4 text-left uppercase w-2/12">Hash</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12">Created</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th><th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">From</th><th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">To</th></tr></thead><tbody><template x-for="transfer in transfers"><tr class="text-white"><td class="truncate pr-4 py-2" x-html="Wrap.transfer(transfer.hash)"></td><td class="truncate pr-4 py-2" x-text="formatTime(transfer.created)"></td><td class="truncate pr-4 py-2" x-html="Wrap.amount(transfer.amount, transfer.token, transfer.tokenPreview)"></td><td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.from)"></td><td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.to)"></td></tr></template></tbody></table></div><div x-cloak x-show="resource == 'balances'"><table class="w-full table-fixed font-light text-sm explorer"><thead><tr class="text-gray-400"><th class="truncate py-2 pr-4 text-left uppercase w-1/3">Address</th><th class="truncate py-2 pr-4 text-left uppercase w-1/3">Token</th><th class="truncate py-2 pr-4 text-left uppercase w-1/4">Amount</th><th x-cloak x-show="balances.length && balances[0].percentage" class="truncate py-2 pr-4 text-left uppercase w-1/4 hidden md:table-cell">Percent</th></tr></thead><tbody><template x-for="balance in balances"><tr class="hover:bg-gray-900 text-white"><td class="truncate pr-4 py-2" x-html="Wrap.address(balance.address)"></td><td class="truncate pr-4 py-2" x-html="Wrap.token(balance.token)"></td><td class="truncate pr-4 py-2" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview)"></td><td x-cloak x-show="balance.percentage" class="truncate pr-4 py-2 hidden md:table-cell" x-html="balance.percentage+'%'"></td></tr></template></tbody></table></div><div x-cloak x-show="resource == 'transactions'"><table class="w-full table-fixed font-light text-sm explorer"><thead><tr class="text-gray-400"><th class="truncate py-2 pr-4 text-left uppercase w-5/12">Hash</th><th class="truncate py-2 pr-4 text-left uppercase w-5/12">Sender</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12">Created</th></tr></thead><tbody><template x-for="transaction in transactions"><tr class="hover:bg-gray-900 text-white"><td class="truncate pr-4 py-2" x-html="Wrap.transaction(transaction.hash)"></td><td class="truncate pr-4 py-2" x-html="Wrap.address(transaction.sender)"></td><td class="truncate pr-4 py-2" x-text="formatTime(transaction.created)"></td></tr></template></tbody></table></div><div x-cloak x-show="resource == 'pools'"><table class="w-full table-fixed font-light text-sm explorer"><thead><tr class="text-gray-400"><th class="truncate py-2 pr-4 text-left uppercase w-4/12">Address</th><th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">Name</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12">Balance</th><th class="truncate py-2 pr-4 text-left uppercase w-1/12">Program</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Expires</th></tr></thead><tbody><template x-for="pool in pools"><tr class="hover:bg-gray-900 text-white"><td class="truncate pr-4 py-2" x-html="Wrap.pool(pool.address)"></td><td class="truncate pr-4 py-2 hidden md:table-cell" x-html="pool.name ? pool.name : 'Unnamed'"></td><td class="truncate pr-4 py-2" x-html="Wrap.amount(pool.tokenBalance, pool.token, pool.tokenPreview)"></td><td class="truncate pr-4 py-2" x-html="pool.program.toUpperCase()"></td><td class="truncate pr-4 py-2 hidden md:table-cell" x-text="pool.expires ? formatTime(pool.expires) : 'Never'"></td></tr></template></tbody></table></div><div x-cloak x-show="resource == 'claims'"><table class="w-full table-fixed font-light text-sm explorer"><thead><tr class="text-gray-400"><th class="truncate py-2 pr-4 text-left uppercase w-2/12">Hash</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12">Category</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Issuer</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Holder</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Unlocks</th><th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Created</th></tr></thead><tbody><template x-for="claim in claims"><tr class="hover:bg-gray-900 text-white"><td class="truncate pr-4 py-2" x-html="Wrap.claim(claim.hash)"></td><td class="truncate pr-4 py-2" x-html="Wrap.amount(claim.tokenAmount, claim.token, claim.tokenPreview)"></td><td class="truncate pr-4 py-2" x-html="claim.category ? claim.category : None"></td><td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(claim.creator)"></td><td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(claim.owner)"></td><td class="truncate pr-4 py-2 hidden md:table-cell" x-html="claim.unlocks ? formatTime(claim.unlocks) : 'Unlocked'"></td><td class="truncate pr-4 py-2 hidden md:table-cell" x-html="formatTime(claim.created)"></td></tr></template></tbody></table></div><div x-cloak x-show="resource == 'allowances'"><table class="w-full table-fixed font-light text-sm explorer"><thead><tr class="text-gray-400"><th class="truncate py-2 pr-4 text-left uppercase w-3/12">Hash</th><th class="truncate py-2 pr-4 text-left uppercase w-3/12">Amount</th><th class="truncate py-2 pr-4 text-left uppercase w-3/12">Issuer</th><th class="truncate py-2 pr-4 text-left uppercase w-3/12">Spender</th></tr></thead><tbody><template x-for="allowance in allowances"><tr class="hover:bg-gray-900 text-white"><td class="truncate pr-4 py-2" x-html="Wrap.allowance(allowance.hash)"></td><td class="truncate pr-4 py-2" x-html="Wrap.amount(allowance.amount, allowance.token, allowance.tokenPreview)"></td><td class="truncate pr-4 py-2" x-html="Wrap.address(allowance.address)"></td><td class="truncate pr-4 py-2" x-html="Wrap.address(allowance.spender)"></td></tr></template></tbody></table></div><div x-cloak x-show="resource == 'tokens'"><div id="tokens" class="hidden"><template x-for="token in tokens"><div class="mx-1.5 mb-4 token"><a :href="'/token/?address='+token.address" class="block rounded-2xl bg-gray-900 bg-opacity-50 shadow transform-gpu hover:-translate-y-2 transition-transform duration-300"><div class="rounded-2xl rounded-b-none overflow-hidden"><img x-cloak x-show="token.preview" class="h-32 w-full mb-2 object-center object-cover" :src="token.preview ? token.preview : Constants.pixel" onerror="this.remove()"></div><div class="px-3 py-3"><p class="text-sm text-white py-0.5 text-center tracking-wider" x-text="token.name"></p><p class="text-xs text-gray-200 py-0.5 text-center truncate" x-text="token.address"></p></div></a></div></template></div><div id="grid" class="w-full"><div class="columns flex mx-5"><div class="column w-1/2 md:w-1/3 lg:w-1/5 block"></div><div class="column w-1/2 md:w-1/3 lg:w-1/5 block"></div><div class="column w-1/2 md:w-1/3 lg:w-1/5 hidden md:block"></div><div class="column w-1/2 md:w-1/3 lg:w-1/5 hidden lg:block"></div><div class="column w-1/2 md:w-1/3 lg:w-1/5 hidden lg:block"></div></div></div></div><div x-show="!depleted[resourceFilter] && $data[resourceFilter].length % 25 == 0" class="pt-6 flex justify-center text-sm"><span @click="load(resource)" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span></div></div></div>
+<script>
+function addressExplorer() {
+    return {
+        resource: 'transfers',
+        resourceFilter: 'transfers',
+        transfersFilter: 'incoming',
+        claimsFilter: Alpine.store('resource') == 'address' ? 'holding' : 'issued',
+        allowancesFilter: 'spendable',
+        transfers: [],
+        transfersOutgoing: [],
+        transfersIncoming: [],
+        transactions: [],
+        tokens: [],
+        pools: [],
+        claims: [],
+        claimsIssued: [],
+        claimsHolding: [],
+        pools: [],
+        allowances: [],
+        allowancesGranted: [],
+        allowancesSpendable: [],
+        balances: [],
+        address: gup('address'),
+        depleted: {},
+        loading: false,
+        methods: {
+            'transfersIncoming': Xeta.transfer.scanToCreated,
+            'transfersOutgoing': Xeta.transfer.scanFromCreated,
+            'transactions': Xeta.transaction.scanSenderCreated,
+            'tokens': Xeta.token.scanOwnerCreated,
+            'pools': Xeta.pool.scanCreatorCreated,
+            'claimsHolding': Xeta.claim.scanHolderCreated,
+            'claimsIssued': Xeta.claim.scanIssuerCreated,
+            'balances': Xeta.balance.scanAddressAmount,
+            'allowancesGranted': Xeta.allowance.scanAddressCreated,
+            'allowancesSpendable': Xeta.allowance.scanSpenderCreated,
+        },
+        inputs: {
+            'transfersIncoming': 'to',
+            'transfersOutgoing': 'from',
+            'transactions': 'sender',
+            'tokens': 'owner',
+            'pools': 'creator',
+            'claimsHolding': 'holder',
+            'claimsIssued': 'issuer',
+            'balances': 'address',
+            'allowancesGranted': 'address',
+            'allowancesSpendable': 'spender',
+        },
+        init() {
+            var self = this
+            document.addEventListener('resourceLoaded', function (e) {
+                if (Alpine.store('resource') == 'pool' && Alpine.store('pool').program == 'loot') self.resource = 'tokens'
+
+                var address = Alpine.store('address')
+                try { if (address.token.meta.default) self.resource = address.token.meta.default } catch (e) {}
+                self.change(self.resource)
+            })
+        },
+        change(resource) {
+            this.resource = resource
+            var filter = this[resource+'Filter']
+            this.resourceFilter = resource+(filter ? filter[0].toUpperCase()+filter.slice(1) : '')
+            this.load(resource)
+        },
+        load(resource) {
+            this[resource] = this[this.resourceFilter]
+            var resourceFilter = this.resourceFilter // Static, because this.resourceFilter could change during request
+            if (this.loading || this.depleted[resourceFilter]) return
+            this.loading = true
+            var last = this[resourceFilter].length ? this[resourceFilter].slice(-1)[0] : {}
+            var self = this
+
+            this.methods[resourceFilter]({...last, ...{[this.inputs[resourceFilter]]: this.address}}, {preview: true}).then(function(data) {
+                if (!data.length) self.depleted[resourceFilter] = true
+                self[resourceFilter] = self[resourceFilter].concat(data)
+                if (resource != resourceFilter) self[resource] = self[resourceFilter]
+                if (resource == 'tokens') Grid.layout(document.getElementById('grid'), document.getElementById('tokens'))
+                self.loading = false
+            }).catch(function(e) {
+                self.loading = false
+                if (e.message == 'quota:limited') window.location.href = '/pages/quota'
+                else throw e
+            })
+        },
+    }
+}
+</script>
+
+<div x-data="addressExplorer">
+    <div class="bg-black rounded-2xl px-2 pt-2 mb-2 text-sm font-light text-gray-200 section">
+        <div class="flex flex-wrap">
+            <template x-for="type in (
+                $store.resource == 'address' ? ['transfers', 'balances', 'tokens', 'transactions', 'pools', 'claims', 'allowances'] : $store.resource == 'pool' ? ['transfers', 'balances', 'tokens', 'claims'] : [])">
+                <div @click="change(type)" :class="{'border-pink-700': resource == type}" class="inline border-b-4 border-gray-900 hover:border-pink-700 px-4 py-2 cursor-pointer capitalize" x-text="type"></div>
+            </template>
+        </div>
+    </div>
+
+    <div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
+        <div class="flex justify-between items-center px-6">
+            <p class="text-lg py-2 text-gray-100 capitalize" x-text="resource"></p>
+            <div x-cloak x-show="['transfers', 'claims', 'allowances'].includes(resource)" x-data="{active: false}" class="relative text-white text-sm">
+                <span @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize text-xs" x-text="$data[resource+'Filter']"></span>
+                <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
+                    <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                        <template x-for="[key, type] in Object.entries({incoming: 'transfers', outgoing: 'transfers', issued: 'claims', holding: 'claims', granted: 'allowances', spendable: 'allowances'})">
+                            <li x-cloak x-show="type == resource" @click="$data[type+'Filter'] = key, change(type), active = false" x-text="key" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs"></li>
+                        </template>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div x-cloak x-show="resource == 'transfers'"><table class="w-full table-fixed font-light text-sm explorer">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Created</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">From</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">To</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="transfer in transfers">
+            <tr class="text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.transfer(transfer.hash)"></td>
+                <td class="truncate pr-4 py-2" x-text="formatTime(transfer.created)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(transfer.amount, transfer.token, transfer.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.from)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(transfer.to)"></td>
+            </tr>
+        </template>
+    </tbody>
+</table></div>
+        <div x-cloak x-show="resource == 'balances'"><table class="w-full table-fixed font-light text-sm explorer">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/3">Address</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/3">Token</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/4">Amount</th>
+            <th x-cloak x-show="balances.length && balances[0].percentage" class="truncate py-2 pr-4 text-left uppercase w-1/4 hidden md:table-cell">Percent</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="balance in balances">
+            <tr class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.address(balance.address)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.token(balance.token)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview)"></td>
+                <td x-cloak x-show="balance.percentage" class="truncate pr-4 py-2 hidden md:table-cell" x-html="balance.percentage+'%'"></td>
+            </tr>
+        </template>
+    </tbody>
+</table></div>
+        <div x-cloak x-show="resource == 'transactions'"><table class="w-full table-fixed font-light text-sm explorer">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-5/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-5/12">Sender</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="transaction in transactions">
+            <tr class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.transaction(transaction.hash)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.address(transaction.sender)"></td>
+                <td class="truncate pr-4 py-2" x-text="formatTime(transaction.created)"></td>
+            </tr>
+        </template>
+    </tbody>
+</table></div>
+        <div x-cloak x-show="resource == 'pools'"><table class="w-full table-fixed font-light text-sm explorer">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-4/12">Address</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12 hidden md:table-cell">Name</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Balance</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-1/12">Program</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Expires</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="pool in pools">
+            <tr class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.pool(pool.address)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="pool.name ? pool.name : 'Unnamed'"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(pool.tokenBalance, pool.token, pool.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2" x-html="pool.program.toUpperCase()"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="pool.expires ? formatTime(pool.expires) : 'Never'"></td>
+            </tr>
+        </template>
+    </tbody>
+</table></div>
+        <div x-cloak x-show="resource == 'claims'"><table class="w-full table-fixed font-light text-sm explorer">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12">Category</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Issuer</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Holder</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Unlocks</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-2/12 hidden md:table-cell">Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="claim in claims">
+            <tr class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.claim(claim.hash)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(claim.tokenAmount, claim.token, claim.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2" x-html="claim.category ? claim.category : None"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(claim.creator)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(claim.owner)"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="claim.unlocks ? formatTime(claim.unlocks) : 'Unlocked'"></td>
+                <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="formatTime(claim.created)"></td>
+            </tr>
+        </template>
+    </tbody>
+</table></div>
+        <div x-cloak x-show="resource == 'allowances'"><table class="w-full table-fixed font-light text-sm explorer">
+    <thead>
+        <tr class="text-gray-400">
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">Hash</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">Amount</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">Issuer</th>
+            <th class="truncate py-2 pr-4 text-left uppercase w-3/12">Spender</th>
+        </tr>
+    </thead>
+    <tbody>
+        <template x-for="allowance in allowances">
+            <tr class="hover:bg-gray-900 text-white">
+                <td class="truncate pr-4 py-2" x-html="Wrap.allowance(allowance.hash)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(allowance.amount, allowance.token, allowance.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.address(allowance.address)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.address(allowance.spender)"></td>
+            </tr>
+        </template>
+    </tbody>
+</table></div>
+        <div x-cloak x-show="resource == 'tokens'"><div id="tokens" class="hidden">
+    <template x-for="token in tokens">
+        <div class="mx-1.5 mb-4 token">
+            <a :href="'/token/?address='+token.address" class="block rounded-2xl bg-gray-900 bg-opacity-50 shadow transform-gpu hover:-translate-y-2 transition-transform duration-300">
+                <div class="rounded-2xl rounded-b-none overflow-hidden">
+                    <img x-cloak x-show="token.preview" class="h-32 w-full mb-2 object-center object-cover" :src="token.preview ? token.preview : Constants.pixel" onerror="this.remove()">
+                </div>
+                <div class="px-3 py-3">
+                    <p class="text-sm text-white py-0.5 text-center tracking-wider" x-text="token.name"></p>
+                    <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-text="token.address"></p>
+                </div>
+            </a>
+        </div>
+    </template>
+</div>
+
+<div id="grid" class="w-full">
+    <div class="columns flex mx-5">
+        <div class="column w-1/2 md:w-1/3 lg:w-1/5 block"></div>
+        <div class="column w-1/2 md:w-1/3 lg:w-1/5 block"></div>
+        <div class="column w-1/2 md:w-1/3 lg:w-1/5 hidden md:block"></div>
+        <div class="column w-1/2 md:w-1/3 lg:w-1/5 hidden lg:block"></div>
+        <div class="column w-1/2 md:w-1/3 lg:w-1/5 hidden lg:block"></div>
+    </div>
+</div></div>
+
+        <div x-show="!depleted[resourceFilter] && $data[resourceFilter].length % 25 == 0" class="pt-6 flex justify-center text-sm">
+            <span @click="load(resource)" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded">Load more</span>
+        </div>
+    </div>    
+</div>

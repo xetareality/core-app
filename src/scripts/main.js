@@ -57,6 +57,9 @@ document.addEventListener('alpine:init', () => {
             var event = document.createEvent('Event')
             event.initEvent('resourceLoaded', false, false)
             document.dispatchEvent(event)
+        }).catch(function(e) {
+            if (e.message == 'quota:limited') window.location.href = '/pages/quota'
+            else throw e
         })
     }
 })

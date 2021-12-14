@@ -78,8 +78,9 @@ function addressExplorer() {
                 if (resource == 'tokens') Grid.layout(document.getElementById('grid'), document.getElementById('tokens'))
                 self.loading = false
             }).catch(function(e) {
-                throw e
                 self.loading = false
+                if (e.message == 'quota:limited') window.location.href = '/pages/quota'
+                else throw e
             })
         },
     }

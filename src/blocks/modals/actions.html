@@ -31,9 +31,9 @@ function actionsModal() {
                 <p class="w-full px-4 pb-4 text-sm text-center text-white">Connected Wallet: <span x-text="Alpine.sstore('publicKey')"></span></p>
 
                 <ul class="list-none w-2/5 mr-2 text-center">
-                    <li @click="window.location.href = '/address/?address='+$lstore('publicKey')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">View Address Page</li>
+                    <li @click="window.location.href = '/address/?address='+$lstore('publicKey')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">View Account</li>
                     <li @click="disconnectWallet(), showModal('walletModal')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Change Wallet</li>
-                    <li @click="disconnectWallet(), hideModal()" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Disconnect Wallet</li>
+                    <li @click="disconnectWallet(), hideModal()" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Disconnect</li>
                     <li @click="backup()" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Back-up Keys</li>
                 </ul>
                 <ul class="list-none w-2/5 ml-2 text-center">

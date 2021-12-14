@@ -60,7 +60,7 @@ function statisticsPage() {
             'lendingAmount:sum',
             'stakingAmount:sum',
         ],
-        agg: 'None',
+        agg: 'Raw',
         statistics: {},
         depleted: {},
         chart: null,
@@ -77,7 +77,7 @@ function statisticsPage() {
         load(refresh=false) {
             if (this.loading) return
             if (this.depleted[this.key]) {
-                if (refresh) this.agg == 'None' ? this.plot() : this.aggregate()
+                if (refresh) this.agg == 'Raw' ? this.plot() : this.aggregate()
                 return
             }
 
@@ -91,7 +91,7 @@ function statisticsPage() {
                 data = data.map(function(d) {return {time: d.time, value: d.value}})
                 self.statistics[self.key] = data.concat(self.statistics[self.key] ? self.statistics[self.key] : [])
 
-                self.agg == 'None' ? self.plot() : self.aggregate()
+                self.agg == 'Raw' ? self.plot() : self.aggregate()
                 self.loading = false
             }).catch(function(e) {
                 self.loading = false
@@ -108,7 +108,7 @@ function statisticsPage() {
             var sums = {}
             var counts = {}
 
-            if (this.agg == 'None') return this.plot(null)
+            if (this.agg == 'Raw') return this.plot(null)
             else {
                 var daily = this.agg.includes('Daily')
                 this.statistics[this.key].forEach(function(d) {
@@ -209,11 +209,11 @@ function statisticsPage() {
 <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 <div x-data="statisticsPage" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-8">
-        <p class="text-2xl font-medium py-2 text-white w-full md:w-1/4">Xeta Network Statistics</p>
-        <div class="flex">
+        <p class="text-2xl font-medium py-2 text-white w-full lg:w-1/4">Xeta Network Statistics</p>
+        <div class="flex flex-wrap">
             <div x-data="{active: false}" class="relative text-white text-sm mr-2">
                 <div @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 flex items-center relative">
-                    <span x-text="'Statistic: '+key" class="mr-2"></span>
+                    <span x-text="key" class="mr-2"></span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                       <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                     </svg>
@@ -227,12 +227,12 @@ function statisticsPage() {
             </div>
             <div x-data="{active: false}" class="relative text-white text-sm mr-2">
                 <div @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 flex items-center relative">
-                    <span x-text="'Aggregate: '+agg" class="mr-2"></span>
+                    <span x-text="agg" class="mr-2"></span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                       <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                     </svg>
                     <select @change="aggregate()" x-model="agg" class="opacity-0 absolute top-0 left-0 w-full h-full no-arrow py-1 cursor-pointer text-gray-600 outline-none focus:outline-none">
-                        <template x-for="option in ['None', 'Daily Mean', 'Daily Sum', 'Weekly Mean', 'Weekly Sum']">
+                        <template x-for="option in ['Raw', 'Daily Mean', 'Daily Sum', 'Weekly Mean', 'Weekly Sum']">
                             <option :value="option" x-text="option" :selected="agg == option"></option>
                         </template>
                     </select>
