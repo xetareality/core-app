@@ -27,8 +27,8 @@ var Actions = {
         This will allow this address to spend your funds.
         If there is a previous allowance for the same token and spender, it will overwrite it.`,
         inputs: [
-            {name: 'spender', type: 'hash', required: true},
-            {name: 'token', type: 'hash', required: true},
+            {name: 'spender', type: 'hash', required: true, suggest: 'addresses'},
+            {name: 'token', type: 'hash', required: true, suggest: 'fts'},
             {name: 'amount', type: 'amount', required: true},
         ],
     },
@@ -40,8 +40,8 @@ var Actions = {
         description: `
         Transfer a claim to another address.`,
         inputs: [
-            {name: 'claim', type: 'hash', required: true, value: 'claim.hash'},
-            {name: 'to', type: 'hash', required: true},
+            {name: 'claim', type: 'hash', required: true, suggest: 'claims', value: 'claim.hash'},
+            {name: 'to', type: 'hash', required: true, suggest: 'addresses'},
         ],
     },
     'claim.create': {
@@ -49,8 +49,8 @@ var Actions = {
         description: `
         Issue a new claim to someone for a certain amount.`,
         inputs: [
-            {name: 'owner', type: 'hash', required: true},
-            {name: 'token', type: 'hash', required: true},
+            {name: 'owner', type: 'hash', required: true, suggest: 'addresses'},
+            {name: 'token', type: 'hash', required: true, suggest: 'tokens'},
             {name: 'tokenAmount', type: 'amount', required: true},
             {name: 'xetaAmount', type: 'amount', required: false},
             {name: 'expires', type: 'timestamp', required: false},
@@ -98,8 +98,8 @@ var Actions = {
         Create a new pool for a token.
         The configuration is final and once launched, cannot be changed.`,
         inputs: [
-            {name: 'token', type: 'string', required: true, value: 'token.address'},
-            {name: 'program', type: 'string', required: true},
+            {name: 'token', type: 'string', required: true, suggest: 'tokens', value: 'token.address'},
+            {name: 'program', type: 'string', required: true, suggest: 'programs'},
             {name: 'name', type: 'string', required: false},
             {name: 'description', type: 'string', required: false},
             {name: 'mechanism', type: 'string', required: false},
@@ -157,7 +157,7 @@ var Actions = {
         Update a token that you have created.
         Leave values empty, if you don't want them to be updated.`,
         inputs: [
-            {name: 'token', type: 'hash', required: true, value: 'token.address'},
+            {name: 'token', type: 'hash', required: true, suggest: 'tokens', value: 'token.address'},
             {name: 'name', type: 'string', required: false},
             {name: 'description', type: 'string', required: false},
             {name: 'links', type: 'strings', required: false},
@@ -174,7 +174,7 @@ var Actions = {
         Mint additional tokens for a fungible token that you've created.
         This is only possible, if your token has a positive reserve amount (specified upon creation).`,
         inputs: [
-            {name: 'token', type: 'hash', required: true, value: 'token.address'},
+            {name: 'token', type: 'hash', required: true, suggest: 'fts', value: 'token.address'},
             {name: 'amount', type: 'amount', required: true, value: 'token.reserve'},
         ],
     },
@@ -187,8 +187,8 @@ var Actions = {
         Create a new transfer.
         Transfer an NFT by leaving the amount empty.`,
         inputs: [
-            {name: 'to', type: 'hash', required: true},
-            {name: 'token', type: 'hash', required: true, value: 'token.address'},
+            {name: 'to', type: 'hash', required: true, suggest: 'addresses'},
+            {name: 'token', type: 'hash', required: true, suggest: 'tokens', value: 'token.address'},
             {name: 'amount', type: 'amount', required: false},
             {name: 'from', type: 'hash', required: false},
             {name: 'message', type: 'string', required: false},
@@ -277,7 +277,7 @@ var Actions = {
         Claim your tokens (pool-tokens if the launch was successful, XETA if the launch was unsuccessful).`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'claim', type: 'hash', required: true},
+            {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
         ],
     },
     'launch.deposit': {
@@ -297,7 +297,7 @@ var Actions = {
         Withdraw the claimable remainder of pool-tokens that were previously deposited to the launch pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'claim', type: 'hash', required: true},
+            {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
         ],
     },
     'launch.close': {
@@ -329,7 +329,7 @@ var Actions = {
         Return borrowed tokens and settle your claim.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'claim', type: 'hash', required: true},
+            {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
         ],
     },
     'lending.liquidate': {
@@ -362,7 +362,7 @@ var Actions = {
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'token', type: 'hash', required: true, value: 'pool.token'},
-            {name: 'claim', type: 'hash', required: true},
+            {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
         ],
     },
     /**
@@ -376,7 +376,7 @@ var Actions = {
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
-            {name: 'address', type: 'hash', required: false},
+            {name: 'address', type: 'hash', required: false, suggest: 'addresses'},
             {name: 'unlocks', type: 'timestamp', required: false},
             {name: 'expires', type: 'timestamp', required: false},
         ],
@@ -387,7 +387,7 @@ var Actions = {
         Claim locked tokens after the lock-period expires.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'claim', type: 'hash', required: true},
+            {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
         ],
     },
     /**
@@ -409,7 +409,7 @@ var Actions = {
         Deposit an NFT to the loot pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'token', type: 'hash', required: true},
+            {name: 'token', type: 'hash', required: true, suggest: 'nfts'},
             {name: 'unlocks', type: 'timestamp', required: false},
             {name: 'expires', type: 'timestamp', required: false},
         ],
@@ -421,7 +421,7 @@ var Actions = {
         This is only possible, if the NFT was not sent as reward to a winning transfer.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'claim', type: 'hash', required: true},
+            {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
         ],
     },
     'loot.clear': {
@@ -451,7 +451,7 @@ var Actions = {
         Claim and find out if you hold a winning ticket.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'claim', type: 'hash', required: true},
+            {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
         ],
     },
     'lottery.resolve': {
@@ -481,7 +481,7 @@ var Actions = {
         The withdrawable amount depends on existing entries to the pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'claim', type: 'hash', required: true},
+            {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
         ],
     },
     'lottery.close': {
@@ -510,7 +510,7 @@ var Actions = {
         The NFT must be included in the pool candidates.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'token', type: 'hash', required: true, value: 'token.address'},
+            {name: 'token', type: 'hash', required: true, suggest: 'nfts', value: 'token.address'},
         ],
     },
     'royalty.deposit': {
@@ -531,7 +531,7 @@ var Actions = {
         Withdraw previously deposited royalty tokens.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'claim', type: 'hash', required: true},
+            {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
         ],
     },
     'royalty.close': {
@@ -562,7 +562,7 @@ var Actions = {
         Claim your staked tokens including rewards, once the staking period expires.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'claim', type: 'hash', required: true},
+            {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
         ],
     },
     'staking.deposit': {
@@ -579,11 +579,12 @@ var Actions = {
     'staking.withdraw': {
         title: 'Withdraw Staking Rewards',
         description: `
-        Withdraw reward tokens from the staking pool.
+        If you want to claim your staking rewards, use the claim method instead.
+        Withdraw deposited reward tokens from the staking pool.
         The amount will be reduced, if staking rewards were already distributed.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'claim', type: 'hash', required: true},
+            {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
         ],
     },
     /**
@@ -617,7 +618,7 @@ var Actions = {
         Withdraw your share from liquidity.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'claim', type: 'hash', required: true},
+            {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
             {name: 'percentage', type: 'number', required: true},
         ],
     },
@@ -642,7 +643,7 @@ var Actions = {
         Claim vote rewards if your answer is included in the winning answers.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'claim', type: 'hash', required: true},
+            {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
         ],
     },
     'vote.oracle': {

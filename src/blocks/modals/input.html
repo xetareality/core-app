@@ -6,6 +6,23 @@ function inputModal() {
         title: null,
         description: null,
         function: null,
+        fts: {},
+        nfts: {},
+        tokens: {},
+        claims: {},
+        addresses: {},
+        programs: {
+            auction: 'Auction',
+            launch: 'Launch',
+            lending: 'Lending',
+            lock: 'Lock',
+            loot: 'Loot',
+            lottery: 'Lottery',
+            royalty: 'Royalty',
+            staking: 'Staking',
+            vote: 'Vote',
+        },
+        loaded: {},
         values: {},
         init() {
             var self = this
@@ -15,6 +32,57 @@ function inputModal() {
                     else self.values[input.name] = null
                 }
             })
+
+            // Init token, claim and address suggestions
+            if (Xeta.config.publicKey) {
+                var suggest = this.inputs.map(function(i) {return i.suggest})
+                if (!this.loaded.tokens && (suggest.includes('fts') || suggest.includes('tokens'))) {
+                    this.fts = {
+                        '11111111111111111111111111111xeta': 'Xeta (XETA): 0',
+                        '11111111111111111111111111111xusd': 'Xeta USD (XUSD): 0',
+                        '1111111111111111111111111sponsored': 'Xeta Sponsored (XS): 0',
+                    }
+
+                    Xeta.balance.scanAddressAmount({address: Xeta.config.publicKey}, {limit: 100, preview: true}).then(function(data) {
+                        data.forEach(function(d) {
+                            if (d.amount != '0') {
+                                self.fts[d.token] = [d.tokenPreview.name, '('+d.tokenPreview.symbol+'):', d.amount].join(' ')
+                            }
+                        })
+                        self.tokens = Object.assign({}, self.fts, self.nfts)
+                    }).catch(function(e) {throw e})
+                    this.loaded.tokens = true
+                }
+
+                if (!this.loaded.nfts && (suggest.includes('nfts') || suggest.includes('tokens'))) {
+                    Xeta.token.scanOwnerCreated({owner: Xeta.config.publicKey}, {limit: 100}).then(function(data) {
+                        data.forEach(function(d) { self.nfts[d.address] = d.name })
+                        self.tokens = Object.assign({}, self.fts, self.nfts)
+                    }).catch(function(e) {throw e})
+                }
+
+                if (!this.loaded.addresses && suggest.includes('addresses')) {
+                    this.addresses = {[Xeta.config.publicKey]: 'Connected Wallet: '+Xeta.config.publicKey}
+
+                    Xeta.transfer.scanFromCreated({from: Xeta.config.publicKey}, {limit: 100}).then(function(data) {
+                        data.forEach(function(d) { self.addresses[d.to] = d.to })
+                    }).catch(function(e) {throw e})
+                }
+
+                // Reset claims with every new input
+                if (suggest.includes('claims')) {
+                    self.claims = {}
+                    if (Alpine.store('resource') == 'pools') {
+                        Xeta.claim.scanIssuerHolder({issuer: gup('address'), holder: Xeta.config.publicKey}, {limit: 100}).then(function(data) {
+                            data.forEach(function(d) { self.claims[d.hash] = [d.hash.slice(0, 10)+'..', d.tokenAmount ? d.tokenAmount+' Tokens' : d.xetaAmount ? d.xetaAmount+' XETA' : '', d.unlocks ? 'Unlocks: '+new Date(d.unlocks).toLocaleDateString() : ''].join(' ') })
+                        }).catch(function(e) {throw e})
+                    } else {
+                        Xeta.claim.scanHolderCreated({holder: Xeta.config.publicKey}, {limit: 100}).then(function(data) {
+                            data.forEach(function(d) { self.claims[d.hash] = [d.hash.slice(0, 10)+'..', d.tokenAmount ? d.tokenAmount+' Tokens' : d.xetaAmount ? d.xetaAmount+' XETA' : '', d.unlocks ? 'Unlocks: '+new Date(d.unlocks).toLocaleDateString() : ''].join(' ') })
+                        }).catch(function(e) {throw e})
+                    }
+                }
+            }
         },
         /**
          * Parse inputs into target datatype
@@ -95,7 +163,7 @@ function inputModal() {
                         <label class="text-gray-200 text-xs font-semibold uppercase mb-2 block" x-text="input.name+(input.required ? ' (required)' : '')"></label>
 
                         <template x-if="['hash', 'string'].includes(input.type)">
-                            <div>
+                            <div class="relative">
                                 <input
                                     x-model="values[input.name]"
                                     :data-rules="JSON.stringify(['maxLength:256']
@@ -107,6 +175,20 @@ function inputModal() {
                                     class="rounded-2xl shadow border-pink-300 border-opacity-50 focus:border-pink-400 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500"
                                 />
                                 <p class="text-gray-200 text-xs mt-2 hidden"></p>
+
+                                <div x-show="input.suggest" class="absolute right-0 top-0 px-5 py-2.5">
+                                    <span class="text-white">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="" viewBox="0 0 16 16">
+                                          <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                                        </svg>
+                                    </span>
+                                    <select x-model="values[input.name]" class="opacity-0 absolute top-0 left-0 w-full h-full no-arrow py-1 cursor-pointer text-gray-600 outline-none focus:outline-none">
+                                        <option value="" selected>Custom</option>
+                                        <template x-for="[k, v] in (input.suggest ? Object.entries($data[input.suggest]) : [])">
+                                            <option :value="k" x-text="v"></option>
+                                        </template>
+                                    </select>
+                                </div>
                             </div>
                         </template>
 
