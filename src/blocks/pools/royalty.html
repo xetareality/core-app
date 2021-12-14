@@ -48,7 +48,7 @@
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Creator/Collection</span>
-                <span x-html="Wrap.address($store.pool.creator)"></span>
+                <span x-html="Wrap.address($store.pool.creator)" class="truncate"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Allowed Candidates</span>
@@ -56,7 +56,7 @@
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Expires</span><span></span>
-                <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'"></span>
+                <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'" class="truncate"></span>
             </p>
         </div>
     </div>
