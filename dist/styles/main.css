@@ -2,6 +2,10 @@
     display: none !important;
 }
 
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
 select.no-arrow::-ms-expand {
     display: none;
 }

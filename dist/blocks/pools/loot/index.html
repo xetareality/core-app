@@ -1,1 +1,49 @@
-<div x-cloak x-show="$store.pool.program == 'loot'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section"><div class="w-full flex flex-wrap justify-between items-center mb-4"><p class="text-2xl font-medium py-2 text-white w-full lg:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Loot Pool)' : 'Loot Pool'"></p><div x-data="{active: false}" class="w-full lg:w-1/4 flex relative"><span @click="action('loot.transfer')" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Participate</span> <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg></span><div x-cloak x-show="active && $store.pool.creator == Xeta.config.publicKey" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50"><ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl"><li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('loot.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li><li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('loot.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li><li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('loot.clear'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Clear</li></ul></div></div></div><div class="flex flex-wrap"><div class="w-full mb-4 text-white"><p class="text-xl mb-4 text-gray-400 font-normal">Participate to win a random NFT.</p><div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900"><p class="text-3xl text-white py-4 tracking-wider"><span x-text="(parseFloat($store.pool.percentage || 1)*100).toFixed(2)+'%'"></span> <span>Win Probability</span></p></div><p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between"><span class="text-gray-400 font-normal mr-4">Cost to Enter</span> <span x-cloak x-show="$store.pool.minAmount == $store.pool.maxAmount"><span x-html="Wrap.amount($store.pool.minAmount, $store.pool.token, $store.pool.tokenPreview)"></span></span></p><p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between"><span class="text-gray-400 font-normal mr-4">Win Probability</span> <span x-text="(parseFloat($store.pool.percentage || 1)*100).toFixed(2)+'%'"></span></p><p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between"><span class="text-gray-400 font-normal mr-4">Participants So Far</span> <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span></p><p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between"><span class="text-gray-400 font-normal mr-4">Winners So Far</span> <span x-text="$store.pool.claimsCount ? formatNumber($store.pool.claimsCount) : 0"></span></p></div></div></div>
+<div x-cloak x-show="$store.pool.program == 'loot'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+    <div class="w-full flex flex-wrap justify-between items-center mb-4">
+        <p class="text-2xl font-medium py-2 text-white w-full lg:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Loot Pool)' : 'Loot Pool'"></p>
+        <div x-data="{active: false}" class="w-full lg:w-1/4 flex relative">
+            <span @click="action('loot.transfer')" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Participate</span>
+            <span @click="active = !active" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                </svg>
+            </span>
+            <div x-cloak x-show="active && $store.pool.creator == Xeta.config.publicKey" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
+                <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('loot.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('loot.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('loot.clear'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Clear</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-wrap">
+        <div class="w-full mb-4 text-white">          
+            <p class="text-xl mb-4 text-gray-400 font-normal">Participate to win a random NFT.</p>
+            <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                <p class="text-3xl text-white py-4 tracking-wider">
+                    <span x-text="(parseFloat($store.pool.percentage || 1)*100).toFixed(2)+'%'"></span>
+                    <span>Win Probability</span>
+                </p>
+            </div>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Cost to Enter</span>
+                <span x-cloak x-show="$store.pool.minAmount == $store.pool.maxAmount">
+                    <span x-html="Wrap.amount($store.pool.minAmount, $store.pool.token, $store.pool.tokenPreview)"></span>
+                </span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Win Probability</span>
+                <span x-text="(parseFloat($store.pool.percentage || 1)*100).toFixed(2)+'%'"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Participants So Far</span>
+                <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Winners So Far</span>
+                <span x-text="$store.pool.claimsCount ? formatNumber($store.pool.claimsCount) : 0"></span>
+            </p>
+        </div>
+    </div>
+</div>
