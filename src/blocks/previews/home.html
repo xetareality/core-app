@@ -229,9 +229,9 @@ function homePreview() {
                             <span x-text="formatNumber(tokenBalance)"></span>
                             <span>XETA (BSC)</span>
                         </span>
-                        <span x-cloak x-show="Alpine.sstore('xetaBalance')" class="text-white">
+                        <span x-cloak x-show="Alpine.store('xetaBalance')" class="text-white">
                             <br />
-                            <span x-text="formatNumber(Alpine.sstore('xetaBalance'))"></span>
+                            <span x-text="formatNumber(Alpine.store('xetaBalance'))"></span>
                             <span>XETA (Native)</span>
                         </span>
                     </p>
@@ -240,10 +240,10 @@ function homePreview() {
 
                 <span x-cloak x-show="!account" @click="connect()" class="w-full block cursor-pointer text-white rounded-2xl text-center bg-gray-700 hover:bg-pink-600 transition-all px-6 py-2">Connect BSC/ETH Wallet</span>
 
-                <span x-cloak x-show="account && !Alpine.sstore('publicKey')" @click="showModal('walletModal')" class="w-full block cursor-pointer text-white rounded-2xl text-center bg-gray-700 hover:bg-pink-600 transition-all px-6 py-2">Connect your XETA Wallet</span>
+                <span x-cloak x-show="account && !Alpine.store('publicKey')" @click="showModal('walletModal')" class="w-full block cursor-pointer text-white rounded-2xl text-center bg-gray-700 hover:bg-pink-600 transition-all px-6 py-2">Connect your XETA Wallet</span>
 
 
-                <div x-cloak x-show="Alpine.sstore('publicKey') && account" class="">
+                <div x-cloak x-show="Alpine.store('publicKey') && account" class="">
                     <div class="flex items-center mb-2 mt-4">
                         <div class="w-1/2 relative flex items-center justify-center">
                             <input x-model="amount" @input="rate()" :placeholder="path[0] == 'BNB' ? 'BNB' : path[0] == 'ETH' ? 'ETH' : 'XETA'" class="rounded-r-none rounded-2xl border-gray-700 border-2 border-r-0 w-full focus:outline-none font-light placeholder-gray-400 shadow transition-all px-4 py-2 bg-gray-900 focus:bg-gray-800 text-lg text-gray-100 outline-none focus:outline-none h-11" type="number" />
@@ -263,7 +263,7 @@ function homePreview() {
                         </div>
                     </div>
 
-                    <p class="text-center text-xs">You will receive approx. <span x-text="exchange"></span> <span x-text="path[1]"></span><span> to your connected wallet (<span x-text="((path[1] == 'XETA' ? Alpine.sstore('publicKey') : account) || '').slice(0,8)+'..'"></span>)</span> within a few minutes.</p>
+                    <p class="text-center text-xs">You will receive approx. <span x-text="exchange"></span> <span x-text="path[1]"></span><span> to your connected wallet (<span x-text="((path[1] == 'XETA' ? Alpine.store('publicKey') : account) || '').slice(0,8)+'..'"></span>)</span> within a few minutes.</p>
                     <span @click="bridge()" x-text="'Swap '+path[0]+' to '+path[1]" class="cursor-pointer text-white rounded-2xl text-center bg-pink-700 hover:bg-pink-600 transition-all px-6 py-2 block mt-4"></span>
                 </div>
             </div>

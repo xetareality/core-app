@@ -44,7 +44,7 @@ function loadDetails() {
                     } else if (['from', 'to', 'leader', 'creator', 'sender'].includes(k)) {
                         self.details[k] = Wrap.address(data[k])
                     } else if (['links'].includes(k)) {
-                        self.details[k] = data[k].map(l => Wrap.link(l)).join('')
+                        self.details[k] = data[k].map(function(l) {return Wrap.link(l)}).join('')
                     } else if (['outputs'].includes(k)) {
                         self.details[k] = data[k].map(function(i) {
                             return i.map(function(j) {

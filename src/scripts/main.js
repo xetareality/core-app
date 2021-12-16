@@ -1,5 +1,6 @@
-document.addEventListener('alpine:init', () => {
-    // Init
+if (!Xeta) alert('Your browser version is not supported. Please update or change device.')
+
+document.addEventListener('alpine:init', function () {
     Alpine.store('pool', {})
     Alpine.store('transaction', {})
     Alpine.store('transfer', {})
@@ -35,11 +36,11 @@ document.addEventListener('alpine:init', () => {
         return Alpine.store(name)
     }
 
-    Alpine.magic('sstore', () => {return (name, value) => Alpine.sstore(name, value)})
-    Alpine.magic('lstore', () => {return (name, value) => Alpine.lstore(name, value)})
+    Alpine.magic('sstore', function () {return function (name, value) {return Alpine.sstore(name, value)}})
+    Alpine.magic('lstore', function () {return function (name, value) {return Alpine.lstore(name, value)}})
 
     Alpine.store('resource', window.location.pathname.slice(1, -1))
-    if (Alpine.sstore('publicKey') && Alpine.sstore('privateKey')) connectWallet(Alpine.sstore('publicKey'), Alpine.sstore('privateKey'))
+    if (Alpine.store('publicKey') && Alpine.store('privateKey')) connectWallet(Alpine.store('publicKey'), Alpine.store('privateKey'))
 
     // Set environment
     if (gup('dev')) Alpine.sstore('dev', !!gup('dev'))
@@ -86,11 +87,9 @@ function action(name, values={}) {
 }
 
 function connectWallet(publicKey, privateKey) {
-    console.log(publicKey, privateKey, Xeta.config)
     Alpine.sstore('publicKey', publicKey)
     Alpine.sstore('privateKey', privateKey)
     Xeta.wallet.init({publicKey: publicKey, privateKey: privateKey})
-    console.log(publicKey, privateKey, Xeta.config)
     refreshBalances()
 }
 
