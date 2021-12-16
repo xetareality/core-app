@@ -28,7 +28,7 @@ function loadDetails() {
                         self.details[k] = formatTime(new Date(Date.now()-parseInt(data[k])), false)
                     } else if (['origin'].includes(k)) {
                         self.details[k] = Wrap.transaction(data[k])
-                    } else if (['pool', 'owner'].includes(k)) {
+                    } else if (['pool'].includes(k)) {
                         self.details[k] = Wrap.pool(data[k])
                     } else if (['token'].includes(k)) {
                         self.details[k] = Wrap.token(data[k])
@@ -41,7 +41,7 @@ function loadDetails() {
                         else if (Alpine.store('resource') == 'transfer') self.details[k] = Wrap.transfer(data[k])
                         else if (Alpine.store('resource') == 'claim') self.details[k] = Wrap.claim(data[k])
                         else if (Alpine.store('resource') == 'allowance') self.details[k] = Wrap.allowance(data[k])
-                    } else if (['from', 'to', 'leader', 'creator', 'sender'].includes(k)) {
+                    } else if (['from', 'to', 'leader', 'creator', 'sender', 'owner'].includes(k)) {
                         self.details[k] = Wrap.address(data[k])
                     } else if (['links'].includes(k)) {
                         self.details[k] = data[k].map(function(l) {return Wrap.link(l)}).join('')

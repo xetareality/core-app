@@ -1,8 +1,8 @@
 <script>
 function addressExplorer() {
     return {
-        resource: 'transfers',
-        resourceFilter: 'transfers',
+        resource: window.location.hash.substr(1) ? window.location.hash.substr(1) : 'transfers',
+        resourceFilter: window.location.hash.substr(1) ? window.location.hash.substr(1) : 'transfers',
         transfersFilter: 'incoming',
         claimsFilter: Alpine.store('resource') == 'address' ? 'holding' : 'issued',
         allowancesFilter: 'spendable',
@@ -59,6 +59,7 @@ function addressExplorer() {
         },
         change(resource) {
             this.resource = resource
+            window.location.hash = resource
             var filter = this[resource+'Filter']
             this.resourceFilter = resource+(filter ? filter[0].toUpperCase()+filter.slice(1) : '')
             this.load(resource)

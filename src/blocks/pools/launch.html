@@ -31,7 +31,7 @@
             </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Tokens for Distribution</span>
-                <span x-html="Wrap.amount($store.pool.tokenBalance, $store.pool.token, $store.pool.tokenPreview)"></span>
+                <span x-html="Wrap.amount($store.pool.meta && $store.pool.meta.launchBalance ? $store.pool.meta.launchBalance : 0, $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Total Token Supply</span>

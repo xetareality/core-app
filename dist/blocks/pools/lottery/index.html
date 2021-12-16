@@ -27,7 +27,7 @@
             
             <div x-cloak x-show="$store.pool.mechanism == 'ft'" class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                 <p class="text-3xl text-white py-4 tracking-wider">
-                    <span x-html="Wrap.amount($store.pool.tokenBalance, $store.pool.token, $store.pool.tokenPreview)"></span>
+                    <span x-html="Wrap.amount($store.pool.meta && $store.pool.meta.lotteryBalance ? $store.pool.meta.lotteryBalance : 0, $store.pool.token, $store.pool.tokenPreview)"></span>
                 </p>
             </div>
 

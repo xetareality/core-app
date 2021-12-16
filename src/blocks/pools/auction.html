@@ -42,7 +42,7 @@
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Highest Bid</span>
-                <span x-html="Wrap.xeta($store.pool.xetaBalance, 2)"></span>
+                <span x-html="Wrap.xeta($store.pool.meta && $store.pool.meta.leaderBid ? $store.pool.meta.leaderBid : 0, 2)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Highest Bidder</span>

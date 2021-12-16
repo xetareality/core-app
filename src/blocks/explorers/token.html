@@ -1,7 +1,7 @@
 <script>
 function tokenExplorer() {
     return {
-        resource: 'transfers',
+        resource: window.location.hash.substr(1) ? window.location.hash.substr(1) : 'transfers',
         transfers: [],
         balances: [],
         address: gup('address'),
@@ -20,6 +20,7 @@ function tokenExplorer() {
         },
         load(resource) {
             this.resource = resource
+            window.location.hash = resource
             if (this.loading || this.depleted[resource]) return
             this.loading = true
             var last = this[resource].length ? this[resource].slice(-1)[0] : {}

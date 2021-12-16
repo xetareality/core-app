@@ -69,7 +69,7 @@ function poolPreview() {
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Highest Bid</span>
-                <span x-html="Wrap.xeta($store.pool.xetaBalance, 2)"></span>
+                <span x-html="Wrap.xeta($store.pool.meta && $store.pool.meta.leaderBid ? $store.pool.meta.leaderBid : 0, 2)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Highest Bidder</span>
@@ -116,7 +116,7 @@ function poolPreview() {
             </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Tokens for Distribution</span>
-                <span x-html="Wrap.amount($store.pool.tokenBalance, $store.pool.token, $store.pool.tokenPreview)"></span>
+                <span x-html="Wrap.amount($store.pool.meta && $store.pool.meta.launchBalance ? $store.pool.meta.launchBalance : 0, $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Total Token Supply</span>
@@ -354,7 +354,7 @@ function poolPreview() {
             
             <div x-cloak x-show="$store.pool.mechanism == 'ft'" class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                 <p class="text-3xl text-white py-4 tracking-wider">
-                    <span x-html="Wrap.amount($store.pool.tokenBalance, $store.pool.token, $store.pool.tokenPreview)"></span>
+                    <span x-html="Wrap.amount($store.pool.meta && $store.pool.meta.lotteryBalance ? $store.pool.meta.lotteryBalance : 0, $store.pool.token, $store.pool.tokenPreview)"></span>
                 </p>
             </div>
 
