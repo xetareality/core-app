@@ -86,9 +86,11 @@ function action(name, values={}) {
 }
 
 function connectWallet(publicKey, privateKey) {
+    console.log(publicKey, privateKey, Xeta.config)
     Alpine.sstore('publicKey', publicKey)
     Alpine.sstore('privateKey', privateKey)
     Xeta.wallet.init({publicKey: publicKey, privateKey: privateKey})
+    console.log(publicKey, privateKey, Xeta.config)
     refreshBalances()
 }
 

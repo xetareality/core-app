@@ -12,8 +12,8 @@
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                     <li @click="action('auction.resolve'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Resolve</li>
                     <li @click="action('auction.cancel'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Cancel</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('auction.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('auction.close'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('auction.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('auction.close'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
                 </ul>
             </div>
         </div>

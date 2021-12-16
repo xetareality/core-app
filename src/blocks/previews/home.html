@@ -7,11 +7,11 @@ function homePreview() {
         transfers: 415180,
         amount: 0,
         exchange: 0,
+        ethBalance: 0,
+        tokenBalance: 0,
         web3modal: null,
         provider: null,
         account: null,
-        ethBalance: null,
-        tokenBalance: null,
         chainId: null,
         bridges: [],
         path: [],
@@ -132,7 +132,7 @@ function homePreview() {
                 from: this.account,
                 to: Constants.ethBridge,
                 value: this.web3.utils.toWei(String((parseFloat(this.amount)*1e4/1e4)), 'ether'),
-                data: this.web3.utils.toHex(Xeta.config.publicKey),
+                data: this.web3.utils.toHex(Alpine.store('publicKey')),
                 gas: 50000,
             })
         },
@@ -144,7 +144,7 @@ function homePreview() {
             var data = contract.methods.transfer(
                 Constants.ethBridge,
                 this.web3.utils.toWei(String((parseFloat(this.amount)*1e4/1e4)), 'gwei'),
-                Xeta.config.publicKey,
+                Alpine.store('publicKey'),
             ).encodeABI().replace('0x56b8c724', '0xa9059cbb')
 
             this.web3.eth.sendTransaction({
@@ -158,7 +158,7 @@ function homePreview() {
         },
         xeta2eth() {
             action('transfer.create', {
-                from: Xeta.config.publicKey,
+                from: Alpine.store('publicKey'),
                 to: Constants.xetaBridge,
                 amount: String((parseFloat(this.amount)*1e4/1e4)),
                 token: Xeta.config.xetaAddress,
@@ -167,7 +167,7 @@ function homePreview() {
         },
         xeta2tokens() {
             action('transfer.create', {
-                from: Xeta.config.publicKey,
+                from: Alpine.store('publicKey'),
                 to: Constants.xetaBridge,
                 amount: String((parseFloat(this.amount)*1e4/1e4)),
                 token: Xeta.config.xetaAddress,

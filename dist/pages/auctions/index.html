@@ -112,10 +112,10 @@
             </nav>
 
             <div class="text-sm flex">
-                <span @click="showModal('walletModal')" x-show="!Alpine.sstore('publicKey')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none">Connect</span>
+                <span @click="showModal('walletModal')" x-show="!Alpine.store('publicKey')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none">Connect</span>
 
-                <div x-cloak x-show="Alpine.sstore('publicKey')" @click="showModal('actionsModal')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none">
-                    <span x-text="String(Alpine.sstore('publicKey')).slice(0, 10)+'...'"></span>
+                <div x-cloak x-show="Alpine.store('publicKey')" @click="showModal('actionsModal')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none">
+                    <span x-text="String(Alpine.store('publicKey')).slice(0, 10)+'...'"></span>
                 </div>
             </div>
         </div>
@@ -601,7 +601,7 @@ function inputModal() {
             })
 
             // Init token, claim and address suggestions
-            if (Xeta.config.publicKey) {
+            if (Alpine.store('publicKey')) {
                 var suggest = this.inputs.map(function(i) {return i.suggest})
                 if (!this.loaded.tokens && (suggest.includes('fts') || suggest.includes('tokens'))) {
                     this.fts = {
@@ -610,7 +610,7 @@ function inputModal() {
                         '1111111111111111111111111sponsored': 'Xeta Sponsored (XS): 0',
                     }
 
-                    Xeta.balance.scanAddressAmount({address: Xeta.config.publicKey}, {limit: 100, preview: true}).then(function(data) {
+                    Xeta.balance.scanAddressAmount({address: Alpine.store('publicKey')}, {limit: 100, preview: true}).then(function(data) {
                         data.forEach(function(d) {
                             if (d.amount != '0') {
                                 self.fts[d.token] = [d.tokenPreview.name, '('+d.tokenPreview.symbol+'):', d.amount].join(' ')
@@ -622,16 +622,16 @@ function inputModal() {
                 }
 
                 if (!this.loaded.nfts && (suggest.includes('nfts') || suggest.includes('tokens'))) {
-                    Xeta.token.scanOwnerCreated({owner: Xeta.config.publicKey}, {limit: 100}).then(function(data) {
+                    Xeta.token.scanOwnerCreated({owner: Alpine.store('publicKey')}, {limit: 100}).then(function(data) {
                         data.forEach(function(d) { self.nfts[d.address] = d.name })
                         self.tokens = Object.assign({}, self.fts, self.nfts)
                     }).catch(function(e) {throw e})
                 }
 
                 if (!this.loaded.addresses && suggest.includes('addresses')) {
-                    this.addresses = {[Xeta.config.publicKey]: 'Connected Wallet: '+Xeta.config.publicKey}
+                    this.addresses = {[Alpine.store('publicKey')]: 'Connected Wallet: '+Alpine.store('publicKey')}
 
-                    Xeta.transfer.scanFromCreated({from: Xeta.config.publicKey}, {limit: 100}).then(function(data) {
+                    Xeta.transfer.scanFromCreated({from: Alpine.store('publicKey')}, {limit: 100}).then(function(data) {
                         data.forEach(function(d) { self.addresses[d.to] = d.to })
                     }).catch(function(e) {throw e})
                 }
@@ -640,11 +640,11 @@ function inputModal() {
                 if (suggest.includes('claims')) {
                     self.claims = {}
                     if (Alpine.store('resource') == 'pools') {
-                        Xeta.claim.scanIssuerHolder({issuer: gup('address'), holder: Xeta.config.publicKey}, {limit: 100}).then(function(data) {
+                        Xeta.claim.scanIssuerHolder({issuer: gup('address'), holder: Alpine.store('publicKey')}, {limit: 100}).then(function(data) {
                             data.forEach(function(d) { self.claims[d.hash] = [d.hash.slice(0, 10)+'..', d.tokenAmount ? d.tokenAmount+' Tokens' : d.xetaAmount ? d.xetaAmount+' XETA' : '', d.unlocks ? 'Unlocks: '+new Date(d.unlocks).toLocaleDateString() : ''].join(' ') })
                         }).catch(function(e) {throw e})
                     } else {
-                        Xeta.claim.scanHolderCreated({holder: Xeta.config.publicKey}, {limit: 100}).then(function(data) {
+                        Xeta.claim.scanHolderCreated({holder: Alpine.store('publicKey')}, {limit: 100}).then(function(data) {
                             data.forEach(function(d) { self.claims[d.hash] = [d.hash.slice(0, 10)+'..', d.tokenAmount ? d.tokenAmount+' Tokens' : d.xetaAmount ? d.xetaAmount+' XETA' : '', d.unlocks ? 'Unlocks: '+new Date(d.unlocks).toLocaleDateString() : ''].join(' ') })
                         }).catch(function(e) {throw e})
                     }

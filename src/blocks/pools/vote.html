@@ -27,7 +27,7 @@ function votePool() {
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                     <li @click="action('vote.claim'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
                     <li @click="action('vote.resolve'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Resolve</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('vote.oracle'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Oracle</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('vote.oracle'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Oracle</li>
                 </ul>
             </div>
         </div>
