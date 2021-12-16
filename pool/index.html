@@ -112,10 +112,10 @@
             </nav>
 
             <div class="text-sm flex">
-                <span @click="showModal('walletModal')" x-show="!Alpine.sstore('publicKey')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none">Connect</span>
+                <span @click="showModal('walletModal')" x-show="!Alpine.store('publicKey')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none">Connect</span>
 
-                <div x-cloak x-show="Alpine.sstore('publicKey')" @click="showModal('actionsModal')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none">
-                    <span x-text="String(Alpine.sstore('publicKey')).slice(0, 10)+'...'"></span>
+                <div x-cloak x-show="Alpine.store('publicKey')" @click="showModal('actionsModal')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none">
+                    <span x-text="String(Alpine.store('publicKey')).slice(0, 10)+'...'"></span>
                 </div>
             </div>
         </div>
@@ -229,8 +229,8 @@ function poolPreview() {
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                     <li @click="action('auction.resolve'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Resolve</li>
                     <li @click="action('auction.cancel'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Cancel</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('auction.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('auction.close'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('auction.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('auction.close'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
                 </ul>
             </div>
         </div>
@@ -288,9 +288,9 @@ function poolPreview() {
                     <li @click="action('launch.swap'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Swap</li>
                     <li @click="action('launch.resolve'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Resolve</li>
                     <li @click="action('launch.claim'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('launch.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('launch.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('launch.close'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('launch.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('launch.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('launch.close'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
                 </ul>
             </div>
         </div>
@@ -476,11 +476,11 @@ function poolPreview() {
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
             </span>
-            <div x-cloak x-show="active && $store.pool.creator == Xeta.config.publicKey" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
+            <div x-cloak x-show="active && $store.pool.creator == Alpine.store('publicKey')" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('loot.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('loot.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('loot.clear'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Clear</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('loot.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('loot.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('loot.clear'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Clear</li>
                 </ul>
             </div>
         </div>
@@ -529,10 +529,10 @@ function poolPreview() {
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                     <li @click="action('lottery.claim'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
                     <li @click="action('lottery.resolve'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Resolve</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('lottery.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('lottery.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('lottery.close'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('lottery.clear'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Clear</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('lottery.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('lottery.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('lottery.close'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('lottery.clear'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Clear</li>
                 </ul>
             </div>
         </div>
@@ -595,11 +595,11 @@ function poolPreview() {
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
             </span>
-            <div x-cloak x-show="active && $store.pool.creator == Xeta.config.publicKey" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
+            <div x-cloak x-show="active && $store.pool.creator == Alpine.store('publicKey')" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('royalty.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('royalty.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('royalty.close'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('royalty.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('royalty.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('royalty.close'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Close</li>
                 </ul>
             </div>
         </div>
@@ -661,8 +661,8 @@ function poolPreview() {
             <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                     <li @click="action('staking.claim'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('staking.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('staking.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('staking.deposit'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('staking.withdraw'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
                 </ul>
             </div>
         </div>
@@ -929,7 +929,7 @@ function votePool() {
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                     <li @click="action('vote.claim'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
                     <li @click="action('vote.resolve'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Resolve</li>
-                    <li x-cloak x-show="$store.pool.creator == Xeta.config.publicKey" @click="action('vote.oracle'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Oracle</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('vote.oracle'), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Oracle</li>
                 </ul>
             </div>
         </div>
@@ -1740,7 +1740,7 @@ function inputModal() {
             })
 
             // Init token, claim and address suggestions
-            if (Xeta.config.publicKey) {
+            if (Alpine.store('publicKey')) {
                 var suggest = this.inputs.map(function(i) {return i.suggest})
                 if (!this.loaded.tokens && (suggest.includes('fts') || suggest.includes('tokens'))) {
                     this.fts = {
@@ -1749,7 +1749,7 @@ function inputModal() {
                         '1111111111111111111111111sponsored': 'Xeta Sponsored (XS): 0',
                     }
 
-                    Xeta.balance.scanAddressAmount({address: Xeta.config.publicKey}, {limit: 100, preview: true}).then(function(data) {
+                    Xeta.balance.scanAddressAmount({address: Alpine.store('publicKey')}, {limit: 100, preview: true}).then(function(data) {
                         data.forEach(function(d) {
                             if (d.amount != '0') {
                                 self.fts[d.token] = [d.tokenPreview.name, '('+d.tokenPreview.symbol+'):', d.amount].join(' ')
@@ -1761,16 +1761,16 @@ function inputModal() {
                 }
 
                 if (!this.loaded.nfts && (suggest.includes('nfts') || suggest.includes('tokens'))) {
-                    Xeta.token.scanOwnerCreated({owner: Xeta.config.publicKey}, {limit: 100}).then(function(data) {
+                    Xeta.token.scanOwnerCreated({owner: Alpine.store('publicKey')}, {limit: 100}).then(function(data) {
                         data.forEach(function(d) { self.nfts[d.address] = d.name })
                         self.tokens = Object.assign({}, self.fts, self.nfts)
                     }).catch(function(e) {throw e})
                 }
 
                 if (!this.loaded.addresses && suggest.includes('addresses')) {
-                    this.addresses = {[Xeta.config.publicKey]: 'Connected Wallet: '+Xeta.config.publicKey}
+                    this.addresses = {[Alpine.store('publicKey')]: 'Connected Wallet: '+Alpine.store('publicKey')}
 
-                    Xeta.transfer.scanFromCreated({from: Xeta.config.publicKey}, {limit: 100}).then(function(data) {
+                    Xeta.transfer.scanFromCreated({from: Alpine.store('publicKey')}, {limit: 100}).then(function(data) {
                         data.forEach(function(d) { self.addresses[d.to] = d.to })
                     }).catch(function(e) {throw e})
                 }
@@ -1779,11 +1779,11 @@ function inputModal() {
                 if (suggest.includes('claims')) {
                     self.claims = {}
                     if (Alpine.store('resource') == 'pools') {
-                        Xeta.claim.scanIssuerHolder({issuer: gup('address'), holder: Xeta.config.publicKey}, {limit: 100}).then(function(data) {
+                        Xeta.claim.scanIssuerHolder({issuer: gup('address'), holder: Alpine.store('publicKey')}, {limit: 100}).then(function(data) {
                             data.forEach(function(d) { self.claims[d.hash] = [d.hash.slice(0, 10)+'..', d.tokenAmount ? d.tokenAmount+' Tokens' : d.xetaAmount ? d.xetaAmount+' XETA' : '', d.unlocks ? 'Unlocks: '+new Date(d.unlocks).toLocaleDateString() : ''].join(' ') })
                         }).catch(function(e) {throw e})
                     } else {
-                        Xeta.claim.scanHolderCreated({holder: Xeta.config.publicKey}, {limit: 100}).then(function(data) {
+                        Xeta.claim.scanHolderCreated({holder: Alpine.store('publicKey')}, {limit: 100}).then(function(data) {
                             data.forEach(function(d) { self.claims[d.hash] = [d.hash.slice(0, 10)+'..', d.tokenAmount ? d.tokenAmount+' Tokens' : d.xetaAmount ? d.xetaAmount+' XETA' : '', d.unlocks ? 'Unlocks: '+new Date(d.unlocks).toLocaleDateString() : ''].join(' ') })
                         }).catch(function(e) {throw e})
                     }
