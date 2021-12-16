@@ -96,9 +96,6 @@ function setData(id, data) {
     }, 0)
 }
 
-function ajax(url, data, success, error) {try {x = new(this.XMLHttpRequest || ActiveXObject)('MSXML2.XMLHTTP.3.0');x.open(data ? 'POST' : 'GET', url, 1);x.onload = function (e) {success && success(this.responseText, this.status)};x.onerror = function (e) {error && error(this.responseText, this.status)};x.send(JSON.stringify(data))} catch (e) {window.console && console.log(e)}};
-function gup(e,l){l||(l=location.href),e=e.replace(/[\\[]/,"\\\\[").replace(/[\\]]/,"\\\\]");var n=new RegExp("[\\\\?&]"+e+"=([^&#]*)").exec(l);return null==n?null:n[1]};
-
 /**
  * Set page meta (title, description, etc)
  */
