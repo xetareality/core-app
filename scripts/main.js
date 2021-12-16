@@ -40,7 +40,8 @@ document.addEventListener('alpine:init', function () {
     Alpine.magic('lstore', function () {return function (name, value) {return Alpine.lstore(name, value)}})
 
     Alpine.store('resource', window.location.pathname.slice(1, -1))
-    if (Alpine.store('publicKey') && Alpine.store('privateKey')) connectWallet(Alpine.store('publicKey'), Alpine.store('privateKey'))
+    if (Alpine.sstore('publicKey') && Alpine.sstore('privateKey')) connectWallet(Alpine.sstore('publicKey'), Alpine.sstore('privateKey'))
+    else disconnectWallet()
 
     // Set environment
     if (gup('dev')) Alpine.sstore('dev', !!gup('dev'))

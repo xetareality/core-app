@@ -641,7 +641,7 @@ function inputModal() {
                 // Reset claims with every new input
                 if (suggest.includes('claims')) {
                     self.claims = {}
-                    if (Alpine.store('resource') == 'pools') {
+                    if (Alpine.store('resource') == 'pool') {
                         Xeta.claim.scanIssuerHolder({issuer: gup('address'), holder: Alpine.store('publicKey')}, {limit: 100}).then(function(data) {
                             data.forEach(function(d) { self.claims[d.hash] = [d.hash.slice(0, 10)+'..', d.tokenAmount ? d.tokenAmount+' Tokens' : d.xetaAmount ? d.xetaAmount+' XETA' : '', d.unlocks ? 'Unlocks: '+new Date(d.unlocks).toLocaleDateString() : ''].join(' ') })
                         }).catch(function(e) {throw e})
@@ -674,7 +674,7 @@ function inputModal() {
                 else if (datatypes[e[0]] == 'hashes') v = v.split(String.fromCharCode(10))
                 else if (datatypes[e[0]] == 'text') v = String(v)
                 else if (datatypes[e[0]] == 'integer') v = parseInt(v)
-                else if (datatypes[e[0]] == 'timestamp') v = parseInt(v)
+                else if (datatypes[e[0]] == 'timestamp') v = new Date(v).getTime()
                 else if (datatypes[e[0]] == 'amount') v = String(v)
                 else if (datatypes[e[0]] == 'boolean') v = !!v
                 else if (datatypes[e[0]] == 'object') v = JSON.parse(v)
@@ -687,6 +687,8 @@ function inputModal() {
         },
         submit() {  
             if (this.transacting) return
+
+            // Private key must be set for signing
             if (!Xeta.config.privateKey) {
                 alert('Please (re)connect your wallet.')
                 return
@@ -793,23 +795,7 @@ function inputModal() {
                             </div>
                         </template>
 
-                        <template x-if="['integer', 'timestamp'].includes(input.type)">
-                            <div>
-                                <input
-                                    x-model="values[input.name]"
-                                    :data-rules="JSON.stringify(['min:0']
-                                        .concat(input.required ? 'required' : 'optional')
-                                        .concat(input.type == 'timestamp' ? ['minLength:13', 'maxLength:13']: []))"
-                                    @input="validate($el)"
-                                    @blur="validate($el)"
-                                    type="number"
-                                    class="rounded-2xl shadow border-pink-300 border-opacity-50 focus:border-pink-400 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500"
-                                />
-                                <p class="text-gray-200 text-xs mt-2 hidden"></p>
-                            </div>
-                        </template>
-
-                        <template x-if="['number', 'amount'].includes(input.type)">
+                        <template x-if="['integer', 'timestamp', 'number', 'amount'].includes(input.type)">
                             <div>
                                 <input
                                     x-model="values[input.name]"
@@ -817,7 +803,7 @@ function inputModal() {
                                         .concat(input.required ? 'required' : 'optional'))"
                                     @input="validate($el)"
                                     @blur="validate($el)"
-                                    type="number"
+                                    :type="input.type == 'timestamp' ? 'datetime-local' : 'number'"
                                     class="rounded-2xl shadow border-pink-300 border-opacity-50 focus:border-pink-400 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500"
                                 />
                                 <p class="text-gray-200 text-xs mt-2 hidden"></p>
