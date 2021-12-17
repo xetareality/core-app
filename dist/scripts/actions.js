@@ -146,8 +146,8 @@ var Actions = {
             {name: 'owner', type: 'string', required: false},
             {name: 'object', type: 'string', required: false},
             {name: 'mime', type: 'string', required: false},
-            {name: 'content', type: 'hash', required: false},
-            {name: 'frozen', type: 'string', required: false},
+            {name: 'content', type: 'string', required: false},
+            {name: 'frozen', type: 'boolean', required: false},
             {name: 'category', type: 'string', required: false},
         ]
     },
@@ -229,8 +229,6 @@ var Actions = {
         Deposit an NFT for auction, as specified by the auction pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'unlocks', type: 'timestamp', required: false},
-            {name: 'expires', type: 'timestamp', required: false},
         ],
     },
     'auction.close': {
@@ -400,7 +398,6 @@ var Actions = {
         You will receiving an NFT if you win (based on a probability as specified by the pool).`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'amount', type: 'amount', required: true},
         ],
     },
     'loot.deposit': {
