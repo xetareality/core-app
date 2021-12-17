@@ -40,7 +40,7 @@ function initSearch() {
                                 <li @click="window.location.href = result.path" class="w-full select-none">
                                     <div class="cursor-pointer rounded-2xl overflow-hidden w-full block hover:bg-black transition-all px-4 py-2 flex justify-start items-center border-b border-gray-700">
                                         <div class="mr-3">
-                                            <img class="w-8 h-8" :class="{'opacity-20': !result.preview}" :src="result.preview ? result.preview : '/media/empty.png'" onerror="this.src = '/media/empty.png'" />
+                                            <img class="w-8 h-8 rounded" :class="{'opacity-20': !result.preview}" :src="result.preview ? result.preview : '/media/empty.png'" onerror="this.src = '/media/empty.png'" />
                                         </div>
 
                                         <div class="">

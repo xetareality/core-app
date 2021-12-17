@@ -4,6 +4,7 @@ function tokenPreview() {
         token: {},
         init() {
             var self = this
+            if (Alpine.store('token')) this.token = Alpine.store('token')
             document.addEventListener('resourceLoaded', function (e) {
                 var token = Alpine.store('token')
                 if (token) self.token = token
