@@ -1,1 +1,113 @@
-<script>function loadDetails(){return{details:{},expanded:!["pool"].includes(Alpine.store("resource")),init(){var a=this;document.addEventListener("resourceLoaded",function(e){var t,n=Alpine.store(Alpine.store("resource"));for(t in"address"==Alpine.store("resource")&&(n.pool?window.location.href="/pool/?address="+n.pool.address:n.token&&n.token.address!=n.token.creator&&(window.location.href="/token/?address="+n.token.address),n.token&&(a.expanded=!1),n=Object.assign({},n.token,n.balance)),n)["amount","maxAmount","minAmount","tokenBalance","tokenTurnover","supply","reserve"].includes(t)?a.details[t]=Wrap.amount(n[t],n.token,n.tokenPreview,8):["fee","xetaBalance","xetaTurnover"].includes(t)?a.details[t]=Wrap.xeta(n[t],8):["created","confirmed","expires","unlocks"].includes(t)?2592e6<Date.now()-n[t]?a.details[t]=new Date(n[t]).toLocaleString():a.details[t]=formatTime(new Date(n[t]))+" ("+new Date(n[t]).toLocaleString()+")":["minTime","maxTime"].includes(t)?a.details[t]=formatTime(new Date(Date.now()-parseInt(n[t])),!1):["origin"].includes(t)?a.details[t]=Wrap.transaction(n[t]):["pool"].includes(t)?a.details[t]=Wrap.pool(n[t]):["token"].includes(t)?a.details[t]=Wrap.token(n[t]):["address"].includes(t)?"token"==Alpine.store("resource")?a.details[t]=Wrap.token(n[t]):"pool"==Alpine.store("resource")?a.details[t]=Wrap.pool(n[t]):"address"==Alpine.store("resource")&&(a.details[t]=String(n[t])):["hash"].includes(t)?"transsaction"==Alpine.store("resource")?a.details[t]=Wrap.transaction(n[t]):"transfer"==Alpine.store("resource")?a.details[t]=Wrap.transfer(n[t]):"claim"==Alpine.store("resource")?a.details[t]=Wrap.claim(n[t]):"allowance"==Alpine.store("resource")&&(a.details[t]=Wrap.allowance(n[t])):["from","to","leader","creator","sender","owner"].includes(t)?a.details[t]=Wrap.address(n[t]):["links"].includes(t)?a.details[t]=n[t].map(function(e){return Wrap.link(e)}).join(""):["outputs"].includes(t)?a.details[t]=n[t].map(function(e){return e.map(function(e){var t={a:"allowance",t:"token",x:"transfer",c:"claim",p:"pool"}[e.split(":")[0]];return t[0].toUpperCase()+t.slice(1)+" "+Wrap[t](e.split(":")[1])}).join("<br>")}).join("<br>"):["instructions","meta"].includes(t)?a.details[t]=JSON.stringify(n[t]):a.details[t]=String(n[t]),"[object Object]"==a.details[t]&&delete a.details[t]})}}}</script><div x-data="loadDetails()"><div class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section"><div @click="expanded = !expanded" class="flex justify-between items-center cursor-pointer select-none"><div class="flex justify-start items-center"><p class="text-lg py-2 text-gray-100">Details</p><div x-cloak x-show="['token', 'allowance', 'address', 'claim'].includes($store.resource)" x-data="{active: false}" class="relative text-white text-sm ml-2"><span @click.stop="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize text-xs">Action</span><div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50 select-none"><ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl"><li @click.stop="action($store.resource+'.update'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Update</li><li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.transfer'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Transfer</li><li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.resolve'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Resolve</li><li x-cloak x-show="$store.resource == 'token'" @click.stop="action('transfer.create'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Transfer</li><li x-cloak x-show="$store.resource == 'token' && $store.token.reserve" @click.stop="action('token.mint'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Mint</li></ul></div></div></div><span class="cursor-pointer underline text-gray-200 text-sm font-light"><span x-text="expanded ? 'Close' : 'Open'">Open</span> Details <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="inline ml-1 -mt-0.5" viewBox="0 0 16 16"><path x-cloak x-show="!expanded" fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/><path x-cloak x-show="expanded" fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/></svg></span></div><table x-cloak x-show="expanded" class="w-full table-fixed font-light text-sm"><thead><tr><th class="text-gray-400 text-left uppercase w-1/3"></th><th class="text-gray-400 text-left uppercase w-2/3"></th></tr></thead><tbody><template x-for="[key, value] in Object.entries(details)"><tr class="border-b border-gray-800"><td class="py-2 text-gray-400 capitalize text-sm font-semibold py-2" x-text="key"></td><td @click="$el.classList.toggle('truncate')" class="text-right text-white truncate break-all py-2 select-none" x-html="value"></td></tr></template></tbody></table></div></div>
+<script>
+function loadDetails() {
+    return {
+        details: {},
+        expanded: !['pool'].includes(Alpine.store('resource')),
+        init() {
+            var self = this
+            document.addEventListener('resourceLoaded', function (e) {
+                var data = Alpine.store(Alpine.store('resource'))
+                
+                if (Alpine.store('resource') == 'address') {
+                    if (data.pool) window.location.href = '/pool/?address='+data.pool.address
+                    else if (data.token && data.token.address != data.token.creator) window.location.href = '/token/?address='+data.token.address
+                    
+                    if (data.token) self.expanded = false
+                    data = Object.assign({}, data.token, data.balance)
+                }
+
+                for (var k in data) {
+                    if (['amount', 'maxAmount', 'minAmount', 'tokenBalance', 'tokenTurnover', 'supply', 'reserve'].includes(k)) {
+                        self.details[k] = Wrap.amount(data[k], data.token, data.tokenPreview, 8)
+                    } else if (['fee', 'xetaBalance', 'xetaTurnover'].includes(k)) {
+                        self.details[k] = Wrap.xeta(data[k], 8)
+                    } else if (['created', 'confirmed', 'expires', 'unlocks'].includes(k)) {
+                        if (Date.now()-data[k] > 30*24*60*60*1000) self.details[k] = new Date(data[k]).toLocaleString()
+                        else self.details[k] = formatTime(new Date(data[k]))+' ('+new Date(data[k]).toLocaleString()+')'
+                    } else if (['minTime', 'maxTime'].includes(k)) {
+                        self.details[k] = formatTime(new Date(Date.now()-parseInt(data[k])), false)
+                    } else if (['origin'].includes(k)) {
+                        self.details[k] = Wrap.transaction(data[k])
+                    } else if (['pool'].includes(k)) {
+                        self.details[k] = Wrap.pool(data[k])
+                    } else if (['token'].includes(k)) {
+                        self.details[k] = Wrap.token(data[k])
+                    } else if (['address'].includes(k)) {
+                        if (Alpine.store('resource') == 'token') self.details[k] = Wrap.token(data[k])
+                        else if (Alpine.store('resource') == 'pool') self.details[k] = Wrap.pool(data[k])
+                        else if (Alpine.store('resource') == 'address') self.details[k] = String(data[k])
+                    } else if (['hash'].includes(k)) {
+                        if (Alpine.store('resource') == 'transsaction') self.details[k] = Wrap.transaction(data[k])
+                        else if (Alpine.store('resource') == 'transfer') self.details[k] = Wrap.transfer(data[k])
+                        else if (Alpine.store('resource') == 'claim') self.details[k] = Wrap.claim(data[k])
+                        else if (Alpine.store('resource') == 'allowance') self.details[k] = Wrap.allowance(data[k])
+                    } else if (['from', 'to', 'leader', 'creator', 'sender', 'owner'].includes(k)) {
+                        self.details[k] = Wrap.address(data[k])
+                    } else if (['links'].includes(k)) {
+                        self.details[k] = data[k].map(function(l) {return Wrap.link(l)}).join('')
+                    } else if (['outputs'].includes(k)) {
+                        self.details[k] = data[k].map(function(i) {
+                            return i.map(function(j) {
+                                var r = {a: 'allowance', t: 'token', x: 'transfer', c: 'claim', p: 'pool'}[j.split(':')[0]]
+                                return r[0].toUpperCase()+r.slice(1)+' '+Wrap[r](j.split(':')[1])
+                            }).join('<br>')
+                        }).join('<br>')
+                    } else if (['instructions', 'meta'].includes(k)) {
+                        self.details[k] = JSON.stringify(data[k])
+                    } else self.details[k] = String(data[k])
+
+                    if (self.details[k] == '[object Object]') delete self.details[k]
+                }
+            })
+        }
+    }
+}
+</script>
+
+<div x-data="loadDetails()">
+    <div class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+        <div @click="expanded = !expanded" class="flex justify-between items-center cursor-pointer select-none">
+            <div class="flex justify-start items-center">
+                <p class="text-lg py-2 text-gray-100">Details</p>
+
+                <div x-cloak x-show="['token', 'allowance', 'address', 'claim'].includes($store.resource)" x-data="{active: false}" class="relative text-white text-sm ml-2">
+                    <span @click.stop="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize text-xs">Action</span>
+                    <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50 select-none">
+                        <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                            <li @click.stop="action($store.resource+'.update'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Update</li>
+                            <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.transfer'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Transfer</li>
+                            <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.resolve'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Resolve</li>
+                            <li x-cloak x-show="$store.resource == 'token'" @click.stop="action('transfer.create'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Transfer</li>
+                            <li x-cloak x-show="$store.resource == 'token' && $store.token.reserve" @click.stop="action('token.mint'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Mint</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            
+            <span class="cursor-pointer underline text-gray-200 text-sm font-light">
+                <span x-text="expanded ? 'Close' : 'Open'">Open</span> Details
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="inline ml-1 -mt-0.5" viewBox="0 0 16 16">
+                  <path x-cloak x-show="!expanded" fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                  <path x-cloak x-show="expanded" fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+                </svg>
+            </span>
+        </div>
+        <table x-cloak x-show="expanded" class="w-full table-fixed font-light text-sm">
+            <thead>
+                <tr>
+                    <th class="text-gray-400 text-left uppercase w-1/3"></th>
+                    <th class="text-gray-400 text-left uppercase w-2/3"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <template x-for="[key, value] in Object.entries(details)">
+                    <tr class="border-b border-gray-800">
+                        <td class="py-2 text-gray-400 capitalize text-sm font-semibold py-2" x-text="key"></td>
+                        <td @click="$el.classList.toggle('truncate')" class="text-right text-white truncate break-all py-2 select-none" x-html="value"></td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+</div>
