@@ -271,7 +271,20 @@ function poolPreview() {
         </div>
     </div>
 </div>
-    <div x-cloak x-show="$store.pool.program == 'launch'" x-data class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+    <script>
+function launchPool() {
+    return {
+        init() {
+            var self = this
+            document.addEventListener('resourceLoaded', function (e) {
+                var p = Alpine.store('pool')
+                Alpine.store('pool').supply = (p.meta && p.meta.launchBalance ? p.meta.launchBalance : 0)/(p.tokenPreview && p.tokenPreview.supply ? p.tokenPreview.supply : 0)
+            })
+        },
+    }
+}
+</script>
+<div x-cloak x-show="$store.pool.program == 'launch'" x-data="launchPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-4">
         <p class="text-2xl font-medium py-2 text-white w-full lg:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Launch Pool)' : 'Launch Pool'"></p>
         <div x-data="{active: false}" class="w-full lg:w-1/4 flex relative">
@@ -297,13 +310,12 @@ function poolPreview() {
         <div class="w-full mb-4 text-white">
             <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                 <p class="text-3xl text-white py-4 tracking-wider">
-                    <span x-cloak x-show="!$store.pool.closed" x-text="formatNumber($store.pool.xetaBalance ? $store.pool.xetaBalance : 0)"></span>
-                    <span x-cloak x-show="!$store.pool.closed" x-text="' out of '+formatNumber($store.pool.xetaLimit ? $store.pool.xetaLimit : 0)+' XETA raised'"></span>
-                    <span x-cloak x-show="$store.pool.closed">Launch Concluded</span>
+                    <span x-text="formatNumber($store.pool.xetaTurnover ? $store.pool.xetaTurnover : 0)"></span>
+                    <span x-text="' out of '+formatNumber($store.pool.xetaLimit || 0)+' XETA raised'"></span>
                 </p>
             </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Tokens for Distribution</span>
+                <span class="text-gray-400 font-normal mr-4">Allocated Launch Tokens</span>
                 <span x-html="Wrap.amount($store.pool.meta && $store.pool.meta.launchBalance ? $store.pool.meta.launchBalance : 0, $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
@@ -311,18 +323,12 @@ function poolPreview() {
                 <span x-html="$store.pool.tokenPreview && $store.pool.tokenPreview.supply ? Wrap.amount($store.pool.tokenPreview.supply, $store.pool.token, $store.pool.tokenPreview) : 'None'"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Liquidity Percentage</span>
-                <span x-text="(parseFloat($store.pool.percentage || 0)*100).toFixed(2)+'%'"></span>
-            </p>
-            <p x-cloak x-show="$store.pool.xetaTarget" class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Softcap Rate</span>
-                <span x-cloak x-show="$store.pool.rate" x-text="formatNumber($store.pool.rate, 8)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? $store.pool.tokenPreview.symbol : 'Tokens')+' per XETA'"></span>
-                <span x-cloak x-show="!$store.pool.rate" x-text="formatNumber(Big($store.pool.tokenBalance ? $store.pool.tokenBalance : 0).div(2).div($store.pool.xetaTarget ? $store.pool.xetaTarget : 1).toString(), 4)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? $store.pool.tokenPreview.symbol : 'Tokens')+' per XETA'"></span>
-            </p>
-            <p x-cloak x-show="$store.pool.xetaLimit" class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
-                <span class="text-gray-400 font-normal mr-4">Hardcap Rate</span>
-                <span x-cloak x-show="$store.pool.rate" x-text="formatNumber($store.pool.rate, 8)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? $store.pool.tokenPreview.symbol : 'Tokens')+' per XETA'"></span>
-                <span x-cloak x-show="!$store.pool.rate" x-text="formatNumber(Big($store.pool.tokenBalance ? $store.pool.tokenBalance : 0).div(2).div($store.pool.xetaLimit ? $store.pool.xetaLimit : 1).toString(), 4)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? $store.pool.tokenPreview.symbol : 'Tokens')+' per XETA'"></span>
+                <span class="text-gray-400 font-normal mr-4">Allocations</span>
+                <span class="flex flex-col text-right">
+                    <span x-text="'50% Launch ('+formatNumber(0.5*$store.pool.supply*100, 2)+'% of total supply)'"></span>
+                    <span x-text="formatNumber(($store.pool.percentage || 1)*100*0.5, 2)+'% Liquidity ('+formatNumber(($store.pool.percentage || 1)*0.5*$store.pool.supply*100, 2)+'% of total supply)'"></span>
+                    <span x-cloak x-show="$store.pool.percentage && $store.pool.percentage != 1" x-text="formatNumber((1-($store.pool.percentage || 1))*100*0.5, 2)+'% Creator ('+formatNumber((1-($store.pool.percentage || 1))*0.5*$store.pool.supply*100, 2)+'% of total supply)'"></span>
+                </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Contribution</span>
@@ -330,7 +336,7 @@ function poolPreview() {
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Funds Raised</span>
-                <span x-html="$store.pool.xetaBalance ? Wrap.xeta($store.pool.xetaBalance) : 'None'"></span>
+                <span x-html="Wrap.xeta($store.pool.xetaTurnover || 0)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Current Participants</span>
@@ -343,6 +349,10 @@ function poolPreview() {
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">XETA Hard Cap</span>
                 <span x-html="$store.pool.xetaLimit ? Wrap.xeta($store.pool.xetaLimit) : 'None'"></span>
+            </p>
+            <p x-cloak x-show="$store.pool.xetaTarget" class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Launch Rate</span>
+                <span x-cloak x-show="$store.pool.rate" x-text="formatNumber($store.pool.rate, 8)+' '+($store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? $store.pool.tokenPreview.symbol : 'Tokens')+' per XETA'"></span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Expires</span>
