@@ -251,15 +251,6 @@ var Actions = {
             {name: 'amount', type: 'amount', required: true},
         ],
     },
-    'launch.swap': {
-        title: 'Swap Launch Tokens',
-        description: `
-        Participate in the launch by swapping at a fixed rate as specified by the launch pool.`,
-        inputs: [
-            {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'amount', type: 'amount', required: true},
-        ],
-    },
     'launch.resolve': {
         title: 'Resolve Launch',
         description: `
@@ -439,7 +430,6 @@ var Actions = {
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'token', type: 'hash', required: true, value: 'pool.token'},
-            {name: 'amount', type: 'amount', required: true},
         ],
     },
     'lottery.claim': {
