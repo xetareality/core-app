@@ -46,7 +46,7 @@ function swapPool() {
             var last = this.candles[this.interval] ? this.candles[this.interval][0] : null            
             var self = this
 
-            Xeta.candle.scanIntervalTokenTime({...(last ? last : {}), ...{interval: this.interval, token: this.address}}).then(function(data) {
+            Xeta.candle.scanIntervalTokenTime({...(last || {}), ...{interval: this.interval, token: this.address}}).then(function(data) {
                 if (!data.length) self.depleted[self.interval] = true
                 data = data.sort(function(a, b) {return a.time-b.time}) // Sort asc
                 self.candles[self.interval] = data.concat(self.candles[self.interval] ? self.candles[self.interval] : [])
@@ -161,7 +161,7 @@ function swapPool() {
             </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Trades</span>
-                <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount, 0) : 0"></span>
+                <span x-text="formatNumber($store.pool.transfersCount || 0)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Price</span>

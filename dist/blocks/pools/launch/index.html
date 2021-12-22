@@ -5,7 +5,7 @@ function launchPool() {
             var self = this
             document.addEventListener('resourceLoaded', function (e) {
                 var p = Alpine.store('pool')
-                Alpine.store('pool').supply = (p.meta && p.meta.launchBalance ? p.meta.launchBalance : 0)/(p.tokenPreview && p.tokenPreview.supply ? p.tokenPreview.supply : 0)
+                Alpine.store('pool').supply = (p.meta && p.meta.launchBalance || 0)/(p.tokenPreview && p.tokenPreview.supply || 0)
             })
         },
     }
@@ -37,13 +37,13 @@ function launchPool() {
         <div class="w-full mb-4 text-white">
             <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                 <p class="text-3xl text-white py-4 tracking-wider">
-                    <span x-text="formatNumber($store.pool.xetaTurnover ? $store.pool.xetaTurnover : 0)"></span>
+                    <span x-text="formatNumber($store.pool.xetaTurnover || 0)"></span>
                     <span x-text="' out of '+formatNumber($store.pool.xetaLimit || 0)+' XETA raised'"></span>
                 </p>
             </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Allocated Launch Tokens</span>
-                <span x-html="Wrap.amount($store.pool.meta && $store.pool.meta.launchBalance ? $store.pool.meta.launchBalance : 0, $store.pool.token, $store.pool.tokenPreview)"></span>
+                <span x-html="Wrap.amount($store.pool.meta && $store.pool.meta.launchBalance || 0, $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Total Token Supply</span>
@@ -59,7 +59,7 @@ function launchPool() {
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Contribution</span>
-                <span x-html="formatNumber($store.pool.minAmount ? $store.pool.minAmount : 0, 8)+' to '+($store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited')+' '+Wrap.xeta(null)"></span>
+                <span x-html="formatNumber($store.pool.minAmount || 0, 8)+' to '+formatNumber($store.pool.maxAmount || Infinity, 8)+' '+Wrap.xeta(null)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Funds Raised</span>
@@ -67,15 +67,15 @@ function launchPool() {
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Current Participants</span>
-                <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span>
+                <span x-text="formatNumber($store.pool.transfersCount || 0)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">XETA Soft Cap</span>
-                <span x-html="$store.pool.xetaTarget ? Wrap.xeta($store.pool.xetaTarget) : 'None'"></span>
+                <span x-html="Wrap.xeta($store.pool.xetaTarget || 0)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">XETA Hard Cap</span>
-                <span x-html="$store.pool.xetaLimit ? Wrap.xeta($store.pool.xetaLimit) : 'None'"></span>
+                <span x-html="Wrap.xeta($store.pool.xetaLimit || 0)"></span>
             </p>
             <p x-cloak x-show="$store.pool.xetaTarget" class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Launch Rate</span>

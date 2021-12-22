@@ -69,7 +69,7 @@ function poolPreview() {
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Highest Bid</span>
-                <span x-html="Wrap.xeta($store.pool.meta && $store.pool.meta.leaderBid ? $store.pool.meta.leaderBid : 0, 2)"></span>
+                <span x-html="Wrap.xeta($store.pool.meta && $store.pool.meta.leaderBid || 0, 2)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Highest Bidder</span>
@@ -90,7 +90,7 @@ function launchPool() {
             var self = this
             document.addEventListener('resourceLoaded', function (e) {
                 var p = Alpine.store('pool')
-                Alpine.store('pool').supply = (p.meta && p.meta.launchBalance ? p.meta.launchBalance : 0)/(p.tokenPreview && p.tokenPreview.supply ? p.tokenPreview.supply : 0)
+                Alpine.store('pool').supply = (p.meta && p.meta.launchBalance || 0)/(p.tokenPreview && p.tokenPreview.supply || 0)
             })
         },
     }
@@ -122,13 +122,13 @@ function launchPool() {
         <div class="w-full mb-4 text-white">
             <div class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                 <p class="text-3xl text-white py-4 tracking-wider">
-                    <span x-text="formatNumber($store.pool.xetaTurnover ? $store.pool.xetaTurnover : 0)"></span>
+                    <span x-text="formatNumber($store.pool.xetaTurnover || 0)"></span>
                     <span x-text="' out of '+formatNumber($store.pool.xetaLimit || 0)+' XETA raised'"></span>
                 </p>
             </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Allocated Launch Tokens</span>
-                <span x-html="Wrap.amount($store.pool.meta && $store.pool.meta.launchBalance ? $store.pool.meta.launchBalance : 0, $store.pool.token, $store.pool.tokenPreview)"></span>
+                <span x-html="Wrap.amount($store.pool.meta && $store.pool.meta.launchBalance || 0, $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Total Token Supply</span>
@@ -144,7 +144,7 @@ function launchPool() {
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Contribution</span>
-                <span x-html="formatNumber($store.pool.minAmount ? $store.pool.minAmount : 0, 8)+' to '+($store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited')+' '+Wrap.xeta(null)"></span>
+                <span x-html="formatNumber($store.pool.minAmount || 0, 8)+' to '+formatNumber($store.pool.maxAmount || Infinity, 8)+' '+Wrap.xeta(null)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Funds Raised</span>
@@ -152,15 +152,15 @@ function launchPool() {
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Current Participants</span>
-                <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span>
+                <span x-text="formatNumber($store.pool.transfersCount || 0)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">XETA Soft Cap</span>
-                <span x-html="$store.pool.xetaTarget ? Wrap.xeta($store.pool.xetaTarget) : 'None'"></span>
+                <span x-html="Wrap.xeta($store.pool.xetaTarget || 0)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">XETA Hard Cap</span>
-                <span x-html="$store.pool.xetaLimit ? Wrap.xeta($store.pool.xetaLimit) : 'None'"></span>
+                <span x-html="Wrap.xeta($store.pool.xetaLimit || 0)"></span>
             </p>
             <p x-cloak x-show="$store.pool.xetaTarget" class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Launch Rate</span>
@@ -204,10 +204,10 @@ function launchPool() {
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Borrow-Amount</span>
                 <span>
-                    <span x-text="$store.pool.minAmount ? formatNumber($store.pool.minAmount, 8) : 0"></span>
+                    <span x-text="formatNumber($store.pool.minAmount || 0, 8)"></span>
                     <span>to</span>
-                    <span x-text="$store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited'"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? ' '+$store.pool.tokenPreview.symbol : ''"></span>
+                    <span x-text="formatNumber($store.pool.maxAmount || 0, 8)"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol || ''"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
@@ -265,23 +265,23 @@ function launchPool() {
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Amount</span>
                 <span>
-                    <span x-text="$store.pool.minAmount ? formatNumber($store.pool.minAmount, 8) : 0"></span>
+                    <span x-text="formatNumber($store.pool.minAmount || 0, 8)"></span>
                     <span>to</span>
-                    <span x-text="$store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited'"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? ' '+$store.pool.tokenPreview.symbol : ''"></span>
+                    <span x-text="formatNumber($store.pool.maxAmount || Infinity, 8)"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol || ''"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Time</span>
                 <span>
-                    <span x-text="$store.pool.minTime ? formatTime(parseInt($store.pool.minTime)+Date.now(), false) : '1 day'"></span>
+                    <span x-text="$store.pool.minTime ? formatTime(parseInt($store.pool.minTime*1000)+Date.now(), false) : '1 day'"></span>
                     <span>to</span>
-                    <span x-text="$store.pool.maxTime ? formatTime(parseInt($store.pool.maxTime)+Date.now(), false) : 'Unlimited'"></span>
+                    <span x-text="$store.pool.maxTime ? formatTime(parseInt($store.pool.maxTime*1000)+Date.now(), false) : 'Unlimited'"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Total Locks</span>
-                <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0" class="truncate"></span>
+                <span x-text="formatNumber($store.pool.transfersCount || 0)" class="truncate"></span>
             </p>
         </div>
     </div>
@@ -320,7 +320,7 @@ function launchPool() {
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Remaining Loot</span>
-                <span x-html="formatNumber($store.pool.meta && $store.pool.meta.lootBalance ? $store.pool.meta.lootBalance : 0)"></span>
+                <span x-html="formatNumber($store.pool.meta && $store.pool.meta.lootBalance || 0)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Win Probability</span>
@@ -328,11 +328,11 @@ function launchPool() {
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Previous Participants</span>
-                <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span>
+                <span x-text="formatNumber($store.pool.transfersCount || 0)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Previous Winners</span>
-                <span x-text="$store.pool.claimsCount ? formatNumber($store.pool.claimsCount) : 0"></span>
+                <span x-text="formatNumber($store.pool.claimsCount || 0)"></span>
             </p>
         </div>
     </div>
@@ -366,7 +366,7 @@ function launchPool() {
             
             <div x-cloak x-show="$store.pool.mechanism == 'ft'" class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                 <p class="text-3xl text-white py-4 tracking-wider">
-                    <span x-html="Wrap.amount($store.pool.meta && $store.pool.meta.lotteryBalance ? $store.pool.meta.lotteryBalance : 0, $store.pool.token, $store.pool.tokenPreview)"></span>
+                    <span x-html="Wrap.amount($store.pool.meta && $store.pool.meta.lotteryBalance || 0, $store.pool.token, $store.pool.tokenPreview)"></span>
                 </p>
             </div>
 
@@ -386,19 +386,19 @@ function launchPool() {
 
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Number of Winners</span>
-                <span x-text="$store.pool.claimsLimit ? formatNumber($store.pool.claimsLimit) : $store.pool.mechanism == 'nft' ? '1' : 'Everyone Wins'"></span>
+                <span x-text="formatNumber($store.pool.claimsLimit || $store.pool.mechanism == 'nft' ? '1' : Infinity)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Max. Participants</span>
-                <span x-text="$store.pool.transfersLimit ? formatNumber($store.pool.transfersLimit) : 'Unlimited'"></span>
+                <span x-text="formatNumber($store.pool.transfersLimit || Infinity)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Current Amount per Winner</span>
-                <span x-html="$store.pool.mechanism == 'nft' ? formatNumber(1) : Wrap.amount(parseFloat($store.pool.tokenBalance)/parseFloat($store.pool.claimsLimit ? ($store.pool.claimsLimit - ($store.pool.claimsCount ? $store.pool.claimsCount : 0)) : $store.pool.transfersCount ? $store.pool.transfersCount : 1), $store.pool.token, $store.pool.tokenPreview)"></span>
+                <span x-html="$store.pool.mechanism == 'nft' ? formatNumber(1) : Wrap.amount(parseFloat($store.pool.tokenBalance)/parseFloat($store.pool.claimsLimit ? ($store.pool.claimsLimit - ($store.pool.claimsCount || 0)) : $store.pool.transfersCount || 1), $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Current Participants</span>
-                <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span>
+                <span x-text="formatNumber($store.pool.transfersCount || 0)"></span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Expires</span>
@@ -449,7 +449,7 @@ function launchPool() {
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Total Claims</span>
-                <span x-text="$store.pool.claimsCount ? formatNumber($store.pool.claimsCount) : 0"></span>
+                <span x-text="formatNumber($store.pool.claimsCount || 0)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Rewards Distributed</span>
@@ -501,18 +501,18 @@ function launchPool() {
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Amount</span>
                 <span>
-                    <span x-text="$store.pool.minAmount ? formatNumber($store.pool.minAmount, 8) : 0"></span>
+                    <span x-text="formatNumber($store.pool.minAmount || 0, 8)"></span>
                     <span>to</span>
-                    <span x-text="$store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited'"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? ' '+$store.pool.tokenPreview.symbol : ''"></span>
+                    <span x-text="formatNumber($store.pool.maxAmount || Infinity, 8)"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol || ''"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Time</span>
                 <span>
-                    <span x-text="$store.pool.minTime ? formatTime(parseInt($store.pool.minTime)+Date.now(), false) : '1 day'"></span>
+                    <span x-text="$store.pool.minTime ? formatTime(parseInt($store.pool.minTime*1000)+Date.now(), false) : '1 day'"></span>
                     <span>to</span>
-                    <span x-text="$store.pool.maxTime ? formatTime(parseInt($store.pool.maxTime)+Date.now(), false) : 'Unlimited'"></span>
+                    <span x-text="$store.pool.maxTime ? formatTime(parseInt($store.pool.maxTime*1000)+Date.now(), false) : 'Unlimited'"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
@@ -582,7 +582,7 @@ function swapPool() {
             var last = this.candles[this.interval] ? this.candles[this.interval][0] : null            
             var self = this
 
-            Xeta.candle.scanIntervalTokenTime({...(last ? last : {}), ...{interval: this.interval, token: this.address}}).then(function(data) {
+            Xeta.candle.scanIntervalTokenTime({...(last || {}), ...{interval: this.interval, token: this.address}}).then(function(data) {
                 if (!data.length) self.depleted[self.interval] = true
                 data = data.sort(function(a, b) {return a.time-b.time}) // Sort asc
                 self.candles[self.interval] = data.concat(self.candles[self.interval] ? self.candles[self.interval] : [])
@@ -697,7 +697,7 @@ function swapPool() {
             </div>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Trades</span>
-                <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount, 0) : 0"></span>
+                <span x-text="formatNumber($store.pool.transfersCount || 0)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Price</span>
@@ -783,19 +783,19 @@ function votePool() {
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Vote-Amount</span>
                 <span>
-                    <span x-text="$store.pool.minAmount ? formatNumber($store.pool.minAmount, 8) : 0"></span>
+                    <span x-text="formatNumber($store.pool.minAmount || 0, 8)"></span>
                     <span>to</span>
-                    <span x-text="$store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited'"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? ' '+$store.pool.tokenPreview.symbol : ''"></span>
+                    <span x-text="formatNumber($store.pool.maxAmount || Infinity, 8)"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol || ''"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Total Votes</span>
-                <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span>
+                <span x-text="formatNumber($store.pool.transfersCount || 0)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Max. Votes</span>
-                <span x-text="$store.pool.transfersLimit ? formatNumber($store.pool.transfersLimit) : 'Unlimited'"></span>
+                <span x-text="formatNumber($store.pool.transfersLimit || Infinity)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Max. Vote Amount</span>
@@ -803,7 +803,7 @@ function votePool() {
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4 up">Resolution Mechanism</span>
-                <span x-text="$store.pool.mechanism ? $store.pool.mechanism : 'Unspecified'"></span>
+                <span x-text="$store.pool.mechanism || 'Unspecified'"></span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Expires</span><span></span>

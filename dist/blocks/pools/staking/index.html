@@ -29,18 +29,18 @@
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Amount</span>
                 <span>
-                    <span x-text="$store.pool.minAmount ? formatNumber($store.pool.minAmount, 8) : 0"></span>
+                    <span x-text="formatNumber($store.pool.minAmount || 0, 8)"></span>
                     <span>to</span>
-                    <span x-text="$store.pool.maxAmount ? formatNumber($store.pool.maxAmount, 8) : 'Unlimited'"></span>
-                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? ' '+$store.pool.tokenPreview.symbol : ''"></span>
+                    <span x-text="formatNumber($store.pool.maxAmount || Infinity, 8)"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol || ''"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Min/Max Lock-Time</span>
                 <span>
-                    <span x-text="$store.pool.minTime ? formatTime(parseInt($store.pool.minTime)+Date.now(), false) : '1 day'"></span>
+                    <span x-text="$store.pool.minTime ? formatTime(parseInt($store.pool.minTime*1000)+Date.now(), false) : '1 day'"></span>
                     <span>to</span>
-                    <span x-text="$store.pool.maxTime ? formatTime(parseInt($store.pool.maxTime)+Date.now(), false) : 'Unlimited'"></span>
+                    <span x-text="$store.pool.maxTime ? formatTime(parseInt($store.pool.maxTime*1000)+Date.now(), false) : 'Unlimited'"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">

@@ -40,7 +40,7 @@
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Total Claims</span>
-                <span x-text="$store.pool.claimsCount ? formatNumber($store.pool.claimsCount) : 0"></span>
+                <span x-text="formatNumber($store.pool.claimsCount || 0)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Rewards Distributed</span>
