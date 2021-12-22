@@ -8,6 +8,7 @@ var Actions = {
         Update address values such as name, description or links.
         These will be shown on top of your address page.
         Leave values empty, if you don't want them to be updated.`,
+        confirmation: `You will update the connected wallet address info.`,
         inputs: [
             {name: 'name', type: 'string', required: false},
             {name: 'description', type: 'string', required: false},
@@ -26,6 +27,7 @@ var Actions = {
         Create an allowance for an address.
         This will allow this address to spend your funds.
         If there is a previous allowance for the same token and spender, it will overwrite it.`,
+        confirmation: `You will allow someone to spend your tokens.`,
         inputs: [
             {name: 'spender', type: 'hash', required: true, suggest: 'addresses'},
             {name: 'token', type: 'hash', required: true, suggest: 'fts'},
@@ -39,6 +41,7 @@ var Actions = {
         title: 'Transfer Claim',
         description: `
         Transfer a claim to another address.`,
+        confirmation: `You will transfer a claim to the specified address.`,
         inputs: [
             {name: 'claim', type: 'hash', required: true, suggest: 'claims', value: 'claim.hash'},
             {name: 'to', type: 'hash', required: true, suggest: 'addresses'},
@@ -48,6 +51,7 @@ var Actions = {
         title: 'Create Claim',
         description: `
         Issue a new claim to someone for a certain amount.`,
+        confirmation: `You will create a new claim.`,
         inputs: [
             {name: 'owner', type: 'hash', required: true, suggest: 'addresses'},
             {name: 'token', type: 'hash', required: true, suggest: 'tokens'},
@@ -67,6 +71,7 @@ var Actions = {
         description: `
         Update an existing claim that you've created previously.
         Leave values empty, if you don't want them to be updated.`,
+        confirmation: `You will update the specified claim.`,
         inputs: [
             {name: 'claim', type: 'hash', required: true, value: 'claim.hash'},
             {name: 'tokenAmount', type: 'amount', required: false},
@@ -84,7 +89,8 @@ var Actions = {
         title: 'Resolve Claim',
         description: `
         Mark a claim that you've created as resolved.
-        A claim cannot be transfered or changed, once it is resolved.`,
+        A claim cannot be transferred or changed, once it is resolved.`,
+        confirmation: `You will resolve the specified claim.`,
         inputs: [
             {name: 'claim', type: 'hash', required: true, value: 'claim.hash'}
         ],
@@ -97,6 +103,7 @@ var Actions = {
         description: `
         Create a new pool for a token.
         The configuration is final and once launched, cannot be changed.`,
+        confirmation: `You will create a new pool.`,
         inputs: [
             {name: 'token', type: 'string', required: true, suggest: 'tokens', value: 'token.address'},
             {name: 'program', type: 'string', required: true, suggest: 'programs'},
@@ -130,6 +137,7 @@ var Actions = {
         description: `
         Create a new token.
         A non-fungible token is created if supply is left empty.`,
+        confirmation: `You will create a new token.`,
         inputs: [
             {name: 'name', type: 'string', required: true},
             {name: 'description', type: 'string', required: false},
@@ -156,6 +164,7 @@ var Actions = {
         description: `
         Update a token that you have created.
         Leave values empty, if you don't want them to be updated.`,
+        confirmation: `You will update your existing token.`,
         inputs: [
             {name: 'token', type: 'hash', required: true, suggest: 'tokens', value: 'token.address'},
             {name: 'name', type: 'string', required: false},
@@ -173,6 +182,7 @@ var Actions = {
         description: `
         Mint additional tokens for a fungible token that you've created.
         This is only possible, if your token has a positive reserve amount (specified upon creation).`,
+        confirmation: `You will mint additional tokens from your token reserve.`,
         inputs: [
             {name: 'token', type: 'hash', required: true, suggest: 'fts', value: 'token.address'},
             {name: 'amount', type: 'amount', required: true, value: 'token.reserve'},
@@ -186,6 +196,7 @@ var Actions = {
         description: `
         Create a new transfer.
         Transfer an NFT by leaving the amount empty.`,
+        confirmation: `You will send a token transfer to the specified address.`,
         inputs: [
             {name: 'to', type: 'hash', required: true, suggest: 'addresses'},
             {name: 'token', type: 'hash', required: true, suggest: 'tokens', value: 'token.address'},
@@ -202,6 +213,7 @@ var Actions = {
         description: `
         Transfer a XETA bid to an auction pool.
         The amount must be higher than the existing highest bid.`,
+        confirmation: `You will submit a bid to the pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
@@ -211,6 +223,7 @@ var Actions = {
         title: 'Resolve Auction',
         description: `
         Resolve an auction once it is completed or expired.`,
+        confirmation: `You will resolve the auction and distribute its tokens.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
         ],
@@ -219,6 +232,7 @@ var Actions = {
         title: 'Cancel Auction',
         description: `
         Cancel auction (everyone will be able to claim back bids and deposited tokens).`,
+        confirmation: `You will cancel the auction and distribute its tokens.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
         ],
@@ -227,6 +241,7 @@ var Actions = {
         title: 'Deposit to Auction',
         description: `
         Deposit an NFT for auction, as specified by the auction pool.`,
+        confirmation: `You will deposit a token to the auction.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
         ],
@@ -235,6 +250,7 @@ var Actions = {
         title: 'Close Auction',
         description: `
         Close the auction pool permanently.`,
+        confirmation: `You will close your auction permanently.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
         ],
@@ -246,6 +262,7 @@ var Actions = {
         title: 'Join a Launch',
         description: `
         Participate by sending XETA to the launch pool.`,
+        confirmation: `You will transfer the specified XETA amount to the launch pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
@@ -255,6 +272,7 @@ var Actions = {
         title: 'Resolve Launch',
         description: `
         Resolve launch pool after it is concluded or expired.`,
+        confirmation: `You will resolve the launch pool and distribute its tokens.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'token', type: 'hash', required: true, value: 'pool.token'},
@@ -264,6 +282,7 @@ var Actions = {
         title: 'Claim Tokens',
         description: `
         Claim your tokens (pool-tokens if the launch was successful, XETA if the launch was unsuccessful).`,
+        confirmation: `You will claim your XETA contribution or token-equivalent from the launch pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
@@ -273,6 +292,7 @@ var Actions = {
         title: 'Deposit Launch Tokens',
         description: `
         Deposit pool-tokens to the launch pool.`,
+        confirmation: `You will deposit the spcecified pool tokens to the launch pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
@@ -284,6 +304,7 @@ var Actions = {
         title: 'Withdraw Launch Tokens',
         description: `
         Withdraw the claimable remainder of pool-tokens that were previously deposited to the launch pool.`,
+        confirmation: `You will withdraw your previously deposited tokens from the launch pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
@@ -292,7 +313,8 @@ var Actions = {
     'launch.close': {
         title: 'Close Launch',
         description: `
-        lose the launch pool permanently.`,
+        Close the launch pool permanently.`,
+        confirmation: `You will close the launch pool permanently.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
         ],
@@ -305,6 +327,7 @@ var Actions = {
         description: `
         Borrow tokens from a lending-pool.
         The minimum collateralization rate is specified by the pool.`,
+        confirmation: `You will borrow tokens from the pool, in exchange for the XETA amount you've specified.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'token', type: 'hash', required: true, value: 'pool.token'},
@@ -316,6 +339,7 @@ var Actions = {
         title: 'Settle Borrowed Tokens',
         description: `
         Return borrowed tokens and settle your claim.`,
+        confirmation: `You will return your borrowed tokens and get back your XETA tokens minus interest rate.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
@@ -326,6 +350,7 @@ var Actions = {
         description: `
         Liquidiate an under-collateralized lending claim.
         You will receive a small share of the liquidation proceeds.`,
+        confirmation: `You will liquidate the claim if the claims' collateralization fell under the pools minimum requirement.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'token', type: 'hash', required: true, value: 'pool.token'},
@@ -337,6 +362,7 @@ var Actions = {
         description: `
         Deposit tokens for others to borrow.
         You will earn a continuous interest rate.`,
+        confirmation: `You will deposit tokens to the lending pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
@@ -348,6 +374,7 @@ var Actions = {
         title: 'Withdraw Lending Tokens',
         description: `
         Withdraw previously deposited lending tokens, including your interest rewards.`,
+        confirmation: `You will withdraw tokens from the lending pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'token', type: 'hash', required: true, value: 'pool.token'},
@@ -362,6 +389,7 @@ var Actions = {
         description: `
         Lock tokens for you or for someone else.
         If you lock for someone else, they will be able to withdraw once the lock-period expires.`,
+        confirmation: `You will lock tokens until the specified period expires.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
@@ -374,6 +402,7 @@ var Actions = {
         title: 'Claim Tokens',
         description: `
         Claim locked tokens after the lock-period expires.`,
+        confirmation: `You will receive your locked tokens as long as the claim is unlocked.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
@@ -387,6 +416,7 @@ var Actions = {
         description: `
         Participate by sending the minimum entry amount to the pool.
         You will receiving an NFT if you win (based on a probability as specified by the pool).`,
+        confirmation: `You will send the minimum participation amount of pool tokens to the pool. Receiving an NFT is dependent on the probability as specified by the pool and not guaranteed.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
         ],
@@ -395,6 +425,7 @@ var Actions = {
         title: 'Deposit Loot Token',
         description: `
         Deposit an NFT to the loot pool.`,
+        confirmation: `You will deposit the specified NFT to the loot pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'token', type: 'hash', required: true, suggest: 'nfts'},
@@ -407,6 +438,7 @@ var Actions = {
         description: `
         Withdraw a previously deposited NFT from the loot pool.
         This is only possible, if the NFT was not sent as reward to a winning transfer.`,
+        confirmation: `You will withdraw your previously deposited NFT from the loot pool, as long as it belongs to the pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
@@ -416,6 +448,7 @@ var Actions = {
         title: 'Clear Loot Proceeds',
         description: `
         Clear all XETA earnings from loot pool.`,
+        confirmation: `You will receive all pool token earnings.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
         ],
@@ -427,6 +460,7 @@ var Actions = {
         title: 'Join Lottery',
         description: `
         Participate in the lottery pool by sending the minimum required amount to enter.`,
+        confirmation: `You will send the minimum XETA participation amount as specified by the pool to participate.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'token', type: 'hash', required: true, value: 'pool.token'},
@@ -436,6 +470,7 @@ var Actions = {
         title: 'Claim Lottery Ticket',
         description: `
         Claim and find out if you hold a winning ticket.`,
+        confirmation: `You will redeem your claim and receive tokens with a probability as determined by the pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
@@ -445,6 +480,7 @@ var Actions = {
         title: 'Resolve Lottery',
         description: `
         Resolve the lottery pool once it is expired or the maximum amount of transfers has been reached.`,
+        confirmation: `You will resolve the lottery and distribute its NFT to a random participant.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
         ],
@@ -454,6 +490,7 @@ var Actions = {
         description: `
         Deposit token(s) to the lottery pool.
         This can be either a fungible token, or a non-fungible token.`,
+        confirmation: `You will deposit pool tokens to the lottery pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: false},
@@ -466,6 +503,7 @@ var Actions = {
         description: `
         Withdraw previously deposited token(s) from the lottery pool.
         The withdrawable amount depends on existing entries to the pool.`,
+        confirmation: `You will withdraw previously deposited tokens from the lottery pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
@@ -475,6 +513,7 @@ var Actions = {
         title: 'Close Lottery',
         description: `
         Close lottery pool permanently.`,
+        confirmation: `You will close the lottery pool permanently.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
         ],
@@ -483,6 +522,7 @@ var Actions = {
         title: 'Clear Lottery Proceeds',
         description: `
         Clear collected XETA earnings from the lottery pool.`,
+        confirmation: `You will receive all collected earnings from the lottery pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
         ],
@@ -495,6 +535,7 @@ var Actions = {
         description: `
         Claim royalties for an NFT that you own.
         The NFT must be included in the pool candidates.`,
+        confirmation: `You will claim royalties for an NFT or collection as specified by the pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'token', type: 'hash', required: true, suggest: 'nfts', value: 'token.address'},
@@ -505,6 +546,7 @@ var Actions = {
         description: `
         Deposit reward tokens to the royalty pool.
         Addresses holding NFTs created by you will be able to claim royalties.`,
+        confirmation: `You will deposit pool tokens as royalties which owners of your NFTs can claim.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
@@ -516,6 +558,7 @@ var Actions = {
         title: 'Withdraw Royalty Tokens',
         description: `
         Withdraw previously deposited royalty tokens.`,
+        confirmation: `You will withdraw previously deposited tokens from the royalty pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
@@ -525,6 +568,7 @@ var Actions = {
         title: 'Close Royalty Pool',
         description: `
         Close royalty pool permanently.`,
+        confirmation: `You will close the royalty pool permanently.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
         ],
@@ -536,6 +580,7 @@ var Actions = {
         title: 'Stake Tokens',
         description: `
         Stake pool-tokens for a certain period and earn staking rewards depending on the duration.`,
+        confirmation: `You will stake the specified amount of your pool tokens until the lock period expires.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
@@ -547,6 +592,7 @@ var Actions = {
         title: 'Claim Stake',
         description: `
         Claim your staked tokens including rewards, once the staking period expires.`,
+        confirmation: `You will claim back your staked tokens.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
@@ -556,6 +602,7 @@ var Actions = {
         title: 'Deposit Staking Rewards',
         description: `
         Deposit reward tokens to the staking pool.`,
+        confirmation: `You will deposit pool tokens to be used as staking rewards for others.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
@@ -569,6 +616,7 @@ var Actions = {
         If you want to claim your staking rewards, use the claim method instead.
         Withdraw deposited reward tokens from the staking pool.
         The amount will be reduced, if staking rewards were already distributed.`,
+        confirmation: `You will withdraw previously deposited or staked tokens, although without rewards.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
@@ -581,6 +629,7 @@ var Actions = {
         title: 'Swap Tokens',
         description: `
         Swap tokens instantly.`,
+        confirmation: `You will send the specified amount of tokens to the pool and receive XETA or pool tokens in exchange.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'token', type: 'hash', required: true, value: 'transfer.token'},
@@ -591,6 +640,7 @@ var Actions = {
         title: 'Deposit Swap Liquidity',
         description: `
         Deposit XETA and pool-tokens to add liquidity.`,
+        confirmation: `You will deposit liquidity to the swap pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'tokenAmount', type: 'amount', required: true},
@@ -603,6 +653,7 @@ var Actions = {
         title: 'Withdraw Swap Liquidity',
         description: `
         Withdraw your share from liquidity.`,
+        confirmation: `You will withdraw liquidity from the swap pool.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
@@ -617,6 +668,7 @@ var Actions = {
         description: `
         Submit a vote by providing an answer or number and the minimum required amount.
         The amount adds weight to your vote.`,
+        confirmation: `You will vote for a specific answer or number while transfering an amount of pool tokens to the pool to weight your answer.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
@@ -628,6 +680,7 @@ var Actions = {
         title: 'Claim a Winning Vote',
         description: `
         Claim vote rewards if your answer is included in the winning answers.`,
+        confirmation: `You will receive reward tokens based on your winning vote claim.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
@@ -637,6 +690,7 @@ var Actions = {
         title: 'Submit an Answer',
         description: `
         Set an answer after the vote has concluded.`,
+        confirmation: `You will set a correct answer. Claims that specify this answer will be able to claim payouts.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'answer', type: 'string', required: true},
@@ -646,6 +700,7 @@ var Actions = {
         title: 'Resolve a Vote',
         description: `
         Resolve the vote and make rewards claimable.`,
+        confirmation: `You will resolve the vote and trigger the distribution of collected pool tokens.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
         ],
