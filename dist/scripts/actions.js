@@ -297,7 +297,6 @@ var Actions = {
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
             {name: 'unlocks', type: 'timestamp', required: false},
-            {name: 'expires', type: 'timestamp', required: false},
         ],
     },
     'launch.withdraw': {
@@ -367,7 +366,6 @@ var Actions = {
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
             {name: 'unlocks', type: 'timestamp', required: false},
-            {name: 'expires', type: 'timestamp', required: false},
         ],
     },
     'lending.withdraw': {
@@ -430,7 +428,6 @@ var Actions = {
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'token', type: 'hash', required: true, suggest: 'nfts'},
             {name: 'unlocks', type: 'timestamp', required: false},
-            {name: 'expires', type: 'timestamp', required: false},
         ],
     },
     'loot.withdraw': {
@@ -495,7 +492,6 @@ var Actions = {
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: false},
             {name: 'unlocks', type: 'timestamp', required: false},
-            {name: 'expires', type: 'timestamp', required: false},
         ],
     },
     'lottery.withdraw': {
@@ -551,7 +547,6 @@ var Actions = {
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
             {name: 'unlocks', type: 'timestamp', required: false},
-            {name: 'expires', type: 'timestamp', required: false},
         ],
     },
     'royalty.withdraw': {
@@ -585,7 +580,6 @@ var Actions = {
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
             {name: 'unlocks', type: 'timestamp', required: true},
-            {name: 'expires', type: 'timestamp', required: false},
         ],
     },
     'staking.claim': {
@@ -607,7 +601,6 @@ var Actions = {
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
             {name: 'unlocks', type: 'timestamp', required: false},
-            {name: 'expires', type: 'timestamp', required: false},
         ],
     },
     'staking.withdraw': {
@@ -646,7 +639,6 @@ var Actions = {
             {name: 'tokenAmount', type: 'amount', required: true},
             {name: 'xetaAmount', type: 'amount', required: true},
             {name: 'unlocks', type: 'timestamp', required: false},
-            {name: 'expires', type: 'timestamp', required: false},
         ],
     },
     'swap.withdraw': {
