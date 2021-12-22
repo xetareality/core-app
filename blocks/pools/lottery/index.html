@@ -27,7 +27,7 @@
             
             <div x-cloak x-show="$store.pool.mechanism == 'ft'" class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
                 <p class="text-3xl text-white py-4 tracking-wider">
-                    <span x-html="Wrap.amount($store.pool.meta && $store.pool.meta.lotteryBalance ? $store.pool.meta.lotteryBalance : 0, $store.pool.token, $store.pool.tokenPreview)"></span>
+                    <span x-html="Wrap.amount($store.pool.meta && $store.pool.meta.lotteryBalance || 0, $store.pool.token, $store.pool.tokenPreview)"></span>
                 </p>
             </div>
 
@@ -47,19 +47,19 @@
 
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Number of Winners</span>
-                <span x-text="$store.pool.claimsLimit ? formatNumber($store.pool.claimsLimit) : $store.pool.mechanism == 'nft' ? '1' : 'Everyone Wins'"></span>
+                <span x-text="formatNumber($store.pool.claimsLimit || $store.pool.mechanism == 'nft' ? '1' : Infinity)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Max. Participants</span>
-                <span x-text="$store.pool.transfersLimit ? formatNumber($store.pool.transfersLimit) : 'Unlimited'"></span>
+                <span x-text="formatNumber($store.pool.transfersLimit || Infinity)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Current Amount per Winner</span>
-                <span x-html="$store.pool.mechanism == 'nft' ? formatNumber(1) : Wrap.amount(parseFloat($store.pool.tokenBalance)/parseFloat($store.pool.claimsLimit ? ($store.pool.claimsLimit - ($store.pool.claimsCount ? $store.pool.claimsCount : 0)) : $store.pool.transfersCount ? $store.pool.transfersCount : 1), $store.pool.token, $store.pool.tokenPreview)"></span>
+                <span x-html="$store.pool.mechanism == 'nft' ? formatNumber(1) : Wrap.amount(parseFloat($store.pool.tokenBalance)/parseFloat($store.pool.claimsLimit ? ($store.pool.claimsLimit - ($store.pool.claimsCount || 0)) : $store.pool.transfersCount || 1), $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Current Participants</span>
-                <span x-text="$store.pool.transfersCount ? formatNumber($store.pool.transfersCount) : 0"></span>
+                <span x-text="formatNumber($store.pool.transfersCount || 0)"></span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Expires</span>
