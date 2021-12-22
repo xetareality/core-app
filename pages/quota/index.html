@@ -451,6 +451,7 @@ function inputModal() {
         inputs: [],
         title: null,
         description: null,
+        confirmation: null,
         function: null,
         fts: {},
         nfts: {},
@@ -570,6 +571,8 @@ function inputModal() {
                 alert('Please (re)connect your wallet.')
                 return
             }
+
+            if (this.confirmation && !confirm(this.confirmation+' This blockchain transaction is irreversable. Continue?')) return
 
             var self = this
             this.transacting = true
