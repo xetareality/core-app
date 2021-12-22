@@ -211,7 +211,7 @@ function auctionsPage() {
             var self = this
 
             var fn = 'scanProgram'+{expiring: 'Expires', bids: 'XetaBalance', transfers: 'TransfersCount', recent: 'Created'}[type]
-            Xeta.pool[fn]({...(last ? last : {}), ...{program: 'auction'}}, {limit: 10, preview: true}).then(function(data) {
+            Xeta.pool[fn]({...(last ? last : {}), ...{program: 'auction'}}, {limit: 10, preview: true, asc: type == 'expiring'}).then(function(data) {
                 if (!data.length) self.depleted[type] = true
                 self.pools[type] = self.pools[type].concat(data)
                 self.loading[type] = false
@@ -234,12 +234,12 @@ function auctionsPage() {
                             <div class="mx-1.5">
                                 <a :href="'/pool/?address='+pool.address" class="block rounded-2xl bg-gray-900 bg-opacity-50 shadow hover:bg-opacity-100 transition-all">
                                     <div class="rounded-2xl rounded-b-none overflow-hidden">
-                                        <img class="h-32 w-full mb-2 object-center object-cover" :src="pool.tokenPreview && pool.tokenPreview.preview ? pool.tokenPreview.preview : Constants.pixel" onerror="this.src = Constants.pixel">
+                                        <img class="h-32 w-full mb-2 object-center object-cover" :src="pool.tokenPreview && pool.tokenPreview.preview ? pool.tokenPreview.preview : '/media/placeholder.jpeg'" onerror="this.src = '/media/placeholder.jpeg'">
                                     </div>
                                     <div class="px-3 py-3">
                                         <p class="text-sm text-white py-0.5 text-center tracking-wider" x-text="pool.name ? pool.name : pool.tokenPreview.name"></p>
                                         <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-html="Wrap.xeta(pool.xetaBalance)"></p>
-                                        <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-text="formatNumber(pool.transfersCount, 0)+' Bids'"></p>
+                                        <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-text="formatNumber(pool.transfersCount || 0)+' Bids'"></p>
                                         <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-text="'Expires '+formatTime(pool.expires)"></p>
                                     </div>
                                 </a>
