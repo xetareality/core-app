@@ -26,10 +26,10 @@ document.addEventListener('alpine:init', function () {
     // Local store
     Alpine.lstore = function(name, value) {
         if (value != null) {
-            sessionStorage.setItem('_xeta:'+name, JSON.stringify(value))
+            localStorage.setItem('_xeta:'+name, JSON.stringify(value))
             Alpine.store(name, value)
         } else {
-            value = JSON.parse(sessionStorage.getItem('_xeta:'+name))
+            value = JSON.parse(localStorage.getItem('_xeta:'+name))
             if (value != null) Alpine.store(name, value)
         }
 
@@ -43,9 +43,9 @@ document.addEventListener('alpine:init', function () {
     if (Alpine.sstore('publicKey') && Alpine.sstore('privateKey')) connectWallet(Alpine.sstore('publicKey'), Alpine.sstore('privateKey'))
     else disconnectWallet()
 
-    // Set environment
-    if (gup('dev')) Alpine.sstore('dev', !!gup('dev'))
-    Xeta.config.init({dev: Alpine.sstore('dev')}) 
+    // Set environment via local storage
+    if (gup('dev')) Alpine.lstore('dev', !!gup('dev'))
+    Xeta.config.init({dev: Alpine.lstore('dev')}) 
 
     // Load resource
     var resource = window.location.pathname.slice(1, -1)

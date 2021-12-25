@@ -31,7 +31,7 @@
                 <span>
                     <span x-text="formatNumber($store.pool.minAmount || 0, 8)"></span>
                     <span>to</span>
-                    <span x-text="formatNumber($store.pool.maxAmount || 0, 8)"></span>
+                    <span x-text="formatNumber($store.pool.maxAmount || $store.pool.tokenBalance, 4)"></span>
                     <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol || ''"></span>
                 </span>
             </p>

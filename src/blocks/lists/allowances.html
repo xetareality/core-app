@@ -11,7 +11,7 @@
         <template x-for="allowance in allowances">
             <tr class="hover:bg-gray-900 text-white">
                 <td class="truncate pr-4 py-2" x-html="Wrap.allowance(allowance.hash)"></td>
-                <td class="truncate pr-4 py-2" x-html="Wrap.amount(allowance.amount, allowance.token, allowance.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(allowance.amount, allowance.token, allowance.tokenPreview, 8)"></td>
                 <td class="truncate pr-4 py-2" x-html="Wrap.address(allowance.address)"></td>
                 <td class="truncate pr-4 py-2" x-html="Wrap.address(allowance.spender)"></td>
             </tr>

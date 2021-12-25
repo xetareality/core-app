@@ -55,6 +55,10 @@
                 <span class="text-gray-400 font-normal mr-4">Total Value Locked</span>
                 <span x-html="Wrap.amount($store.pool.tokenBalance, $store.pool.token, $store.pool.tokenPreview)"></span>
             </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Available Staking Rewards</span>
+                <span x-html="Wrap.amount($store.pool.meta && $store.pool.meta.rewardBalance ? $store.pool.meta.rewardBalance : 0, $store.pool.token, $store.pool.tokenPreview)"></span>
+            </p>
             <p class="text-xl font-light mb-2 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Expires</span><span></span>
                 <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'" class="truncate"></span>

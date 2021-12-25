@@ -59,6 +59,7 @@ function inputModal() {
                 if (!this.loaded.nfts && (suggest.includes('nfts') || suggest.includes('tokens'))) {
                     Xeta.token.scanOwnerCreated({owner: Alpine.store('publicKey')}, {limit: 100}).then(function(data) {
                         data.forEach(function(d) { self.nfts[d.address] = d.name })
+                        delete self.nfts[Alpine.store('publicKey')] // Delete own profile address
                         self.tokens = Object.assign({}, self.fts, self.nfts)
                     }).catch(function(e) {throw e})
                 }
@@ -97,7 +98,7 @@ function inputModal() {
             var parsed = {}
             Object.entries(this.values).forEach(function(e) {
                 var v = typeof e[1] == 'string' ? e[1].trim() : e[1]
-                if (v == null || v == '') return
+                if (v === null || v === undefined || v === '') return
 
                 if (datatypes[e[0]] == 'string') v = String(v)
                 else if (datatypes[e[0]] == 'strings') v = v.split(String.fromCharCode(10))

@@ -13,7 +13,7 @@
             <tr class="hover:bg-gray-900 text-white">
                 <td class="truncate pr-4 py-2" x-html="Wrap.pool(pool.address)"></td>
                 <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="pool.name ? pool.name : 'Unnamed'"></td>
-                <td class="truncate pr-4 py-2" x-html="Wrap.amount(pool.tokenBalance, pool.token, pool.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(pool.tokenBalance, pool.token, pool.tokenPreview, 8)"></td>
                 <td class="truncate pr-4 py-2" x-html="pool.program.toUpperCase()"></td>
                 <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="pool.expires ? formatTime(pool.expires) : 'Never'"></td>
             </tr>

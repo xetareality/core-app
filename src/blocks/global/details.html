@@ -54,6 +54,8 @@ function loadDetails() {
                         }).join('<br>')
                     } else if (['instructions', 'meta'].includes(k)) {
                         self.details[k] = JSON.stringify(data[k])
+                    } else if (['program', 'mechanism'].includes(k)) {
+                        self.details[k] = String(data[k]).toUpperCase()
                     } else self.details[k] = String(data[k])
 
                     if (self.details[k] == '[object Object]') delete self.details[k]

@@ -55,9 +55,9 @@ function collectionsPage() {
                         <tr class="hover:bg-gray-900 text-white">
                             <td class="truncate pr-4 py-2">
                                 <a :href="'/address/?address='+candle.key.split(':')[1]" class="hover:text-pink-400 flex items-center block">
-                                    <img class="h-12 w-12 mr-4 inline rounded-full" :src="candle.tokenPreview ? candle.tokenPreview.preview : Constants.pixel" onerror="this.src = '/media/favicon.png'" />
+                                    <img class="h-12 w-12 mr-4 inline rounded-full" :src="candle.tokenPreview ? candle.tokenPreview.preview : '/media/placeholder.jpeg'" onerror="this.src = '/media/placeholder.jpeg'" />
                                     <span class="mr-2 text-base" x-text="i+'. '"></span>
-                                    <span class="text-base" x-text="candle.tokenPreview && candle.tokenPreview.name ? candle.tokenPreview.name : candle.key.split(':')[1]"></span>
+                                    <span class="text-base truncate" x-text="candle.tokenPreview && candle.tokenPreview.name ? candle.tokenPreview.name : candle.key.split(':')[1]"></span>
                                 </a>
                             </td>
                             <td class="truncate pr-4 py-2" x-html="Wrap.xeta(candle.turnover, 0)"></td>

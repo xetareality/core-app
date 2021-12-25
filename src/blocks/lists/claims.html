@@ -14,7 +14,7 @@
         <template x-for="claim in claims">
             <tr class="hover:bg-gray-900 text-white">
                 <td class="truncate pr-4 py-2" x-html="Wrap.claim(claim.hash)"></td>
-                <td class="truncate pr-4 py-2" x-html="Wrap.amount(claim.tokenAmount, claim.token, claim.tokenPreview)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(claim.tokenAmount, claim.token, claim.tokenPreview, 8)"></td>
                 <td class="truncate pr-4 py-2" x-html="claim.category ? claim.category : None"></td>
                 <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(claim.creator)"></td>
                 <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.address(claim.owner)"></td>
