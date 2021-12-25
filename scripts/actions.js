@@ -102,7 +102,7 @@ var Actions = {
         title: 'Create Pool',
         description: `
         Create a new pool for a token.
-        The configuration is final and once launched, cannot be changed.`,
+        The configuration is final and once launched, cannot be changed. Documentation for individual pool programs can be accessed under https://docs.xetareality.com/programs/`,
         confirmation: `You will create a new pool.`,
         inputs: [
             {name: 'token', type: 'string', required: true, suggest: 'tokens', value: 'token.address'},
@@ -244,6 +244,7 @@ var Actions = {
         confirmation: `You will deposit a token to the auction.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
+            {name: 'unlocks', type: 'timestamp', required: false},
         ],
     },
     'auction.close': {
@@ -377,6 +378,7 @@ var Actions = {
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'token', type: 'hash', required: true, value: 'pool.token'},
             {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
+            {name: 'percentage', type: 'number', required: false},
         ],
     },
     /**
@@ -460,7 +462,6 @@ var Actions = {
         confirmation: `You will send the minimum XETA participation amount as specified by the pool to participate.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'token', type: 'hash', required: true, value: 'pool.token'},
         ],
     },
     'lottery.claim': {
@@ -613,6 +614,7 @@ var Actions = {
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
+            {name: 'percentage', type: 'number', required: false},
         ],
     },
     /**
@@ -649,7 +651,7 @@ var Actions = {
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'claim', type: 'hash', required: true, suggest: 'claims'},
-            {name: 'percentage', type: 'number', required: true},
+            {name: 'percentage', type: 'number', required: false},
         ],
     },
     /**
@@ -658,9 +660,9 @@ var Actions = {
     'vote.transfer': {
         title: 'Cast a Vote',
         description: `
-        Submit a vote by providing an answer or number and the minimum required amount.
+        Submit a vote by providing an answer or number and the minimum required pool token amount.
         The amount adds weight to your vote.`,
-        confirmation: `You will vote for a specific answer or number while transfering an amount of pool tokens to the pool to weight your answer.`,
+        confirmation: `You will vote for a specific answer or number while transfering the specified amount of pool tokens to the pool to weight your answer.`,
         inputs: [
             {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
             {name: 'amount', type: 'amount', required: true},
