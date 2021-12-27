@@ -7,7 +7,7 @@ function votePool() {
 
             return candidates.map(function(c) {
                 var m = meta[Xeta.utils.base58encode(new TextEncoder().encode(c)).slice(-8)]
-                if (m) return [c, m.s || m.c]
+                if (m) return [c, m.c+m.w]
                 else return [c, 0]
             }).sort(function(a, b) {return b[1]-a[1]})
         }
