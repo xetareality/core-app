@@ -14,8 +14,8 @@ function poolPreview() {
             var pool = Alpine.store('pool')
             var closed = pool.closed
             var expired = pool.expires && pool.expires < Date.now()
-            var overXetaLimit = pool.xetaLimit && pool.xetaBalance && pool.xetaBalance >= pool.xetaLimit
-            var overTokenLimit = pool.tokenLimit && pool.tokenBalance && pool.tokenBalance >= pool.tokenLimit
+            var overXetaLimit = pool.xetaLimit && pool.xetaBalance && parseFloat(pool.xetaBalance) >= parseFloat(pool.xetaLimit)
+            var overTokenLimit = pool.tokenLimit && pool.tokenBalance && parseFloat(pool.tokenBalance) >= parseFloat(pool.tokenLimit)
             var overTransfersLimit = pool.transfersLimit && pool.transfersCount && pool.transfersCount >= pool.transfersLimit
             this.open = !closed && !expired && !overXetaLimit && !overTokenLimit && !overTransfersLimit
         },
