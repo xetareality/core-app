@@ -6,7 +6,7 @@ function swapPool() {
         exchangeValue: null,
         priceValue: null,
         amount: null,
-        interval: '1d',
+        interval: '5m',
         candles: {},
         depleted: {},
         address: gup('address'),
@@ -14,9 +14,6 @@ function swapPool() {
         series: null,
         loading: false,
         init() {
-            Alpine.store('transfer').token = Xeta.config.xetaAddress
-            Alpine.store('transfer').amount = '0'
-
             var self = this
             document.addEventListener('resourceLoaded', function (e) {
                 self.pool = Alpine.store('pool')
@@ -118,7 +115,7 @@ function swapPool() {
                 </svg>
                 <span x-html="token ? Wrap.xetaPreview() : Wrap.tokenPreview($store.pool.tokenPreview)"></span>
             </span>
-            <span @click="action('swap.transfer', true)" class="w-1/4 cursor-pointer text-white py-2 pl-4 text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all h-11">Swap</span>
+            <span @click="action('swap.transfer', {pool: $store.pool.address, token: token ? $store.pool.token : Xeta.config.xetaAddress, amount: amount})" class="w-1/4 cursor-pointer text-white py-2 pl-4 text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all h-11">Swap</span>
             <span @click="active = !active" class="w-10 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all h-11">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
@@ -140,7 +137,7 @@ function swapPool() {
             <div class="flex flex-wrap justify-between items-center mb-4">
                 <p class="text-xl text-gray-400 font-normal">
                     <span x-html="Wrap.tokenPreview($store.pool.tokenPreview, $store.pool.token)+' Price - '"></span>
-                    <span x-html="$store.pool.xetaBalance && $store.pool.tokenBalance ? Wrap.xeta(parseFloat($store.pool.xetaBalance)/parseFloat($store.pool.tokenBalance)) : 0"></span>
+                    <span x-html="$store.pool.xetaBalance && $store.pool.tokenBalance ? Wrap.xeta(parseFloat($store.pool.xetaBalance)/parseFloat($store.pool.tokenBalance), 8) : 0"></span>
                 </p>
                 <div x-data="{active: false}" class="relative text-white text-sm">
                     <span @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900">Interval: <span x-text="interval"></span></span>
@@ -165,7 +162,7 @@ function swapPool() {
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Price</span>
-                <span x-html="$store.pool.xetaBalance && $store.pool.tokenBalance ? Wrap.xeta(parseFloat($store.pool.xetaBalance)/parseFloat($store.pool.tokenBalance)) : 0"></span>
+                <span x-html="$store.pool.xetaBalance && $store.pool.tokenBalance ? Wrap.xeta(parseFloat($store.pool.xetaBalance)/parseFloat($store.pool.tokenBalance), 8) : 0"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Token Liquidity</span>
