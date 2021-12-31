@@ -716,9 +716,9 @@ var Actions = {
         Swap tokens instantly.`,
         confirmation: `You will send the specified amount of tokens to the pool and receive XETA or pool tokens in exchange.`,
         inputs: [
-            {name: 'pool', type: 'hash', required: true, value: 'pool.address'},
-            {name: 'token', type: 'hash', required: true, value: 'transfer.token'},
-            {name: 'amount', type: 'amount', required: true, value: 'transfer.amount'},
+            {name: 'pool', type: 'hash', required: true},
+            {name: 'token', type: 'hash', required: true},
+            {name: 'amount', type: 'amount', required: true},
         ],
     },
     'swap.deposit': {

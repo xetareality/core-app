@@ -5,8 +5,7 @@ function actionsModal() {
         init() {
         },
         backup() {
-            showModal('walletModal')
-            setData('wallet-modal', {selection: 'generate', publicKey: Alpine.sstore('publicKey'), privateKey: Alpine.sstore('privateKey')})
+            showModal('walletModal', {selection: 'generate', publicKey: Alpine.sstore('publicKey'), privateKey: Alpine.sstore('privateKey')})
         }
     }
 }

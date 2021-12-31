@@ -72,29 +72,48 @@ var Wrap = {
 }
 
 
-function showModal(name) {
-    document.body.classList.add('overflow-hidden')
-    Alpine.store('modal', name)
+// function showModal(name) {
+//     document.body.classList.add('overflow-hidden')
+//     Alpine.store('modal', name)
+// }
+
+function showModal(name, data) {
+    setTimeout(function() {
+        if (data) {
+            var el = document.getElementsByName(name)[0]
+            var changed = false
+            for (key of Object.keys(data)) {
+                if (JSON.stringify(el._x_dataStack[0][key]) != JSON.stringify(data[key])) changed = true
+                el._x_dataStack[0][key] = data[key]
+            }
+            
+            if (changed) el._x_dataStack[0].init() // Only re-init if settable data has changed, this allows to retain form inputs on accidental closures
+        }
+
+        document.body.classList.add('overflow-hidden')
+        Alpine.store('modal', name)
+    }, 0)
 }
+
 
 function hideModal() {
     document.body.classList.remove('overflow-hidden')
     Alpine.store('modal', '')
 }
 
-function setData(id, data) {
-    setTimeout(function() {
-        var changed = false
-        for (key of Object.keys(data)) {
-            if (JSON.stringify(document.getElementById(id)._x_dataStack[0][key]) != JSON.stringify(data[key])) changed = true
-            document.getElementById(id)._x_dataStack[0][key] = data[key]
-        }
+// function setData(id, data) {
+//     setTimeout(function() {
+//         var changed = false
+//         for (key of Object.keys(data)) {
+//             if (JSON.stringify(document.getElementById(id)._x_dataStack[0][key]) != JSON.stringify(data[key])) changed = true
+//             document.getElementById(id)._x_dataStack[0][key] = data[key]
+//         }
 
-        // Only re-init if settable data has changed
-        // This allows to retain form inputs on accidental closures
-        if (changed) document.getElementById(id)._x_dataStack[0].init()
-    }, 0)
-}
+//         // Only re-init if settable data has changed
+//         // This allows to retain form inputs on accidental closures
+//         if (changed) document.getElementById(id)._x_dataStack[0].init()
+//     }, 0)
+// }
 
 /**
  * Set page meta (title, description, etc)
