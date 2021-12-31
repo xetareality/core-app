@@ -83,8 +83,8 @@ function action(name, values={}) {
         })
     }
 
-    setData('input-modal', {inputs: inputs, values: values, title: act.title, description: act.description, confirmation: act.confirmation, function: name})
-    showModal('inputModal')
+    setData('transact-modal', {inputs: inputs, values: values, title: act.title, description: act.description, confirmation: act.confirmation, function: name})
+    showModal('transactModal')
 }
 
 function connectWallet(publicKey, privateKey) {
