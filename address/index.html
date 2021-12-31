@@ -261,11 +261,11 @@ function loadDetails() {
                     <span @click.stop="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize text-xs">Action</span>
                     <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50 select-none">
                         <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                            <li @click.stop="action($store.resource+'.update'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Update</li>
-                            <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.transfer'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Transfer</li>
-                            <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.resolve'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Resolve</li>
-                            <li x-cloak x-show="$store.resource == 'token'" @click.stop="action('transfer.create'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Transfer</li>
-                            <li x-cloak x-show="$store.resource == 'token' && $store.token.reserve" @click.stop="action('token.mint'), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Mint</li>
+                            <li @click.stop="action($store.resource+'.update', {[$store.resource]: $store[$store.resource][Xeta.utils.key($store.resource)]}), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Update</li>
+                            <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.transfer', {claim: $store.claim.hash}), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Transfer</li>
+                            <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.resolve', {claim: $store.claim.hash}), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Resolve</li>
+                            <li x-cloak x-show="$store.resource == 'token'" @click.stop="action('transfer.create', {token: $store.token.address}), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Transfer</li>
+                            <li x-cloak x-show="$store.resource == 'token' && $store.token.reserve" @click.stop="action('token.mint', {token: $store.token.address, amount: $store.token.reserve}), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs select-none">Mint</li>
                         </ul>
                     </div>
                 </div>
@@ -889,9 +889,9 @@ function actionsModal() {
                 <ul class="list-none w-2/5 ml-2 text-center">
                     <li @click="action('transfer.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Transfer</li>
                     <li @click="action('token.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Token</li>
-                    <li @click="action('pool.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Pool</li>
-                    <li @click="action('allowance.update'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Allowance</li>
-                    <li @click="action('claim.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Claim</li>
+                    <li @click="action('pool.create', {token: $store.token.address}), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Pool</li>
+                    <li @click="action('allowance.update', {token: $store.token.address}), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Allowance</li>
+                    <li @click="action('claim.create', {token: $store.token.address}), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Claim</li>
                 </ul>
             </div>
         </div>
@@ -1073,8 +1073,9 @@ function transactModal() {
         info(field) {
             if (!this.function) return
             var base = this.function.split('.')[0]
-            if (Infos[base]) return Infos[base][field]
-            else return Infos.program[field]
+            if (Infos[base] && Infos[base][field]) return Infos[base][field]
+            else if (Infos.custom[field]) return Infos.custom[field]
+            else return ''
         }
     }
 }

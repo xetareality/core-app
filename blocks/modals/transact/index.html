@@ -174,8 +174,9 @@ function transactModal() {
         info(field) {
             if (!this.function) return
             var base = this.function.split('.')[0]
-            if (Infos[base]) return Infos[base][field]
-            else return Infos.program[field]
+            if (Infos[base] && Infos[base][field]) return Infos[base][field]
+            else if (Infos.custom[field]) return Infos.custom[field]
+            else return ''
         }
     }
 }
