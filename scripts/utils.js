@@ -212,6 +212,56 @@ function formatTime(date, prep=true) {
     return format(i + ' second'+(i != 1 ? 's' : ''))
 }
 
+function formatDetails(data, resource) {
+    resource = resource || Alpine.store('resource')
+    var details = {}
+    for (var k in data) {
+        if (['amount', 'maxAmount', 'minAmount', 'tokenBalance', 'tokenTurnover', 'supply', 'reserve'].includes(k)) {
+            details[k] = Wrap.amount(data[k], data.token, data.tokenPreview, 8)
+        } else if (['fee', 'xetaBalance', 'xetaTurnover'].includes(k)) {
+            details[k] = Wrap.xeta(data[k], 8)
+        } else if (['created', 'confirmed', 'expires', 'unlocks'].includes(k)) {
+            if (Date.now()-data[k] > 30*24*60*60*1000) details[k] = new Date(data[k]).toLocaleString()
+            else details[k] = formatTime(new Date(data[k]))+' ('+new Date(data[k]).toLocaleString()+')'
+        } else if (['minTime', 'maxTime'].includes(k)) {
+            details[k] = formatTime(new Date(Date.now()-parseInt(data[k])), false)
+        } else if (['origin'].includes(k)) {
+            details[k] = Wrap.transaction(data[k])
+        } else if (['pool'].includes(k)) {
+            details[k] = Wrap.pool(data[k])
+        } else if (['token'].includes(k)) {
+            details[k] = Wrap.token(data[k])
+        } else if (['address'].includes(k)) {
+            if (resource == 'token') details[k] = Wrap.token(data[k])
+            else if (resource == 'pool') details[k] = Wrap.pool(data[k])
+            else if (resource == 'address') details[k] = String(data[k])
+        } else if (['hash'].includes(k)) {
+            if (resource == 'transaction') details[k] = Wrap.transaction(data[k])
+            else if (resource == 'transfer') details[k] = Wrap.transfer(data[k])
+            else if (resource == 'claim') details[k] = Wrap.claim(data[k])
+            else if (resource == 'allowance') details[k] = Wrap.allowance(data[k])
+        } else if (['from', 'to', 'leader', 'creator', 'sender', 'owner'].includes(k)) {
+            details[k] = Wrap.address(data[k])
+        } else if (['links'].includes(k)) {
+            details[k] = data[k].map(function(l) {return Wrap.link(l)}).join('')
+        } else if (['outputs'].includes(k)) {
+            details[k] = data[k].map(function(i) {
+                return i.map(function(j) {
+                    var r = {a: 'allowance', t: 'token', x: 'transfer', c: 'claim', p: 'pool'}[j.split(':')[0]]
+                    return r[0].toUpperCase()+r.slice(1)+' '+Wrap[r](j.split(':')[1])
+                }).join('<br>')
+            }).join('<br>')
+        } else if (['instructions', 'meta'].includes(k)) {
+            details[k] = JSON.stringify(data[k])
+        } else if (['program', 'mechanism'].includes(k)) {
+            details[k] = String(data[k]).toUpperCase()
+        } else details[k] = String(data[k])
+
+        if (details[k] == '[object Object]') delete details[k]
+    }
+    return details
+}
+
 function timer(expires) {
     var remaining =  parseInt((expires - Date.now()) / 1000)
     if (remaining <= 0) return 'Expired on '+(new Date(parseInt(expires)).toLocaleString())

@@ -12,7 +12,7 @@ function actionsModal() {
 }
 </script>
 
-<div x-cloak name="actionsModal" id="create-modal" x-show.transition.opacity="$store.modal == 'actionsModal'" x-data="actionsModal" class="z-50 fixed w-full h-full top-0 left-0">
+<div x-cloak name="actionsModal" id="actions-modal" x-show.transition.opacity="$store.modal == 'actionsModal'" x-data="actionsModal" class="z-50 fixed w-full h-full top-0 left-0">
     <div @click="selection = null, hideModal()" class="backdrop absolute w-full h-full bg-black opacity-75 z-0"></div>
 
     <div @click="selection = null, hideModal()" class="relative cursor-pointer flex w-full justify-center py-4 text-white text-sm z-50">

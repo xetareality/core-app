@@ -810,7 +810,7 @@ function actionsModal() {
 }
 </script>
 
-<div x-cloak name="actionsModal" id="create-modal" x-show.transition.opacity="$store.modal == 'actionsModal'" x-data="actionsModal" class="z-50 fixed w-full h-full top-0 left-0">
+<div x-cloak name="actionsModal" id="actions-modal" x-show.transition.opacity="$store.modal == 'actionsModal'" x-data="actionsModal" class="z-50 fixed w-full h-full top-0 left-0">
     <div @click="selection = null, hideModal()" class="backdrop absolute w-full h-full bg-black opacity-75 z-0"></div>
 
     <div @click="selection = null, hideModal()" class="relative cursor-pointer flex w-full justify-center py-4 text-white text-sm z-50">
@@ -846,7 +846,7 @@ function actionsModal() {
     </div>
 </div>
         <script>
-function inputModal() {
+function transactModal() {
     return {
         transacting: false,
         uploading: false,
@@ -981,7 +981,10 @@ function inputModal() {
             this.transacting = true
             Xeta.instruction.wrap(Object.assign({}, {function: this.function}, this.data())).then(function(tx) {
                 if (['address.update', 'token.update', 'claim.update', 'claim.resolve'].includes(self.function)) window.location.reload()
-                else window.location.href = '/transaction/?hash='+tx.hash
+                else {
+                    setData('confirmation-modal', {transaction: tx, details: formatDetails(tx, 'transaction')})
+                    showModal('confirmationModal')
+                }
             }).catch(function(e) {
                 console.log(e.message)
                 self.transacting = false
@@ -1009,12 +1012,18 @@ function inputModal() {
                     }, function(status) { alert('upload:error') })
                 }                  
             }
+        },
+        info(field) {
+            if (!this.function) return
+            var base = this.function.split('.')[0]
+            if (Infos[base]) return Infos[base][field]
+            else return Infos.program[field]
         }
     }
 }
 </script>
 
-<div x-cloak name="inputModal" id="input-modal" x-show.transition.opacity="$store.modal == 'inputModal'" x-data="inputModal" class="z-50 fixed w-full h-full top-0 left-0">
+<div x-cloak name="transactModal" id="transact-modal" x-show.transition.opacity="$store.modal == 'transactModal'" x-data="transactModal" class="z-50 fixed w-full h-full top-0 left-0">
     <div @click="hideModal()" class="backdrop absolute w-full h-full bg-black opacity-75 z-0"></div>
 
     <div @click="hideModal()" class="relative cursor-pointer flex w-full justify-center py-4 text-white text-sm z-50">
@@ -1036,7 +1045,7 @@ function inputModal() {
             <form x-cloak x-show="!transacting" x-data>
                 <template x-for="input in inputs">
                     <div class="mb-6 w-full">
-                        <label class="text-gray-200 text-xs font-semibold uppercase mb-2 block" x-text="input.name+(input.required ? ' (required)' : '')"></label>
+                        <label class="text-gray-200 text-xs font-semibold uppercase mb-2 block" x-text="input.name+' - '+info(input.name)+(input.required ? ' (required)' : '')"></label>
 
                         <template x-if="['hash', 'string'].includes(input.type)">
                             <div class="relative">
@@ -1256,6 +1265,56 @@ function faucetModal() {
                     </form>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+        <script>
+function confirmationModal() {
+    return {
+        transaction: {},
+        details: {},
+        init() {
+
+        }
+    }
+}
+</script>
+
+<div x-cloak name="confirmationModal" id="confirmation-modal" x-show.transition.opacity="$store.modal == 'confirmationModal'" x-data="confirmationModal" class="z-50 fixed w-full h-full top-0 left-0">
+    <div @click="selection = null, hideModal()" class="backdrop absolute w-full h-full bg-black opacity-75 z-0"></div>
+
+    <div @click="selection = null, hideModal()" class="relative cursor-pointer flex w-full justify-center py-4 text-white text-sm z-50">
+        <svg class="fill-current text-white mt-0.5" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+            <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+        </svg>
+        <span class="ml-1">Close</span>
+    </div>
+
+
+    <div class="overflow-scroll max-h-full mx-auto w-full md:w-1/2 pb-32 z-50 relative disable-scrollbar">
+        <div class="rounded-2xl shadow w-full relative bg-pink-900 px-4 lg:px-8 py-4 bg-top bg-cover" style="background-image: url(/media/background.jpg)">
+            <p class="w-full px-4 pb-4 text-2xl text-center text-white">Transaction confirmed!</p>
+            <p class="w-full px-4 pb-4 text-sm text-center text-white">Your transaction was successfully processed by at least one validator node. Other nodes will confirm this transaction shortly (usually in <1 second).</p>
+
+            <div class="bg-black rounded-2xl px-6 py-4 mb-4 section">
+                <table class="w-full table-fixed font-light text-sm">
+                    <thead>
+                        <tr>
+                            <th class="text-gray-400 text-left uppercase w-1/3"></th>
+                            <th class="text-gray-400 text-left uppercase w-2/3"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="[key, value] in Object.entries(details)">
+                            <tr class="border-b border-gray-800">
+                                <td class="py-2 text-gray-400 capitalize text-sm font-semibold py-2" x-text="key"></td>
+                                <td @click="$el.classList.toggle('truncate')" class="text-right text-white truncate break-all py-2 select-none" x-html="value"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+            
         </div>
     </div>
 </div>

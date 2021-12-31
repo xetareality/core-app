@@ -16,50 +16,7 @@ function loadDetails() {
                     data = Object.assign({}, data.token, data.balance)
                 }
 
-                for (var k in data) {
-                    if (['amount', 'maxAmount', 'minAmount', 'tokenBalance', 'tokenTurnover', 'supply', 'reserve'].includes(k)) {
-                        self.details[k] = Wrap.amount(data[k], data.token, data.tokenPreview, 8)
-                    } else if (['fee', 'xetaBalance', 'xetaTurnover'].includes(k)) {
-                        self.details[k] = Wrap.xeta(data[k], 8)
-                    } else if (['created', 'confirmed', 'expires', 'unlocks'].includes(k)) {
-                        if (Date.now()-data[k] > 30*24*60*60*1000) self.details[k] = new Date(data[k]).toLocaleString()
-                        else self.details[k] = formatTime(new Date(data[k]))+' ('+new Date(data[k]).toLocaleString()+')'
-                    } else if (['minTime', 'maxTime'].includes(k)) {
-                        self.details[k] = formatTime(new Date(Date.now()-parseInt(data[k])), false)
-                    } else if (['origin'].includes(k)) {
-                        self.details[k] = Wrap.transaction(data[k])
-                    } else if (['pool'].includes(k)) {
-                        self.details[k] = Wrap.pool(data[k])
-                    } else if (['token'].includes(k)) {
-                        self.details[k] = Wrap.token(data[k])
-                    } else if (['address'].includes(k)) {
-                        if (Alpine.store('resource') == 'token') self.details[k] = Wrap.token(data[k])
-                        else if (Alpine.store('resource') == 'pool') self.details[k] = Wrap.pool(data[k])
-                        else if (Alpine.store('resource') == 'address') self.details[k] = String(data[k])
-                    } else if (['hash'].includes(k)) {
-                        if (Alpine.store('resource') == 'transsaction') self.details[k] = Wrap.transaction(data[k])
-                        else if (Alpine.store('resource') == 'transfer') self.details[k] = Wrap.transfer(data[k])
-                        else if (Alpine.store('resource') == 'claim') self.details[k] = Wrap.claim(data[k])
-                        else if (Alpine.store('resource') == 'allowance') self.details[k] = Wrap.allowance(data[k])
-                    } else if (['from', 'to', 'leader', 'creator', 'sender', 'owner'].includes(k)) {
-                        self.details[k] = Wrap.address(data[k])
-                    } else if (['links'].includes(k)) {
-                        self.details[k] = data[k].map(function(l) {return Wrap.link(l)}).join('')
-                    } else if (['outputs'].includes(k)) {
-                        self.details[k] = data[k].map(function(i) {
-                            return i.map(function(j) {
-                                var r = {a: 'allowance', t: 'token', x: 'transfer', c: 'claim', p: 'pool'}[j.split(':')[0]]
-                                return r[0].toUpperCase()+r.slice(1)+' '+Wrap[r](j.split(':')[1])
-                            }).join('<br>')
-                        }).join('<br>')
-                    } else if (['instructions', 'meta'].includes(k)) {
-                        self.details[k] = JSON.stringify(data[k])
-                    } else if (['program', 'mechanism'].includes(k)) {
-                        self.details[k] = String(data[k]).toUpperCase()
-                    } else self.details[k] = String(data[k])
-
-                    if (self.details[k] == '[object Object]') delete self.details[k]
-                }
+                self.details = formatDetails(data)
             })
         }
     }
