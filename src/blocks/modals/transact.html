@@ -28,16 +28,8 @@ function transactModal() {
         values: {},
         init() {
             var self = this
-            // this.inputs.forEach(function(input) {
-            //     if (self.values[input.name] == null) {
-            //         if (input.value) self.values[input.name] = Alpine.store(input.value.split('.')[0])[input.value.split('.')[1]]
-            //         else self.values[input.name] = null
-            //     }
-            // })
-
             if (!Alpine.store('publicKey')) {
-                hideModal()
-                alert('Please reconnect your Xeta wallet.')
+                if (this.inputs.length) alert('Please reconnect your Xeta wallet.')
                 return
             }
             
