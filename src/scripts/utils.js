@@ -86,7 +86,7 @@ function showModal(name, data) {
                 if (JSON.stringify(el._x_dataStack[0][key]) != JSON.stringify(data[key])) changed = true
                 el._x_dataStack[0][key] = data[key]
             }
-            
+
             if (changed) el._x_dataStack[0].init() // Only re-init if settable data has changed, this allows to retain form inputs on accidental closures
         }
 
@@ -276,7 +276,7 @@ function formatDetails(data, resource) {
             details[k] = String(data[k]).toUpperCase()
         } else details[k] = String(data[k])
 
-        if (details[k] == '[object Object]') delete details[k]
+        if (details[k].includes('[object Object]')) delete details[k]
     }
     return details
 }

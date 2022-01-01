@@ -1,11 +1,12 @@
 <script>
 function launchPool() {
     return {
+        supply: 0,
         init() {
             var self = this
             document.addEventListener('resourceLoaded', function (e) {
-                var p = Alpine.store('pool')
-                Alpine.store('pool').supply = (p.meta && p.meta.launchBalance || 0)/(p.tokenPreview && p.tokenPreview.supply || 0)
+                var pool = Alpine.store('pool')
+                self.supply = (pool.meta && pool.meta.launchBalance || 0)/(pool.tokenPreview && pool.tokenPreview.supply || 0)
             })
         },
     }
@@ -52,9 +53,9 @@ function launchPool() {
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Allocations</span>
                 <span class="flex flex-col text-right">
-                    <span x-text="'50% Launch ('+formatNumber(0.5*$store.pool.supply*100, 2)+'% of total supply)'"></span>
-                    <span x-text="formatNumber(($store.pool.percentage || 1)*100*0.5, 2)+'% Liquidity ('+formatNumber(($store.pool.percentage || 1)*0.5*$store.pool.supply*100, 2)+'% of total supply)'"></span>
-                    <span x-cloak x-show="$store.pool.percentage && $store.pool.percentage != 1" x-text="formatNumber((1-($store.pool.percentage || 1))*100*0.5, 2)+'% Creator ('+formatNumber((1-($store.pool.percentage || 1))*0.5*$store.pool.supply*100, 2)+'% of total supply)'"></span>
+                    <span x-text="'50% Launch ('+formatNumber(0.5*supply*100, 2)+'% of total supply)'"></span>
+                    <span x-text="formatNumber(($store.pool.percentage || 1)*100*0.5, 2)+'% Liquidity ('+formatNumber(($store.pool.percentage || 1)*0.5*supply*100, 2)+'% of total supply)'"></span>
+                    <span x-cloak x-show="$store.pool.percentage && $store.pool.percentage != 1" x-text="formatNumber((1-($store.pool.percentage || 1))*100*0.5, 2)+'% Creator ('+formatNumber((1-($store.pool.percentage || 1))*0.5*supply*100, 2)+'% of total supply)'"></span>
                 </span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
