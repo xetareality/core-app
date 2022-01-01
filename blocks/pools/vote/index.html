@@ -1,1 +1,100 @@
-<script>function votePool(){return{init(){},sorted(n,t){return t?n.map(function(n){var e=t[Xeta.utils.base58encode((new TextEncoder).encode(n)).slice(-8)];return e?[n,e.c+e.w]:[n,0]}).sort(function(n,e){return e[1]-n[1]}):n.map(function(n){return[n,0]})}}}</script><div x-cloak x-show="$store.pool.program == 'vote'" x-data="votePool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section"><div class="w-full flex flex-wrap justify-between items-center mb-4"><p class="text-2xl font-medium py-2 text-white w-full lg:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Vote Pool)' : 'Vote Pool'"></p><div x-data="{active: false}" class="w-full lg:w-1/4 flex relative justify-end"><span x-cloak x-show="!$store.pool.candidates" @click="action('vote.transfer', {pool: $store.pool.address, amount: 0, number: $store.pool.meta && $store.pool.meta.average || 0})" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Vote</span> <span @click="active = !active" :class="{'rounded-l-none': !$store.pool.candidates}" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg></span><div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50"><ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl"><li @click="action('vote.claim', {pool: $store.pool.address}), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li><li @click="action('vote.resolve', {pool: $store.pool.address}), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Resolve</li><li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('vote.oracle', {pool: $store.pool.address}), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Oracle</li></ul></div></div><p x-cloak x-show="$store.pool.description" class="font-ligh pt-1 flex text-gray-200" x-text="$store.pool.description"></p></div><div class="flex flex-wrap"><div class="w-full mb-4 text-white"><div x-cloak x-show="!$store.pool.candidates" class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900"><p class="text-3xl text-white py-4 tracking-wider"><span x-text="'Voting Average: '+($store.pool.meta ? formatNumber($store.pool.meta.average || ($store.pool.meta.sum || 0)/($store.pool.meta.count || 1), 4) : 0)"></span></p></div><div x-cloak x-show="$store.pool.candidates"><p class="text-xl mb-4 text-gray-400 font-normal">Vote for one of the following candidates:</p><div class="border-2 mb-8 rounded-2xl border-gray-800 px-4 bg-gray-900"><ul class="list-none flex flex-wrap"><template x-for="candidate in ($store.pool.candidates ? sorted($store.pool.candidates, $store.pool.meta) : [])"><li class="w-full flex justify-between items-center py-2 border-b border-gray-700"><span x-html="candidate[0].slice(0, 4) == 'http' ? Wrap.link(candidate[0]) : (candidate[0].includes(' ') || candidate[0].length < 32 || candidate[0].length > 44) ? candidate[0] : Wrap.address(candidate[0])"></span><div class="flex items-center"><span class="text-gray-100" x-text="candidate[1]"></span> <span @click="action('vote.transfer', {pool: $store.pool.address, answer: candidate[0], amount: $store.pool.minAmount || 0})" class="ml-4 cursor-pointer text-white py-2 px-4 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-light transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"></path></svg></span></div></li></template></ul></div></div><p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between"><span class="text-gray-400 font-normal mr-4">Min/Max Vote Amount</span> <span><span x-text="formatNumber($store.pool.minAmount || 0, 8)"></span> <span>to</span> <span x-text="formatNumber($store.pool.maxAmount || Infinity, 8)"></span> <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol || ''"></span></span></p><p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between"><span class="text-gray-400 font-normal mr-4">Total Votes</span> <span x-text="formatNumber($store.pool.transfersCount || 0)"></span></p><p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between"><span class="text-gray-400 font-normal mr-4">Max. Votes</span> <span x-text="formatNumber($store.pool.transfersLimit || Infinity)"></span></p><p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between"><span class="text-gray-400 font-normal mr-4">Current Vote Amount</span> <span x-html="Wrap.amount($store.pool.tokenBalance || 0, $store.pool.token, $store.pool.tokenPreview)"></span></p><p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between"><span class="text-gray-400 font-normal mr-4">Max. Vote Amount</span> <span x-html="Wrap.amount($store.pool.tokenLimit || Infinity, $store.pool.token, $store.pool.tokenPreview)"></span></p><p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between"><span class="text-gray-400 font-normal mr-4 up">Resolution Mechanism</span> <span x-text="$store.pool.mechanism && $store.pool.mechanism.toUpperCase() || 'Unspecified'"></span></p><p class="text-xl font-light mb-2 flex justify-between"><span class="text-gray-400 font-normal mr-4">Expires</span><span></span> <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'" class="truncate"></span></p></div></div></div>
+<script>
+function votePool() {
+    return {
+        init() {},
+        sorted(candidates, meta) {
+            if (!meta) return candidates.map(function(c) {return [c, 0]})
+
+            return candidates.map(function(c) {
+                var m = meta[Xeta.utils.base58encode(new TextEncoder().encode(c)).slice(-8)]
+                if (m) return [c, m.c+m.w]
+                else return [c, 0]
+            }).sort(function(a, b) {return b[1]-a[1]})
+        }
+    }
+}
+</script>
+<div x-cloak x-show="$store.pool.program == 'vote'" x-data="votePool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+    <div class="w-full flex flex-wrap justify-between items-center mb-4">
+        <p class="text-2xl font-medium py-2 text-white w-full lg:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Vote Pool)' : 'Vote Pool'"></p>
+        <div x-data="{active: false}" class="w-full lg:w-1/4 flex relative justify-end">
+            <span x-cloak x-show="!$store.pool.candidates" @click="action('vote.transfer', {pool: $store.pool.address, amount: 0, number: $store.pool.meta && $store.pool.meta.average || 0})" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Vote</span>
+            <span @click="active = !active" :class="{'rounded-l-none': !$store.pool.candidates}" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                </svg>
+            </span>
+            <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
+                <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                    <li @click="action('vote.claim', {pool: $store.pool.address}), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Claim</li>
+                    <li @click="action('vote.resolve', {pool: $store.pool.address}), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Resolve</li>
+                    <li x-cloak x-show="$store.pool.creator == Alpine.store('publicKey')" @click="action('vote.oracle', {pool: $store.pool.address}), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Oracle</li>
+                </ul>
+            </div>
+        </div>
+        <p x-cloak x-show="$store.pool.description" class="font-ligh pt-1 flex text-gray-200" x-text="$store.pool.description"></p>
+    </div>
+    <div class="flex flex-wrap">
+        <div class="w-full mb-4 text-white">
+            <div x-cloak x-show="!$store.pool.candidates" class="text-center border-2 mb-8 rounded-2xl border-gray-800 py-4 px-4 bg-gray-900">
+                <p class="text-3xl text-white py-4 tracking-wider">
+                    <span x-text="'Voting Average: '+($store.pool.meta ? formatNumber($store.pool.meta.average || ($store.pool.meta.sum || 0)/($store.pool.meta.count || 1), 4) : 0)"></span>
+                </p>
+            </div>
+            <div x-cloak x-show="$store.pool.candidates">
+                <p class="text-xl mb-4 text-gray-400 font-normal">Vote for one of the following candidates:</p>
+                <div class="border-2 mb-8 rounded-2xl border-gray-800 px-4 bg-gray-900">
+                    <ul class="list-none flex flex-wrap">
+                        <template x-for="candidate in ($store.pool.candidates ? sorted($store.pool.candidates, $store.pool.meta) : [])">
+                            <li class="w-full flex justify-between items-center py-2 border-b border-gray-700">
+                                <span x-html="candidate[0].slice(0, 4) == 'http' ? Wrap.link(candidate[0]) : (candidate[0].includes(' ') || candidate[0].length < 32 || candidate[0].length > 44) ? candidate[0] : Wrap.address(candidate[0])"></span>
+                                <div class="flex items-center">
+                                    <span class="text-gray-100" x-text="candidate[1]"></span>
+                                    <span @click="action('vote.transfer', {pool: $store.pool.address, answer: candidate[0], amount: $store.pool.minAmount || 0})" class="ml-4 cursor-pointer text-white py-2 px-4 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-light transition-all">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
+                                          <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"></path>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </div>
+
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Min/Max Vote Amount</span>
+                <span>
+                    <span x-text="formatNumber($store.pool.minAmount || 0, 8)"></span>
+                    <span>to</span>
+                    <span x-text="formatNumber($store.pool.maxAmount || Infinity, 8)"></span>
+                    <span x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol || ''"></span>
+                </span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Total Votes</span>
+                <span x-text="formatNumber($store.pool.transfersCount || 0)"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Max. Votes</span>
+                <span x-text="formatNumber($store.pool.transfersLimit || Infinity)"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Current Vote Amount</span>
+                <span x-html="Wrap.amount($store.pool.tokenBalance || 0, $store.pool.token, $store.pool.tokenPreview)"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Max. Vote Amount</span>
+                <span x-html="Wrap.amount($store.pool.tokenLimit || Infinity, $store.pool.token, $store.pool.tokenPreview)"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4 up">Resolution Mechanism</span>
+                <span x-text="$store.pool.mechanism && $store.pool.mechanism.toUpperCase() || 'Unspecified'"></span>
+            </p>
+            <p class="text-xl font-light mb-2 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Expires</span><span></span>
+                <span x-text="$store.pool.closed ? 'Closed' : $store.pool.expires ? $store.pool.timer : 'Never'" class="truncate"></span>
+            </p>
+        </div>
+    </div>
+</div>

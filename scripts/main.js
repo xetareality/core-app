@@ -54,6 +54,7 @@ document.addEventListener('alpine:init', function () {
             if (!data) return
             Alpine.store(resource, data)
             if (resource == 'address') Alpine.store('token', data.token)
+            else if (resource == 'token' && data.pool) Alpine.store('pool', data.pool)
             setPageMeta(resource, data)
 
             var event = document.createEvent('Event')
