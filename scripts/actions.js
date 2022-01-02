@@ -97,15 +97,15 @@ var Infos = {
 
 var Actions = {
     /**
-     * Address
+     * Profile
      */
-    'address.update': {
-        title: 'Update Address',
+    'profile.update': {
+        title: 'Update Profile',
         description: `
-        Update address values such as name, description or links.
+        Update profile values such as name, description or links.
         These will be shown on top of your address page.
         Leave values empty, if you don't want them to be updated.`,
-        confirmation: `You will update the connected wallet address info.`,
+        confirmation: `You will update the connected wallet profile info.`,
         inputs: [
             {name: 'name', type: 'string', required: false},
             {name: 'description', type: 'string', required: false},
