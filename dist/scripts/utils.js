@@ -186,11 +186,11 @@ function validForm(form) {
 }
 
 function formatNumber(val, decimals=0) {
-    return (Math.floor(parseFloat(val)*(10**decimals))/(10*decimals)).toLocaleString('en', {maximumFractionDigits: decimals})
+    return (Math.floor(parseFloat(val)*(10**decimals))/(10**decimals)).toLocaleString('en', {maximumFractionDigits: decimals})
 }
 
 function formatCurrency(val, decimals=0) {
-    return parseFloat(val).toLocaleString('en', {style: 'currency', currency: 'USD', maximumFractionDigits: decimals})
+    return (Math.floor(parseFloat(val)*(10**decimals))/(10**decimals)).toLocaleString('en', {style: 'currency', currency: 'USD', maximumFractionDigits: decimals})
 }
 
 function formatTime(date, prep=true) {
@@ -272,7 +272,7 @@ function formatDetails(data, resource) {
             }).join('<br>')
         } else if (['instructions', 'meta'].includes(k)) {
             details[k] = JSON.stringify(data[k])
-        } else if (['program', 'mechanism'].includes(k)) {
+        } else if (['program', 'mechanism', 'whole', 'frozen', 'sponsored'].includes(k)) {
             details[k] = String(data[k]).toUpperCase()
         } else details[k] = String(data[k])
 
