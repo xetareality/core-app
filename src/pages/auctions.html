@@ -44,13 +44,13 @@ function auctionsPage() {
 
 <div x-data="auctionsPage">
     <template x-for="type in ['expiring', 'bids', 'transfers', 'recent']">
-        <div class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
-            <p class="text-2xl font-medium py-2 text-white w-full mb-2" x-text="{expiring: 'Ending Soon', bids: 'Highest Bids', transfers: 'Most Popular', recent: 'Recently Added'}[type]"></p>
-            <div @scroll.debounce="$el.scrollLeft > 0.35*$el.clientWidth ? load(type) : null" class="flex overflow-x-scroll disable-scrollbar mb-2">
+        <div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12 section">
+            <p class="text-2xl font-medium py-2 text-white w-full mb-2 px-6" x-text="{expiring: 'Ending Soon', bids: 'Highest Bids', transfers: 'Most Popular', recent: 'Recently Added'}[type]"></p>
+            <div @scroll.debounce="$el.scrollLeft > 0.35*$el.clientWidth ? load(type) : null" class="flex overflow-x-scroll disable-scrollbar mb-2 px-5">
                 <div class="flex flex-nowrap">
                     <template x-for="pool in pools[type]">
                         <div class="w-48 inline-block">
-                            <div class="mx-1.5">
+                            <div class="mx-1">
                                 <a :href="'/pool/?address='+pool.address" class="block rounded-2xl bg-gray-900 bg-opacity-50 shadow hover:bg-opacity-100 transition-all">
                                     <div class="rounded-2xl rounded-b-none overflow-hidden">
                                         <img class="h-32 w-full mb-2 object-center object-cover" :src="pool.tokenPreview && pool.tokenPreview.preview ? pool.tokenPreview.preview : '/media/placeholder.jpeg'" onerror="this.src = '/media/placeholder.jpeg'">

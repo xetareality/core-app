@@ -47,7 +47,7 @@ function collectionsPage() {
                         <th class="truncate py-2 pr-4 text-left uppercase w-1/6">Volume</th>
                         <th class="truncate py-2 pr-4 text-left uppercase w-1/6 hidden md:table-cell">Avg. Bid</th>
                         <th class="truncate py-2 pr-4 text-left uppercase w-1/6 hidden md:table-cell">Max. Bid</th>
-                        <th class="truncate py-2 pr-4 text-left uppercase w-1/6">Bids</th>
+                        <th class="truncate py-2 pr-4 text-left uppercase w-1/6 hidden md:table-cell">Bids</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -61,8 +61,8 @@ function collectionsPage() {
                                 </a>
                             </td>
                             <td class="truncate pr-4 py-2" x-html="Wrap.xeta(candle.turnover, 0)"></td>
-                            <td class="truncate pr-4 py-2" x-html="Wrap.xeta(candle.turnover/(candle.trades ? candle.trades : 1), 4)"></td>
-                            <td class="truncate pr-4 py-2" x-html="Wrap.xeta(candle.high, 4)"></td>
+                            <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.xeta(candle.turnover/(candle.trades ? candle.trades : 1), 4)"></td>
+                            <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.xeta(candle.high, 4)"></td>
                             <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="formatNumber(candle.trades)"></td>
                         </tr>
                     </template>

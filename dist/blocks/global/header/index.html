@@ -43,8 +43,8 @@ function initSearch() {
                                             <img class="w-8 h-8 rounded" :class="{'opacity-20': !result.preview}" :src="result.preview ? result.preview : '/media/empty.png'" onerror="this.src = '/media/empty.png'" />
                                         </div>
 
-                                        <div class="">
-                                            <p class="block">
+                                        <div class="truncate">
+                                            <p>
                                                 <span class="text-xs text-gray-200 uppercase" x-text="result.type"></span>
                                                 <span class="text-xs text-gray-200 break-words" x-text="result.name ? '('+result.name.slice(0,50)+')' : ''"></span>
                                             </p>

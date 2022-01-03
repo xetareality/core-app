@@ -46,24 +46,24 @@ function tokensPage() {
                         <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Trades</th>
                         <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Liquidity</th>
                         <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Supply</th>
-                        <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Market Cap.</th>
+                        <th class="truncate py-2 pr-4 text-left uppercase w-1/12">Market Cap.</th>
                     </tr>
                 </thead>
                 <tbody>
                     <template x-for="(pool, i) in pools">
                         <tr class="hover:bg-gray-900 text-white">
                             <td class="truncate pr-4 py-2">
-                                <a :href="'/pool/?address='+pool.token" class="hover:text-pink-400 flex items-center block">
+                                <a :href="'/pool/?address='+Xeta.hash.inverse(pool.token)" class="hover:text-pink-400 flex items-center block">
                                     <span x-text="i+'. '"></span>
                                     <img class="h-4 w-4 mx-1 -mt-0.5 inline" :src="pool.tokenPreview ? pool.tokenPreview.preview : Constants.pixel" onerror="this.src = '/media/favicon.png'" />
                                     <span x-text="pool.tokenPreview.symbol"></span>
                                 </a>
                             </td>
-                            <td class="truncate pr-4 py-2" x-text="formatNumber(parseFloat(pool.tokenBalance)/parseFloat(pool.xetaBalance)*Constants.xetaPrice, 8)"></td>
+                            <td class="truncate pr-4 py-2" x-text="formatNumber(parseFloat(pool.xetaBalance)/parseFloat(pool.tokenBalance)*Constants.xetaPrice, 8)"></td>
                             <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="formatNumber(pool.transfersCount)"></td>
                             <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.xeta(pool.xetaBalance, 0)"></td>
                             <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="formatNumber(pool.tokenPreview && pool.tokenPreview.supply || 0)"></td>
-                            <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="'$'+formatNumber(parseFloat(pool.number)/Constants.xetaPrice)"></td>
+                            <td class="truncate pr-4 py-2" x-text="'$'+formatNumber(parseFloat(pool.number)*Constants.xetaPrice)"></td>
                         </tr>
                     </template>
                 </tbody>

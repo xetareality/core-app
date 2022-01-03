@@ -1,5 +1,5 @@
 var Infos = {
-    address: {
+    profile: {
         address: 'Associated address',
         name: 'Profile name or title',
         description: 'Profile description text',
@@ -82,6 +82,7 @@ var Infos = {
         pool: 'Associated pool address',
         token: 'Associated token address',
         claim: 'Associated claim hash',
+        address: 'Recipient address',
         amount: 'Amount to be transferred',
         unlocks: 'Datetime after which the claim can be redeemed',
         expires: 'Datetime after which the claim becomes invalid',
@@ -246,6 +247,7 @@ var Actions = {
             {name: 'symbol', type: 'string', required: false},
             {name: 'supply', type: 'amount', required: false},
             {name: 'reserve', type: 'amount', required: false},
+            {name: 'whole', type: 'boolean', required: false},
 
             // NFT
             {name: 'owner', type: 'string', required: false},

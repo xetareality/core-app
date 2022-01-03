@@ -12,7 +12,7 @@
             <tr class="hover:bg-gray-900 text-white">
                 <td class="truncate pr-4 py-2" x-html="Wrap.address(balance.address)"></td>
                 <td class="truncate pr-4 py-2" x-html="Wrap.token(balance.token)"></td>
-                <td class="truncate pr-4 py-2" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview, 8)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview, balance.tokenPreview.whole ? 0 : 8)"></td>
                 <td x-cloak x-show="balance.percentage" class="truncate pr-4 py-2 hidden md:table-cell" x-html="balance.percentage+'%'"></td>
             </tr>
         </template>

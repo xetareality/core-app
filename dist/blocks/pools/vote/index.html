@@ -19,7 +19,7 @@ function votePool() {
         <p class="text-2xl font-medium py-2 text-white w-full lg:w-3/4" x-text="$store.pool.name ? $store.pool.name+' (Vote Pool)' : 'Vote Pool'"></p>
         <div x-data="{active: false}" class="w-full lg:w-1/4 flex relative justify-end">
             <span x-cloak x-show="!$store.pool.candidates" @click="action('vote.transfer', {pool: $store.pool.address, amount: 0, number: $store.pool.meta && $store.pool.meta.average || 0})" class="w-5/6 cursor-pointer text-white py-2 pl-8 rounded-2xl rounded-r-none text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all">Vote</span>
-            <span @click="active = !active" :class="{'rounded-l-none': !$store.pool.candidates}" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
+            <span @click="active = !active" :class="{'rounded-l-none': !$store.pool.candidates, '-mt-12 lg:mt-0': $store.pool.candidates}" class="w-1/6 cursor-pointer text-white py-2 rounded-2xl text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -47,7 +47,7 @@ function votePool() {
                     <ul class="list-none flex flex-wrap">
                         <template x-for="candidate in ($store.pool.candidates ? sorted($store.pool.candidates, $store.pool.meta) : [])">
                             <li class="w-full flex justify-between items-center py-2 border-b border-gray-700">
-                                <span x-html="candidate[0].slice(0, 4) == 'http' ? Wrap.link(candidate[0]) : (candidate[0].includes(' ') || candidate[0].length < 32 || candidate[0].length > 44) ? candidate[0] : Wrap.address(candidate[0])"></span>
+                                <span class="truncate" x-html="candidate[0].slice(0, 4) == 'http' ? Wrap.link(candidate[0]) : (candidate[0].includes(' ') || candidate[0].length < 32 || candidate[0].length > 44) ? candidate[0] : Wrap.address(candidate[0])"></span>
                                 <div class="flex items-center">
                                     <span class="text-gray-100" x-text="candidate[1]"></span>
                                     <span @click="action('vote.transfer', {pool: $store.pool.address, answer: candidate[0], amount: $store.pool.minAmount || 0})" class="ml-4 cursor-pointer text-white py-2 px-4 rounded-2xl text-center bg-pink-700 hover:bg-gray-900 text-lg font-light transition-all">
