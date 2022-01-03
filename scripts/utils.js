@@ -186,7 +186,7 @@ function validForm(form) {
 }
 
 function formatNumber(val, decimals=0) {
-    return parseFloat(val).toLocaleString('en', {maximumFractionDigits: decimals})
+    return (Math.floor(parseFloat(val)*(10**decimals))/(10*decimals)).toLocaleString('en', {maximumFractionDigits: decimals})
 }
 
 function formatCurrency(val, decimals=0) {

@@ -79,12 +79,12 @@
         </div>
         <div class="w-full justify-between lg:justify-end lg:w-3/5 flex items-center font-light">
             <nav class="flex flex-wrap text-sm lg:mr-4">
-                <a href="/" class="lg:hidden cursor-pointer px-2 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm">
+                <a href="/" class="lg:hidden cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm">
                     <span>Home</span>
                 </a>
                 <div x-data="{active: false}" class="relative text-xs lg:text-sm">
-                    <span @click="active = !active" class="block cursor-pointer px-2 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">Tokens</span>
-                    <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50 select-none">
+                    <span @click="active = !active" class="block cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">Tokens</span>
+                    <div x-cloak x-show="active" @click.away="active = false" class="absolute left-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50 select-none">
                         <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                             <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/tokens">By Market Cap</a></li>
                             <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/trending">By Trending</a></li>
@@ -92,18 +92,18 @@
                     </div>
                 </div>
                 <div x-data="{active: false}" class="relative text-xs lg:text-sm">
-                    <span @click="active = !active" class="block cursor-pointer px-2 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">NFTs</span>
-                    <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50 select-none">
-                        <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                    <span @click="active = !active" class="block cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">NFTs</span>
+                    <div x-cloak x-show="active" @click.away="active = false" class="absolute left-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50 select-none">
+                        <ul class="list-none bg-gray-900 px-1 py-2 rounded-2xl">
                             <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/collections">Top Collections</a></li>
                             <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/auctions">Top Auctions</a></li>
                         </ul>
                     </div>
                 </div>
-                <a href="/pages/statistics" class="cursor-pointer px-2 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm">
+                <a href="/pages/statistics" class="cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm">
                     <span>Stats</span>
                 </a>
-                <a href="https://xetareality.com" target="_blank" class="cursor-pointer px-2 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm">
+                <a href="https://xetareality.com" target="_blank" class="cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm">
                     <span>About</span>
                 </a>
             </nav>
@@ -112,7 +112,7 @@
                 <span @click="showModal('walletModal')" x-show="!Alpine.store('publicKey')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none">Connect</span>
 
                 <div x-cloak x-show="Alpine.store('publicKey')" @click="showModal('actionsModal')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none">
-                    <span x-text="String(Alpine.store('publicKey')).slice(0, 10)+'...'"></span>
+                    <span x-text="String(Alpine.store('publicKey')).slice(0, 8)+'...'"></span>
                 </div>
             </div>
         </div>
@@ -167,8 +167,8 @@ function initSearch() {
                                             <img class="w-8 h-8 rounded" :class="{'opacity-20': !result.preview}" :src="result.preview ? result.preview : '/media/empty.png'" onerror="this.src = '/media/empty.png'" />
                                         </div>
 
-                                        <div class="">
-                                            <p class="block">
+                                        <div class="truncate">
+                                            <p>
                                                 <span class="text-xs text-gray-200 uppercase" x-text="result.type"></span>
                                                 <span class="text-xs text-gray-200 break-words" x-text="result.name ? '('+result.name.slice(0,50)+')' : ''"></span>
                                             </p>
@@ -226,24 +226,24 @@ function tokensPage() {
                         <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Trades</th>
                         <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Liquidity</th>
                         <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Supply</th>
-                        <th class="truncate py-2 pr-4 text-left uppercase w-1/12 hidden md:table-cell">Market Cap.</th>
+                        <th class="truncate py-2 pr-4 text-left uppercase w-1/12">Market Cap.</th>
                     </tr>
                 </thead>
                 <tbody>
                     <template x-for="(pool, i) in pools">
                         <tr class="hover:bg-gray-900 text-white">
                             <td class="truncate pr-4 py-2">
-                                <a :href="'/pool/?address='+pool.token" class="hover:text-pink-400 flex items-center block">
+                                <a :href="'/pool/?address='+Xeta.hash.inverse(pool.token)" class="hover:text-pink-400 flex items-center block">
                                     <span x-text="i+'. '"></span>
                                     <img class="h-4 w-4 mx-1 -mt-0.5 inline" :src="pool.tokenPreview ? pool.tokenPreview.preview : Constants.pixel" onerror="this.src = '/media/favicon.png'" />
                                     <span x-text="pool.tokenPreview.symbol"></span>
                                 </a>
                             </td>
-                            <td class="truncate pr-4 py-2" x-text="formatNumber(parseFloat(pool.tokenBalance)/parseFloat(pool.xetaBalance)*Constants.xetaPrice, 8)"></td>
+                            <td class="truncate pr-4 py-2" x-text="formatNumber(parseFloat(pool.xetaBalance)/parseFloat(pool.tokenBalance)*Constants.xetaPrice, 8)"></td>
                             <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="formatNumber(pool.transfersCount)"></td>
                             <td class="truncate pr-4 py-2 hidden md:table-cell" x-html="Wrap.xeta(pool.xetaBalance, 0)"></td>
                             <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="formatNumber(pool.tokenPreview && pool.tokenPreview.supply || 0)"></td>
-                            <td class="truncate pr-4 py-2 hidden md:table-cell" x-text="'$'+formatNumber(parseFloat(pool.number)/Constants.xetaPrice)"></td>
+                            <td class="truncate pr-4 py-2" x-text="'$'+formatNumber(parseFloat(pool.number)*Constants.xetaPrice)"></td>
                         </tr>
                     </template>
                 </tbody>
@@ -545,20 +545,20 @@ function actionsModal() {
             
             <div x-show="!selection" class="flex flex-wrap justify-center">
                 <p class="w-full px-4 py-4 text-2xl text-center text-white font-light">Select Wallet Action</p>
-                <p class="w-full px-4 pb-4 text-sm text-center text-white">Connected Wallet: <span x-text="Alpine.sstore('publicKey')"></span></p>
+                <p class="w-full px-4 pb-4 text-sm text-center text-white truncate">Connected Wallet: <span x-text="Alpine.sstore('publicKey')"></span></p>
 
                 <ul class="list-none w-2/5 mr-2 text-center">
-                    <li @click="window.location.href = '/address/?address='+$lstore('publicKey')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">View Account</li>
-                    <li @click="disconnectWallet(), showModal('walletModal')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Change Wallet</li>
-                    <li @click="disconnectWallet(), hideModal()" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Disconnect</li>
-                    <li @click="backup()" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Back-up Keys</li>
+                    <li @click="window.location.href = '/address/?address='+$lstore('publicKey')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">View Account</li>
+                    <li @click="disconnectWallet(), showModal('walletModal')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">Change Wallet</li>
+                    <li @click="disconnectWallet(), hideModal()" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">Disconnect</li>
+                    <li @click="backup()" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">Back-up Keys</li>
                 </ul>
                 <ul class="list-none w-2/5 ml-2 text-center">
-                    <li @click="action('transfer.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Transfer</li>
-                    <li @click="action('token.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Token</li>
-                    <li @click="action('pool.create', {token: $store.token.address}), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Pool</li>
-                    <li @click="action('allowance.update', {token: $store.token.address}), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Allowance</li>
-                    <li @click="action('claim.create', {token: $store.token.address}), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Claim</li>
+                    <li @click="action('transfer.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">New Transfer</li>
+                    <li @click="action('token.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">New Token</li>
+                    <li @click="action('pool.create', {token: $store.token.address}), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">New Pool</li>
+                    <li @click="action('allowance.update', {token: $store.token.address}), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">New Allowance</li>
+                    <li @click="action('claim.create', {token: $store.token.address}), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">New Claim</li>
                 </ul>
             </div>
         </div>

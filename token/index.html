@@ -79,12 +79,12 @@
         </div>
         <div class="w-full justify-between lg:justify-end lg:w-3/5 flex items-center font-light">
             <nav class="flex flex-wrap text-sm lg:mr-4">
-                <a href="/" class="lg:hidden cursor-pointer px-2 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm">
+                <a href="/" class="lg:hidden cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm">
                     <span>Home</span>
                 </a>
                 <div x-data="{active: false}" class="relative text-xs lg:text-sm">
-                    <span @click="active = !active" class="block cursor-pointer px-2 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">Tokens</span>
-                    <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50 select-none">
+                    <span @click="active = !active" class="block cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">Tokens</span>
+                    <div x-cloak x-show="active" @click.away="active = false" class="absolute left-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50 select-none">
                         <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                             <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/tokens">By Market Cap</a></li>
                             <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/trending">By Trending</a></li>
@@ -92,18 +92,18 @@
                     </div>
                 </div>
                 <div x-data="{active: false}" class="relative text-xs lg:text-sm">
-                    <span @click="active = !active" class="block cursor-pointer px-2 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">NFTs</span>
-                    <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50 select-none">
-                        <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                    <span @click="active = !active" class="block cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">NFTs</span>
+                    <div x-cloak x-show="active" @click.away="active = false" class="absolute left-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50 select-none">
+                        <ul class="list-none bg-gray-900 px-1 py-2 rounded-2xl">
                             <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/collections">Top Collections</a></li>
                             <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/auctions">Top Auctions</a></li>
                         </ul>
                     </div>
                 </div>
-                <a href="/pages/statistics" class="cursor-pointer px-2 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm">
+                <a href="/pages/statistics" class="cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm">
                     <span>Stats</span>
                 </a>
-                <a href="https://xetareality.com" target="_blank" class="cursor-pointer px-2 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm">
+                <a href="https://xetareality.com" target="_blank" class="cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm">
                     <span>About</span>
                 </a>
             </nav>
@@ -112,7 +112,7 @@
                 <span @click="showModal('walletModal')" x-show="!Alpine.store('publicKey')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none">Connect</span>
 
                 <div x-cloak x-show="Alpine.store('publicKey')" @click="showModal('actionsModal')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none">
-                    <span x-text="String(Alpine.store('publicKey')).slice(0, 10)+'...'"></span>
+                    <span x-text="String(Alpine.store('publicKey')).slice(0, 8)+'...'"></span>
                 </div>
             </div>
         </div>
@@ -167,8 +167,8 @@ function initSearch() {
                                             <img class="w-8 h-8 rounded" :class="{'opacity-20': !result.preview}" :src="result.preview ? result.preview : '/media/empty.png'" onerror="this.src = '/media/empty.png'" />
                                         </div>
 
-                                        <div class="">
-                                            <p class="block">
+                                        <div class="truncate">
+                                            <p>
                                                 <span class="text-xs text-gray-200 uppercase" x-text="result.type"></span>
                                                 <span class="text-xs text-gray-200 break-words" x-text="result.name ? '('+result.name.slice(0,50)+')' : ''"></span>
                                             </p>
@@ -347,21 +347,23 @@ function swapPool() {
 <div x-cloak x-show="$store.pool.program == 'swap'" x-data="swapPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
     <div class="w-full flex flex-wrap justify-between items-center mb-8">
         <p class="text-2xl font-medium py-2 text-white w-full lg:w-1/4" x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? $store.pool.tokenPreview.symbol+'/XETA'+' Swap' : 'Swap Pool'"></p>
-        <div x-data="{active: false}" class="w-full lg:w-3/4 justify-end items-center flex relative">
-            <input @input="amount = $el.value, exchange(), $store.transfer.amount = $el.value" :placeholder="token ? ($store.pool.tokenPreview ? $store.pool.tokenPreview.symbol : 'Token') : 'XETA'" class="rounded-r-none rounded-2xl focus:outline-none font-light placeholder-gray-400 shadow border-gray-700 border-2 transition-all px-4 py-2 bg-gray-900 focus:bg-gray-800 text-lg text-gray-100 outline-none focus:outline-none h-11 border-r-0" type="number" />
-            <span @click="token = !token, exchange(), $store.transfer.token = token ? $store.pool.token : Xeta.config.xetaAddress" class="cursor-pointer text-white text-gray-400 border-gray-700 border-2 border-l-0 border-r-0 py-3 px-4 text-center bg-gray-900 hover:bg-gray-800 transition-all h-11 flex items-center text-lg font-light">
-                <span x-html="token ? Wrap.tokenPreview($store.pool.tokenPreview) : Wrap.xetaPreview()"></span>
+        <div x-data="{active: false}" class="w-full lg:w-2/3 justify-end items-center flex flex-wrap relative">
+            <input @input="amount = $el.value, exchange(), $store.transfer.amount = $el.value" :placeholder="token ? ($store.pool.tokenPreview ? $store.pool.tokenPreview.symbol : 'Token') : 'XETA'" class="rounded-r-none rounded-2xl focus:outline-none font-light placeholder-gray-400 shadow border-gray-700 border-2 transition-all px-4 py-2 bg-gray-900 focus:bg-gray-800 text-sm lg:text-lg text-gray-100 outline-none focus:outline-none h-11 border-r-0 w-1/2 lg:w-1/3" type="number" />
+            <span @click="token = !token, exchange(), $store.transfer.token = token ? $store.pool.token : Xeta.config.xetaAddress" class="cursor-pointer text-white text-gray-400 border-gray-700 border-2 border-l-0 lg:border-r-0 py-3 px-4 rounded-2xl rounded-l-none lg:rounded-r-none text-center bg-gray-800 hover:bg-gray-700 transition-all h-11 flex items-center justify-center text-sm lg:text-lg font-light w-1/2 lg:w-1/3">
+                <span class="truncate" x-html="token ? Wrap.tokenPreview($store.pool.tokenPreview) : Wrap.xetaPreview()"></span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="mx-2" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
+                    <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
                 </svg>
-                <span x-html="token ? Wrap.xetaPreview() : Wrap.tokenPreview($store.pool.tokenPreview)"></span>
+                <span class="truncate" x-html="token ? Wrap.xetaPreview() : Wrap.tokenPreview($store.pool.tokenPreview)"></span>
             </span>
-            <span @click="action('swap.transfer', {pool: $store.pool.address, token: token ? $store.pool.token : Xeta.config.xetaAddress, amount: amount})" class="w-1/4 cursor-pointer text-white py-2 pl-4 text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all h-11">Swap</span>
-            <span @click="active = !active" class="w-10 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all h-11">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-                </svg>
-            </span>
+            <div class="flex w-full lg:w-1/3 mt-2 lg:mt-0">
+                <span @click="action('swap.transfer', {pool: $store.pool.address, token: token ? $store.pool.token : Xeta.config.xetaAddress, amount: amount})" class="cursor-pointer text-white py-2 pl-4 text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all h-11 w-5/6 rounded-2xl lg:rounded-l-none rounded-r-none">Swap</span>
+                <span @click="active = !active" class="w-10 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all h-11 w-1/6">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </span>
+            </div>
             <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
                 <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
                     <li @click="action('swap.deposit', {pool: $store.pool.address}), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
@@ -380,7 +382,7 @@ function swapPool() {
                     <span x-html="Wrap.tokenPreview($store.pool.tokenPreview, $store.pool.token)+' Price - '"></span>
                     <span x-html="$store.pool.xetaBalance && $store.pool.tokenBalance ? Wrap.xeta(parseFloat($store.pool.xetaBalance)/parseFloat($store.pool.tokenBalance), 8) : 0"></span>
                 </p>
-                <div x-data="{active: false}" class="relative text-white text-sm">
+                <div x-data="{active: false}" class="relative text-white text-sm mt-2">
                     <span @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900">Interval: <span x-text="interval"></span></span>
                     <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
                         <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
@@ -453,7 +455,7 @@ function loadDetails() {
                     <span @click.stop="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize text-xs">Action</span>
                     <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
                         <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                            <li @click.stop="action($store.resource+'.update', {[$store.resource]: $store[$store.resource][Xeta.utils.key($store.resource)]}), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Update</li>
+                            <li @click.stop="action($store.resource.replace('address', 'profile')+'.update', {[$store.resource]: $store[$store.resource][Xeta.utils.key($store.resource)]}), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Update</li>
                             <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.transfer', {claim: $store.claim.hash}), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
                             <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.resolve', {claim: $store.claim.hash}), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Resolve</li>
                             <li x-cloak x-show="$store.resource == 'token'" @click.stop="action('transfer.create', {token: $store.token.address}), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
@@ -588,7 +590,7 @@ function tokenExplorer() {
             <tr class="hover:bg-gray-900 text-white">
                 <td class="truncate pr-4 py-2" x-html="Wrap.address(balance.address)"></td>
                 <td class="truncate pr-4 py-2" x-html="Wrap.token(balance.token)"></td>
-                <td class="truncate pr-4 py-2" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview, 8)"></td>
+                <td class="truncate pr-4 py-2" x-html="Wrap.amount(balance.amount, balance.token, balance.tokenPreview, balance.tokenPreview.whole ? 0 : 8)"></td>
                 <td x-cloak x-show="balance.percentage" class="truncate pr-4 py-2 hidden md:table-cell" x-html="balance.percentage+'%'"></td>
             </tr>
         </template>
@@ -891,20 +893,20 @@ function actionsModal() {
             
             <div x-show="!selection" class="flex flex-wrap justify-center">
                 <p class="w-full px-4 py-4 text-2xl text-center text-white font-light">Select Wallet Action</p>
-                <p class="w-full px-4 pb-4 text-sm text-center text-white">Connected Wallet: <span x-text="Alpine.sstore('publicKey')"></span></p>
+                <p class="w-full px-4 pb-4 text-sm text-center text-white truncate">Connected Wallet: <span x-text="Alpine.sstore('publicKey')"></span></p>
 
                 <ul class="list-none w-2/5 mr-2 text-center">
-                    <li @click="window.location.href = '/address/?address='+$lstore('publicKey')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">View Account</li>
-                    <li @click="disconnectWallet(), showModal('walletModal')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Change Wallet</li>
-                    <li @click="disconnectWallet(), hideModal()" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Disconnect</li>
-                    <li @click="backup()" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">Back-up Keys</li>
+                    <li @click="window.location.href = '/address/?address='+$lstore('publicKey')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">View Account</li>
+                    <li @click="disconnectWallet(), showModal('walletModal')" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">Change Wallet</li>
+                    <li @click="disconnectWallet(), hideModal()" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">Disconnect</li>
+                    <li @click="backup()" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">Back-up Keys</li>
                 </ul>
                 <ul class="list-none w-2/5 ml-2 text-center">
-                    <li @click="action('transfer.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Transfer</li>
-                    <li @click="action('token.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Token</li>
-                    <li @click="action('pool.create', {token: $store.token.address}), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Pool</li>
-                    <li @click="action('allowance.update', {token: $store.token.address}), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Allowance</li>
-                    <li @click="action('claim.create', {token: $store.token.address}), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 text-lg font-light transition-all w-full mb-4">New Claim</li>
+                    <li @click="action('transfer.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">New Transfer</li>
+                    <li @click="action('token.create'), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">New Token</li>
+                    <li @click="action('pool.create', {token: $store.token.address}), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">New Pool</li>
+                    <li @click="action('allowance.update', {token: $store.token.address}), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">New Allowance</li>
+                    <li @click="action('claim.create', {token: $store.token.address}), selection = null" class="cursor-pointer text-white py-2 px-4 rounded-2xl block text-center bg-black hover:bg-gray-900 transition-all w-full mb-4">New Claim</li>
                 </ul>
             </div>
         </div>
