@@ -53,12 +53,18 @@ document.addEventListener('alpine:init', function () {
         Xeta[resource].read({[Xeta.utils.key(resource)]: gup(Xeta.utils.key(resource))}, {preview: true}).then(function(data) {
             if (!data) return
             Alpine.store(resource, data)
-            if (resource == 'address') Alpine.store('token', data.token)
-            else if (resource == 'token' && data.pool) Alpine.store('pool', data.pool)
+
+            if (resource == 'address') {
+                if (data.profile) Alpine.store('token', data.profile)
+                if (data.pool) window.location.href = '/pool/?address='+data.pool.address
+                if (data.token) window.location.href = '/token/?address='+data.token.address
+                data = Object.assign({}, data.profile || {}, data.balance || {})
+            } else if (resource == 'token' && data.pool) Alpine.store('pool', data.pool)
             setPageMeta(resource, data)
 
             var event = document.createEvent('Event')
             event.initEvent('resourceLoaded', false, false)
+            event.data = data
             document.dispatchEvent(event)
         }).catch(function(e) {
             if (e.message == 'quota:limited') window.location.href = '/pages/quota'
