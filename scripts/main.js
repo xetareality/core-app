@@ -123,6 +123,6 @@ var Constants = {
     bscLiquidity: '0xD6675f3db1B9fF04C55917D220648499E5c1a0A5',
     bscWbnb: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
     ethXeta: '',
-    ethBridge: '0xaf80978384a2C702154077BaAB12ce271E651afC',
-    xetaBridge: '1BsR3DGCn95JgR2aB7ZTrvdQ52pjE4i4FRQt2YfGxqq',
+    ethBridge: '0x84b4BB9A138DE35158031a56f608654d6731E1fB',
+    xetaBridge: '14axkTARTgoVKkvgcjk9xb81aPZKU69C9CWrBEhdSu32',
 }
