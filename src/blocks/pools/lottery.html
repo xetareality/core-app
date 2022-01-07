@@ -51,7 +51,7 @@
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Number of Winners</span>
-                <span x-text="formatNumber($store.pool.claimsLimit || $store.pool.mechanism == 'nft' ? '1' : Infinity)"></span>
+                <span x-text="formatNumber($store.pool.claimsLimit || ($store.pool.mechanism == 'nft' ? '1' : Infinity))"></span>
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Max. Participants</span>

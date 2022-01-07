@@ -92,13 +92,13 @@ function faucetModal() {
                     <form x-data x-show="!selection" class="flex flex-wrap w-full px-2 lg:px-8 py-8 text-white font-light">
                         <div class="mb-6 w-full">
                             <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your Gmail Address</label>
-                            <input x-model="email" data-rules='["required"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
+                            <input x-model="email" data-rules='["required"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-300 border-opacity-50 focus:border-pink-400 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
                             <p class="text-gray-200 text-xs mt-2 hidden"></p>
                         </div>
 
                         <div class="mb-6 w-full">
                             <label class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your XETA Public Key Address <span @click="showModal('walletModal')" class="text-gray-200 text-xs font-semibold uppercase underline cursor-pointer">Create New XETA Wallet or Connect Existing</span></label>
-                            <input x-model="wallet" data-rules='["required"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
+                            <input x-model="wallet" data-rules='["required"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-300 border-opacity-50 focus:border-pink-400 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
                             <p class="text-gray-200 text-xs mt-2 hidden"></p>
                         </div>
 
@@ -110,7 +110,7 @@ function faucetModal() {
                     <form x-data x-show="selection == 'confirm'" class="flex flex-wrap w-full px-2 lg:px-8 py-8 text-white font-light">
                         <div class="mb-6 w-full">
                             <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your Email Confirmation Code</label>
-                            <input x-model="key" data-rules='["required"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-700 focus:border-pink-500 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 font-light outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
+                            <input x-model="key" data-rules='["required"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-300 border-opacity-50 focus:border-pink-400 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
                             <p class="text-gray-200 text-xs mt-2 hidden"></p>
                         </div>
 
