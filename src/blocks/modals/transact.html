@@ -157,7 +157,10 @@ function transactModal() {
 
                 reader.onloadend = function() {
                     ajax('https://interface.xetareality.com/media', {data: reader.result}, function(data) {
-                        self.values['preview'] = JSON.parse(data).url // Hosted url
+                        try {
+                            data = JSON.parse(data)
+                            self.values['preview'] = data.url // Hosted url
+                        } catch (e) { alert(data) }
                         self.uploading = false
                     }, function(status) { alert('upload:error') })
                 }                  

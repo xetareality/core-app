@@ -1,0 +1,262 @@
+{% extends "src/wrappers/main.html" %}
+
+{% block title %}Creator Tool{% endblock %}
+{% block description %}{% endblock %}
+
+{% block content %}
+{% include "src/blocks/global/header.html" %}
+<script>
+function creatorPage() {
+    return {
+        tokens: [],
+        errors: [],
+        tokenOutputs: [],
+        poolOutputs: [],
+        transacting: false,
+        complete: false,
+        connected() {
+            return Alpine.store('privateKey') && Alpine.store('xetaBalance') && Big(Alpine.store('xetaBalance')).gte(100)
+        },
+        init() {
+        },
+        upload(e) {
+            var self = this
+            if (this.tokens.length+e.target.files.length > 20) {
+                alert('Total number of tokens can not exceed 20')
+                return
+            }
+
+            Object.keys(e.target.files).forEach(function(key) {
+                var reader = new FileReader()
+                var file = e.target.files[key]
+                var name
+                try { name = file.name.split('.')[0].replace(/[^a-z0-9]/gmi, ' ').replace(/\s+/g, ' ') } catch {}
+
+                reader.onloadend = function() {
+                    ajax('https://interface.xetareality.com/media', {data: reader.result}, function(data) {
+                        try {
+                            data = JSON.parse(data)
+                            self.tokens.push({name: name, preview: data.url})
+                        } catch (e) { self.errors.push(name+' error: '+data) }
+                    }, function(status) { alert('upload:error') })
+                }
+
+                reader.readAsDataURL(file)
+            })
+        },
+        mint() {
+            if (this.complete) {
+                alert('You have submitted already')
+                return
+            }
+
+            if (this.transacting) {
+                alert('Already transacting, please wait')
+                return
+            }
+
+            var self = this
+            if (!confirm('You are about to create '+this.tokens.length+' NFTs (and auctions where selected). This blockchain transaction is irreversable. Continue?')) return
+
+            // Validate
+            var valid = true
+            this.tokens.forEach(function(token) {
+                if (!token.name || !token.preview) valid = false
+            })
+
+            if (!valid) {
+                alert('Some token missing names or previews')
+                return
+            }
+
+            tokenInstructions = []
+            auctionInstructions = []
+            depositInstructions = []
+
+            // Create tokens
+            this.tokens.forEach(function(token) {
+                tokenInstructions.push({
+                    function: 'token.create',
+                    name: token.name,
+                    preview: token.preview,
+                })
+
+                if (token.days || token.target || token.limit) {
+                    auctionInstructions.push({
+                        function: 'pool.create',
+                        program: 'auction',
+                        expires: Date.now()+1000*24*60*60*(token.days || 7),
+                        xetaTarget: token.target,
+                        xetaLimit: token.limit,
+                    })
+                }
+            })
+
+            this.transacting = true
+            Xeta.transaction.submit(tokenInstructions).then(function(tx) {
+                if (tx.error) {
+                    alert(tx.error)
+                    self.transacting = false
+                    return
+                }
+
+                var auctionTokens = []
+                tx.outputs.forEach(function(output, index) {
+                    self.tokenOutputs.push(output[0].split(':')[1])
+                    var token = self.tokens[index]
+                    if (token.days || token.target || token.limit) auctionTokens.push(output[0].split(':')[1])
+                })
+
+                auctionInstructions.forEach(function(instruction, index) {
+                    instruction.token = auctionTokens[index]
+                })
+
+                // Create pools
+                if (auctionInstructions.length) {
+                    Xeta.transaction.submit(auctionInstructions).then(function(tx) {
+                        if (tx.error) {
+                            alert(tx.error)
+                            self.transacting = false
+                            return
+                        }
+
+                        tx.outputs.forEach(function(output, index) {
+                            self.poolOutputs.push(output[0].split(':')[1])
+                            depositInstructions.push({
+                                function: 'auction.deposit',
+                                pool: output[0].split(':')[1],
+                            })
+                        })
+
+                        // Deposit tokens in batches of 5
+                        for (var i=0; i<Math.ceil(depositInstructions.length/5); i++) {
+                            Xeta.transaction.submit(depositInstructions.slice(i*5,(i+1)*5)).then(function(tx) {
+                                self.transacting = false
+                                self.complete = true
+                            })
+                        }
+                    })
+                } else {
+                    self.transacting = false
+                    self.complete = true
+                }
+            })
+        }
+    }
+}
+</script>
+
+<div x-data="creatorPage">
+
+    <div x-data="creatorPage" class="bg-black bg-opacity-100 rounded-2xl px-6 py-2 lg:py-6 mb-4 lg:mb-6 bg-center bg-cover relative section z-0 overflow-hidden" style="background-image: url(https://xetareality.com/img/banner1.jpeg)">
+        <div class="bg-black opacity-50 absolute top-0 left-0 w-full h-full z-10 rounded-2xl"></div>
+
+        <div class="flex flex-wrap z-20 relative">
+            <div class="w-full">
+                <p class="text-2xl py-2 text-white tracking-wider">Xeta Creator Tool</p>
+                <p class="py-2 text-white font-light">The Xeta Reality creator tool enables creators to upload up to 20 NFTs in bulk. All NFTs can be instantly added as auctions. Simply follow the steps outlined below to create your NFT collection on Xeta. You should have at least 100 XETA to cover all associated minting and creation fees.</p>
+            </div>
+        </div>
+    </div>
+
+    <div x-cloak x-show="!connected()" class="bg-black rounded-2xl py-4 px-6 mb-4 lg:mb-6 section">
+        <p class="text-2xl py-2 text-white tracking-wider">1. Connect Wallet and Get XETA Tokens</p>
+        <p x-cloak x-show="!Alpine.store('privateKey')" class="py-2 text-white font-light"><span @click="showModal('walletModal')" class="underline cursor-pointer relative bg-gray-700 hover:bg-gray-500 rounded px-2 py-1">Click here</span> to connect or create a new wallet on Xeta.</p>
+        <p x-cloak x-show="!Alpine.store('xetaBalance') || Big(Alpine.store('xetaBalance')).lt(100)" class="text-white font-light mb-2"><a class="underline cursor-pointer relative bg-gray-700 hover:bg-gray-500 rounded px-2 py-1" :href="'&#109;&#65;&#105;&#108;&#84;&#111;&#58;&#99;&#114;&#101;&#97;&#116;&#111;&#114;&#115;&#64;&#120;&#101;&#116;&#97;&#114;&#101;&#97;&#108;&#105;&#116;&#121;&#46;&#99;&#111;&#109;&#63;&#115;&#117;&#98;&#106;&#101;&#99;&#116;&#61;&#71;&#114;&#97;&#110;&#116;&#37;&#50;&#48;&#82;&#101;&#113;&#117;&#101;&#115;&#116;&#38;&#98;&#111;&#100;&#121;&#61;&#73;&#37;&#50;&#48;&#119;&#111;&#117;&#108;&#100;&#37;&#50;&#48;&#108;&#105;&#107;&#101;&#37;&#50;&#48;&#116;&#111;&#37;&#50;&#48;&#112;&#117;&#98;&#108;&#105;&#115;&#104;&#37;&#50;&#48;&#109;&#121;&#37;&#50;&#48;&#78;&#70;&#84;&#37;&#50;&#48;&#99;&#111;&#108;&#108;&#101;&#99;&#116;&#105;&#111;&#110;&#37;&#50;&#48;&#116;&#111;&#37;&#50;&#48;&#88;&#101;&#116;&#97;&#46;&#37;&#50;&#48;&#77;&#121;&#37;&#50;&#48;&#99;&#114;&#101;&#97;&#116;&#111;&#114;&#37;&#50;&#48;&#115;&#111;&#99;&#105;&#97;&#108;&#37;&#50;&#48;&#109;&#101;&#100;&#105;&#97;&#37;&#50;&#48;&#112;&#114;&#111;&#102;&#105;&#108;&#101;&#115;&#37;&#50;&#48;&#97;&#114;&#101;&#37;&#51;&#65;&#37;&#48;&#65;&#37;&#48;&#65;&#89;&#79;&#85;&#82;&#95;&#83;&#79;&#67;&#73;&#65;&#76;&#95;&#80;&#82;&#79;&#70;&#73;&#76;&#69;&#95;&#76;&#73;&#78;&#75;&#83;&#37;&#48;&#65;&#37;&#48;&#65;&#77;&#121;&#37;&#50;&#48;&#88;&#101;&#116;&#97;&#37;&#50;&#48;&#119;&#97;&#108;&#108;&#101;&#116;&#37;&#50;&#48;&#97;&#100;&#100;&#114;&#101;&#115;&#115;&#37;&#50;&#48;&#105;&#115;&#37;&#50;&#48;'+Alpine.store('publicKey')">Click here</a> to request a Creators Grant of 1000 XETA. Your wallet currently does not hold sufficient XETA (>100) to continue with the creation of tokens. Alternatively, purchase XETA tokens directly through an exchange or <a href="/" class="underline">swap from BNB/ETH via bridge.</a></p>
+    </div>
+
+    <div x-cloak x-show="connected()" class="bg-black rounded-2xl py-4 px-6 mb-4 lg:mb-6 section">
+        <p class="text-2xl py-2 text-white tracking-wider">2. Create your Collection Profile</p>
+        <p class="py-2 text-white font-light"><span @click="action('profile.update', {address: Alpine.store('publicKey')}), active = false" class="underline cursor-pointer relative bg-gray-700 hover:bg-gray-500 rounded px-2 py-1">Click here</span> to customize the name, description, links and preview image of your wallet address which represents your NFT collection.</p>
+    </div>
+
+    <div x-cloak x-show="connected()" class="bg-black rounded-2xl py-4 px-6 mb-4 lg:mb-6 section">
+        <p class="text-2xl py-2 text-white tracking-wider">3. Upload NFTs</p>
+
+        <p class="py-2 text-white font-light"><span class="underline cursor-pointer relative bg-gray-700 hover:bg-gray-500 rounded px-2 py-1"><input @change="upload($event)" class="opacity-0 absolute top-0 left-0 w-full h-full no-arrow py-1 cursor-pointer text-gray-600 outline-none focus:outline-none" name="media" type="file" accept="image/bmp,image/gif,image/jpeg,image/png,image/tiff,image/webp" multiple="true" />Click here</span> to upload up to 20 images as NFTs. The maximum size for each image is 200kb. If you set auction values, auctions will be automatically created for your NFTs. You can specify the auction length in days, the minimum price for a successful auction, as well as the maximum price equivalent to the "instant buy" bid.</p>
+
+        <p>Apply to all NFTs:</p>
+        <div class="flex flex-wrap">
+            <div class="w-1/2 lg:w-1/4 py-1">
+                <p class="w-full text-xs text-gray-200">Token name</p>
+                <input type="text" placeholder="Name" @input="tokens.forEach(function(token) {token.name = $event.target.value})" class="text-sm rounded shadow border-gray-700 focus:border-gray-500 border transition-all px-1 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden">
+            </div>
+            <div class="w-1/2 lg:w-1/4 py-1">
+                <p class="w-full text-xs text-gray-200">Auction (Days)</p>
+                <input type="number" placeholder="0" @input="tokens.forEach(function(token) {token.days = $event.target.value})" class="text-sm rounded shadow border-gray-700 focus:border-gray-500 border transition-all px-1 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden">
+            </div>
+            <div class="w-1/2 lg:w-1/4 py-1">
+                <p class="w-full text-xs text-gray-200">MinPrice (XETA)</p>
+                <input type="number" placeholder="0" @input="tokens.forEach(function(token) {token.target = $event.target.value})" class="text-sm rounded shadow border-gray-700 focus:border-gray-500 border transition-all px-1 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden">
+            </div>
+            <div class="w-1/2 lg:w-1/4 py-1">
+                <p class="w-full text-xs text-gray-200">MaxPrice (XETA)</p>
+                <input type="number" placeholder="0" @input="tokens.forEach(function(token) {token.limit = $event.target.value})" value="10000" class="text-sm rounded shadow border-gray-700 focus:border-gray-500 border transition-all px-1 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden">
+            </div>
+        </div>
+
+        <p x-show="errors.length">Errors:</p>
+        <template x-for="error in errors"><p x-text="error" class="w-full text-sm text-gray-200"></p></template>
+
+        <div class="w-full flex flex-wrap py-4">
+            <template x-for="(token, index) in tokens">
+                <div class="column w-1/2 md:w-1/3 lg:w-1/5 block">
+                    <div class="mx-1.5 mb-4 token">
+                        <div class="block rounded-2xl bg-gray-900 bg-opacity-80 shadow">
+                            <div class="rounded-2xl rounded-b-none overflow-hidden relative">
+                                <img class="h-32 w-full mb-2 object-center object-cover" :src="token.preview || '/media/placeholder.jpeg'">
+                                <span @click="tokens.splice(index, 1)" class="cursor-pointer absolute right-0 top-0 mr-1 mt-1 rounded-full p-1-full bg-gray-800"><svg class="fill-current text-gray-400 w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path></svg></span>
+                            </div>
+                            <div class="px-3 py-3">
+                                <input type="text" placeholder="Token Name" x-model="token.name" class="text-sm rounded shadow border-gray-700 focus:border-gray-500 border transition-all px-2 py-1 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden w-full">
+                                <div class="flex py-1 items-center mt-2">
+                                    <p class="w-full text-xs text-gray-200 w-2/6">Auction</p>
+                                    <input type="number" placeholder="0" x-model="token.days" class="text-sm rounded shadow border-gray-700 focus:border-gray-500 border transition-all px-1 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden">
+                                    <p class="w-full text-xs text-gray-200 w-1/6 ml-1">Days</p>
+                                </div>
+                                <div class="flex py-1 items-center">
+                                    <p class="w-full text-xs text-gray-200 w-2/6">MinPrice</p>
+                                    <input type="number" placeholder="0" x-model="token.target" class="text-sm rounded shadow border-gray-700 focus:border-gray-500 border transition-all px-1 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden">
+                                    <p class="w-full text-xs text-gray-200 w-1/6 ml-1">XETA</p>
+                                </div>
+                                <div class="flex py-1 items-center">
+                                    <p class="w-full text-xs text-gray-200 w-2/6">MaxPrice</p>
+                                    <input type="number" placeholder="0" x-model="token.limit" value="10000" class="text-sm rounded shadow border-gray-700 focus:border-gray-500 border transition-all px-1 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden">
+                                    <p class="w-full text-xs text-gray-200 w-1/6 ml-1">XETA</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <div x-cloak x-show="connected()" class="bg-black rounded-2xl py-4 px-6 mb-4 lg:mb-6 section">
+        <p class="text-2xl py-2 text-white tracking-wider">4. Mint & Create Auctions</p>
+
+        <p class="py-2 text-white font-light"><span @click="mint()" class="underline cursor-pointer relative bg-gray-700 hover:bg-gray-500 rounded px-2 py-1">Click here</span> to mint your collection and set up auctions, if you've specified any auction values.</p>
+
+        <div x-cloak x-show="transacting" class="flex justify-center">
+            <div class="spinner"></div>
+        </div>
+
+        <p x-show="errors.length">Errors:</p>
+        <template x-for="error in errors"><p x-text="error" class="w-full text-sm text-gray-200"></p></template>
+
+        <p class="mt-2">Your Profile (Collection):</p>
+        <p x-html="Wrap.address(Alpine.store('publicKey'))" class="w-full text-sm text-gray-200"></p>
+
+        <p class="mt-2">Output Tokens:</p>
+        <template x-for="output in tokenOutputs"><p x-html="Wrap.token(output)" class="w-full text-sm text-gray-200"></p></template>
+
+        <p class="mt-2">Output Auctions:</p>
+        <template x-for="output in poolOutputs"><p x-html="Wrap.pool(output)" class="w-full text-sm text-gray-200"></p></template>
+    </div>
+
+    <div x-cloak x-show="complete" class="bg-black rounded-2xl py-4 px-6 mb-4 lg:mb-6 section">
+        <p class="text-2xl py-2 text-white tracking-wider">5. Share your Tokens, Auctions and Collection</p>
+        <p class="py-2 text-white font-light">Share your tokens, auctions, and collection profile on your socials. You might want to also look into Royalty Pools as an incentive for token buyers (to enable passive income for your NFTs) or create a Lottery Pool to promote a single NFT and raise awareness about your project. Finally, you could set up a Loot Pool, which enables you to randomly distribute your NFTs for a participation fee.</p>
+    </div>
+</div>
+{% endblock %}

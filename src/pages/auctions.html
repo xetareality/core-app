@@ -45,7 +45,7 @@ function auctionsPage() {
 <div x-data="auctionsPage">
     <template x-for="type in ['expiring', 'bids', 'transfers', 'recent']">
         <div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12 section">
-            <p class="text-2xl font-medium py-2 text-white w-full mb-2 px-6" x-text="{expiring: 'Ending Soon', bids: 'Highest Bids', transfers: 'Most Popular', recent: 'Recently Added'}[type]"></p>
+            <p class="text-2xl tracking-wider py-2 text-white w-full mb-2 px-6" x-text="{expiring: 'Ending Soon', bids: 'Highest Bids', transfers: 'Most Popular', recent: 'Recently Added'}[type]"></p>
             <div @scroll.debounce="$el.scrollLeft > 0.35*$el.clientWidth ? load(type) : null" class="flex overflow-x-scroll disable-scrollbar mb-2 px-5">
                 <div class="flex flex-nowrap">
                     <template x-for="pool in pools[type]">
