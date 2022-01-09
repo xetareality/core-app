@@ -1,1 +1,299 @@
-<script>function homePreview(){return{prices:{xeta:1,usd:.01},supply:.971,mcap:241e4,transfers:415180,amount:0,exchange:0,ethBalance:0,tokenBalance:0,web3modal:null,provider:null,account:null,chainId:null,bridges:[],path:[],init(){this.mcap=this.price*this.supply*1e9;var e=this;ajax("https://api.coingecko.com/api/v3/simple/price?ids=xeta-reality&vs_currencies=USD,ETH,BNB",null,function(t){t=JSON.parse(t),e.prices.usd=t["xeta-reality"].usd,e.prices.eth=t["xeta-reality"].eth,e.prices.bnb=t["xeta-reality"].bnb,e.mcap=e.prices.usd*e.supply*1e9}),Xeta.statistic.read({key:"transfers:total:h",time:Math.round(Date.now()/1e3-Date.now()/1e3%3600)-3600}).then(function(t){e.transfers=t.value}),this.bridges=[["BNB","XETA"],["ETH","XETA"],["XETA(BSC)","XETA"],["XETA","BNB"],["XETA","ETH"],["XETA","XETA(BSC)"]]},async connect(){if(window.ethereum)try{this.web3=new Web3(window.ethereum),accounts=await window.ethereum.request({method:"eth_requestAccounts"}),0<accounts.length&&(this.account=accounts[0]);var t=this;window.ethereum.on("accountsChanged",function(){t.balance(t)}),window.ethereum.on("chainChanged",function(){t.balance(t)}),window.ethereum.on("chainChanged",function(){t.balance(t)}),await this.balance()}catch(t){console.log(t)}else alert("Browser does not support web3.")},async disconnect(){this.provider&&this.provider.disconnect&&(await this.provider.disconnect(),await this.web3modal.clearCachedProvider()),this.account=null,this.ethBalance=null,this.tokenBalance=null,this.provider=null},async balance(e){var t;(e=e||this).chainId=await e.web3.eth.getChainId(),[1,56].includes(e.chainId)?(e.bridges=[["BNB","XETA"],["ETH","XETA"],["XETA(BSC)","XETA"],["XETA","BNB"],["XETA","ETH"],["XETA","XETA(BSC)"]].filter(function(t){return 1==e.chainId&&("ETH"==t[0]||"ETH"==t[1])||(56==e.chainId&&"ETH"!=t[0]&&"ETH"!=t[1]||void 0)}),e.path=e.bridges[0],t=await e.web3.eth.getAccounts(),e.account=t[0],t=await e.web3.eth.getBalance(e.account),e.ethBalance=e.web3.utils.fromWei(t,"ether"),56==e.chainId&&(e.tokenBalance=e.xetaBscBalance())):alert("Invalid network")},xetaBscBalance(){var t=new this.web3.eth.Contract(Constants.bscAbi,Constants.bscXeta),a=this;t.methods.balanceOf(this.account).call(function(t,e){!e||1<(e=Big(e).div(1e9).toNumber())&&(a.tokenBalance=e)})},bridge(){var t;Xeta.config.dev&&(t="Bridge swaps are only supported on mainnet. Please switch."),parseFloat(this.amount)<.01&&(t="Amount muss be at least 0.01."),this.path[0].includes("XETA")&&parseFloat(this.amount)<100&&(t="Amount muss be at least 100 XETA."),Alpine.store("publicKey")||(t="Please reconnect your Xeta wallet."),(t=this.account?t:"Please reconnect your BSC/ETH wallet.")?alert(t):["ETH","BNB"].includes(this.path[0])&&"XETA"==this.path[1]?this.eth2xeta():"XETA(BSC)"==this.path[0]&&"XETA"==this.path[1]?this.tokens2xeta():"XETA"==this.path[0]&&["ETH","BNB"].includes(this.path[1])?this.xeta2eth():"XETA"==this.path[0]&&"XETA(BSC)"==this.path[1]&&this.xeta2tokens()},eth2xeta(){this.web3.eth.sendTransaction({from:this.account,to:Constants.ethBridge,value:this.web3.utils.toWei(String(1e4*parseFloat(this.amount)/1e4),"ether"),data:this.web3.utils.toHex(Alpine.store("publicKey")),gas:5e4})},tokens2xeta(){var t=new this.web3.eth.Contract(Constants.bscAbi,Constants.bscXeta);56==this.chainId&&(t=t.methods.transfer(Constants.ethBridge,this.web3.utils.toWei(String(1e4*parseFloat(this.amount)/1e4),"gwei"),Alpine.store("publicKey")).encodeABI().replace("0x56b8c724","0xa9059cbb"),this.web3.eth.sendTransaction({from:this.account,to:Constants.bscXeta,gas:25e4,value:this.web3.utils.toWei(String(0),"ether"),data:t},function(t,e){}))},xeta2eth(){action("transfer.create",{from:Alpine.store("publicKey"),to:Constants.xetaBridge,amount:String(1e4*parseFloat(this.amount)/1e4),token:Xeta.config.xetaAddress,message:JSON.stringify([this.path[1],this.account])})},xeta2tokens(){action("transfer.create",{from:Alpine.store("publicKey"),to:Constants.xetaBridge,amount:String(1e4*parseFloat(this.amount)/1e4),token:Xeta.config.xetaAddress,message:JSON.stringify(["XETA",this.account])})},rate(){var t=this.path[0]&&this.path[0].includes("XETA"),e=parseFloat(this.prices[this.path[0]&&this.path[0].includes("XETA")?"xeta":this.path[0].toLowerCase()]),a=parseFloat(this.prices[this.path[1]&&this.path[1].includes("XETA")?"xeta":this.path[1].toLowerCase()]),s=e==a?.985:.975;this.exchange=t?formatNumber(this.amount*a*s,4):formatNumber(this.amount/e*s)}}}</script><script type="text/javascript" src="https://unpkg.com/web3@1.2.11/dist/web3.min.js"></script><div x-data="homePreview" class="bg-black bg-opacity-100 rounded-2xl px-4 lg:px-12 py-2 lg:py-6 mb-4 lg:mb-6 bg-center bg-cover relative section z-0 overflow-hidden" style="background-image:url(https://xetareality.com/img/banner1.jpeg)"><div class="bg-black opacity-50 absolute top-0 left-0 w-full h-full z-10 rounded-2xl"></div><div @click="showModal('faucetModal')" class="bg-pink-700 hover:bg-pink-600 w-64 h-64 transform -rotate-45 absolute -left-44 -top-44 z-20 flex items-end justify-center cursor-pointer select-none"><span class="text-xs font-medium mb-1.5 text-center uppercase text-gray-200 select-none">Get<br>Free XETA</span></div><div class="flex flex-wrap z-20 relative mt-6"><div class="w-full lg:w-3/5"><p class="text-2xl py-2 text-white tracking-wider text-center lg:text-left">Xeta Reality Blockchain</p><p class="py-2 text-white font-light mb-4">Xeta Reality is a serverless Layer-1 blockchain for Metaverse, Gaming, and NFT applications. Xeta's mission is to onboard 100 million users to the Metaverse by developing intuitive applications & interfaces for mainstream adoption.</p><a href="https://xetareality.com" target="_blank" class="text-lg cursor-pointer block underline text-gray-100 hover:text-pink-400 tracking-wider">Visit Website →</a> <a href="https://xetareality.com/whitepaper.pdf" target="_blank" class="text-sm block cursor-pointer text-gray-300 hover:text-pink-400 tracking-wider">Read Whitepaper</a></div><div class="w-full lg:w-2/5 mt-4 lg:mt-0 lg:px-8"><div class="shadow bg-black bg-opacity-80 rounded-2xl px-8 py-8 shadow-2xl"><p class="text-lg text-gray-100 flex items-center justify-center"><span>Bridge BNB, ETH</span> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="mx-2" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/></svg> <span>XETA</span></p><p x-cloak x-show="!account" class="py-2 text-white font-light mb-2 text-center text-sm px-4">Swap tokens between different chains with a couple of clicks.</p><div x-cloak x-show="account" class="text-sm text-gray-400 text-center mb-2"><p><span>Connected (<span x-text="chainId == 1 ? 'ETH' : 'BSC'"></span>):</span> <span @click="disconnect()" class="cursor-pointer text-white" x-text="account ? '0x..'+account.slice(-10) : ''"></span> <span class="uppercase" x-text="''"></span></p><p><span>Balances:</span> <span class="text-white"><span x-text="formatNumber(ethBalance, 4)"></span> <span x-text="chainId == 1 ? 'ETH' : 'BNB'"></span> </span><span x-cloak x-show="tokenBalance" class="text-white"><br><span x-text="formatNumber(tokenBalance)"></span> <span>XETA (BSC)</span> </span><span x-cloak x-show="Alpine.store('xetaBalance')" class="text-white"><br><span x-text="formatNumber(Alpine.store('xetaBalance'))"></span> <span>XETA (Native)</span></span></p></div><span x-cloak x-show="!account" @click="connect()" class="w-full block cursor-pointer text-white rounded-2xl text-center bg-gray-700 hover:bg-pink-600 transition-all px-6 py-2">Connect BSC/ETH Wallet</span> <span x-cloak x-show="account && !Alpine.store('publicKey')" @click="showModal('walletModal')" class="w-full block cursor-pointer text-white rounded-2xl text-center bg-gray-700 hover:bg-pink-600 transition-all px-6 py-2">Connect your XETA Wallet</span><div x-cloak x-show="Alpine.store('publicKey') && account" class=""><div class="flex items-center mb-2 mt-4"><div class="w-1/2 relative flex items-center justify-center"><input x-model="amount" @input="rate()" :placeholder="path[0] == 'BNB' ? 'BNB' : path[0] == 'ETH' ? 'ETH' : 'XETA'" class="rounded-r-none rounded-2xl border-gray-700 border-2 border-r-0 w-full focus:outline-none font-light placeholder-gray-400 shadow transition-all px-4 py-2 bg-gray-900 focus:bg-gray-800 text-lg text-gray-100 outline-none focus:outline-none h-11" type="number"> <span @click="$el.remove(), amount = path[0] == 'XETA' ? Alpine.store('xetaBalance') : path[0] == 'XETA(BSC)' ? tokenBalance : Math.max(ethBalance-0.01, 0), rate()" class="uppercase absolute right-0 cursor-pointer text-white mr-2 text-gray-400 text-xs">Max</span></div><div class="w-1/2 rounded-2xl rounded-l-none cursor-pointer text-white text-gray-400 border-gray-700 border-2 border-l-0 py-3 px-1 bg-gray-900 hover:bg-gray-800 transition-all h-11 flex items-center text-xs font-light relative justify-center"><span x-html="path[0] && path[0].includes('XETA') ? Wrap.xetaPreview() : Wrap.tokenPreview(path[0] == 'BNB' ? {symbol: 'BNB', preview: '/media/bnb.png'} : {symbol: 'ETH', preview: '/media/eth.png'})"></span> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="mx-1" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/></svg> <span x-html="path[1] && path[1].includes('XETA') ? Wrap.xetaPreview() : Wrap.tokenPreview(path[1] == 'BNB' ? {symbol: 'BNB', preview: '/media/bnb.png'} : {symbol: 'ETH', preview: '/media/eth.png'})"></span> <select @change="path = JSON.parse($el.value), rate()" class="opacity-0 absolute top-0 left-0 w-full h-full no-arrow py-1 cursor-pointer text-gray-600 outline-none focus:outline-none"><template x-for="option in bridges"><option :value="JSON.stringify(option)" x-text="option[0]+' to '+option[1]" :selected="JSON.stringify(path) == JSON.stringify(option)"></option></template></select></div></div><p class="text-center text-xs">You will receive approx. <span x-text="exchange"></span> <span x-text="path[1]"></span><span> to your connected wallet (<span x-text="((path[1] == 'XETA' ? Alpine.store('publicKey') : account) || '').slice(0,8)+'..'"></span>)</span> within a few minutes.</p><span @click="bridge()" x-text="'Swap '+path[0]+' to '+path[1]" class="cursor-pointer text-white rounded-2xl text-center bg-pink-700 hover:bg-pink-600 transition-all px-6 py-2 block mt-4"></span></div></div></div></div><div class="rounded-2xl mt-2 lg:mt-6 flex flex-wrap relative z-20"><div class="py-1 lg:py-4 text-left w-full lg:w-1/4"><div class="flex flex-row lg:flex-col justify-between items-center lg:items-start"><span class="text-sm uppercase font-semibold text-gray-100 tracking-wider">Transfers</span> <span class="font-semibold text-2xl text-white" x-text="formatNumber(transfers)"></span></div></div><div class="py-1 lg:py-4 text-left w-full lg:w-1/4"><div class="flex flex-row lg:flex-col justify-between items-center lg:items-start"><span class="text-sm uppercase font-semibold text-gray-100 tracking-wider">XETA Price</span> <span class="font-semibold text-2xl text-white" x-text="'$'+formatNumber(prices.usd, 4)"></span></div></div><div class="py-1 lg:py-4 text-left w-full lg:w-1/4"><div class="flex flex-row lg:flex-col justify-between items-center lg:items-start"><span class="text-sm uppercase font-semibold text-gray-100 tracking-wider">Circ. Supply</span> <span class="font-semibold text-2xl text-white" x-text="supply+'B'"></span></div></div><div class="py-1 lg:py-4 text-left w-full lg:w-1/4"><div class="flex flex-row lg:flex-col justify-between items-center lg:items-start"><span class="text-sm uppercase font-semibold text-gray-100 tracking-wider">Market Cap</span> <span class="font-semibold text-2xl text-white" x-text="'$'+formatNumber(mcap, 0)"></span></div></div></div></div>
+<script>
+function homePreview() {
+    return {
+        prices: {xeta: 1, usd: 0.01},
+        supply: 0.971,
+        mcap: 2410000,
+        transfers: 415180,
+        amount: 0,
+        exchange: 0,
+        ethBalance: 0,
+        tokenBalance: 0,
+        web3modal: null,
+        provider: null,
+        account: null,
+        chainId: null,
+        bridges: [],
+        path: [],
+        init() {
+            this.mcap = this.price*this.supply*1e9
+            var self = this
+
+            ajax('https://api.coingecko.com/api/v3/simple/price?ids=xeta-reality&vs_currencies=USD,ETH,BNB', null, function(data) {
+                data = JSON.parse(data)
+                self.prices['usd'] = data['xeta-reality']['usd']
+                self.prices['eth'] = data['xeta-reality']['eth']
+                self.prices['bnb'] = data['xeta-reality']['bnb']
+                self.mcap = self.prices['usd']*self.supply*1e9
+
+                // https://api.coingecko.com/api/v3/simple/price?ids=xeta-reality&vs_currencies=USD&include_24hr_change=true
+                // self.mcapChange = self.priceChange
+                // self.priceChange = data['xeta-reality']['usd_24h_change'].toFixed(2)
+            })
+
+            Xeta.statistic.read({key: 'transfers:total:h', time: Math.round(Date.now()/1000 - Date.now()/1000 % (60*60)) - 60*60}).then(function(data) {
+                self.transfers = data.value
+            })
+
+
+            this.bridges = [['BNB', 'XETA'], ['ETH', 'XETA'], ['XETA(BSC)', 'XETA'], ['XETA', 'BNB'], ['XETA', 'ETH'], ['XETA', 'XETA(BSC)']]
+        },
+        async connect() {
+            if (window.ethereum) {
+                try {
+                    this.web3 = new Web3(window.ethereum)
+                    accounts = await window.ethereum.request({method: 'eth_requestAccounts'})
+                    if (accounts.length > 0) this.account = accounts[0]
+
+                    var self = this
+                    window.ethereum.on('accountsChanged', function() {
+                        self.balance(self)
+                    })
+                    window.ethereum.on('chainChanged', function() {
+                        self.balance(self)
+                    })
+                    window.ethereum.on('chainChanged', function() {
+                        self.balance(self)
+                    })
+
+                    await this.balance()
+                } catch (e) {
+                    console.log(e)
+                }
+            } else alert('Browser does not support web3.')
+        },
+        async disconnect() {
+            if (this.provider && this.provider.disconnect) {
+                await this.provider.disconnect()
+                await this.web3modal.clearCachedProvider()
+            }
+
+            this.account = null
+            this.ethBalance = null
+            this.tokenBalance = null
+            this.provider = null
+        },
+        /**
+         * Fetch ETH/BNB balance for first account
+         */
+        async balance(self) {
+            var self = self ? self : this
+            self.chainId = await self.web3.eth.getChainId()
+            if (![1, 56].includes(self.chainId)) {
+                alert('Invalid network')
+                return
+            }
+
+            self.bridges = [['BNB', 'XETA'], ['ETH', 'XETA'], ['XETA(BSC)', 'XETA'], ['XETA', 'BNB'], ['XETA', 'ETH'], ['XETA', 'XETA(BSC)']].filter(function(b) {
+                if (self.chainId == 1 && (b[0] == 'ETH' || b[1] == 'ETH')) return true
+                else if (self.chainId == 56 && (b[0] != 'ETH' && b[1] != 'ETH')) return true
+            })
+            self.path = self.bridges[0]
+
+            var accounts = await self.web3.eth.getAccounts()
+            self.account = accounts[0]
+
+            var balance = await self.web3.eth.getBalance(self.account)
+            self.ethBalance = self.web3.utils.fromWei(balance, 'ether')
+
+            if (self.chainId == 56) self.tokenBalance = self.xetaBscBalance()
+        },
+        xetaBscBalance() {
+            var contract = new this.web3.eth.Contract(Constants.bscAbi, Constants.bscXeta);
+            var self = this
+
+            contract.methods.balanceOf(this.account).call(function(error, result) {
+                if (result) {
+                    var bal = Big(result).div(1e9).toNumber()
+                    if (bal > 1) self.tokenBalance = bal
+                }
+            })
+        },
+        bridge() {
+            var error
+            if (Xeta.config.dev) error = 'Bridge swaps are only supported on mainnet. Please switch.'
+            if (parseFloat(this.amount) < 0.01) error = 'Amount muss be at least 0.01.'
+            if (this.path[0].includes('XETA') && parseFloat(this.amount) < 100) error = 'Amount muss be at least 100 XETA.'
+            if (!Alpine.store('publicKey')) error = 'Please reconnect your Xeta wallet.'
+            if (!this.account) error = 'Please reconnect your BSC/ETH wallet.'
+                
+            if (error) {
+                alert(error)
+                return
+            }
+
+            if (['ETH', 'BNB'].includes(this.path[0]) && this.path[1] == 'XETA') this.eth2xeta()
+            else if (this.path[0] == 'XETA(BSC)' && this.path[1] == 'XETA') this.tokens2xeta()
+            else if (this.path[0] == 'XETA' && ['ETH', 'BNB'].includes(this.path[1])) this.xeta2eth()
+            else if (this.path[0] == 'XETA' && this.path[1] == 'XETA(BSC)') this.xeta2tokens()
+        },
+        eth2xeta() {
+            this.web3.eth.sendTransaction({
+                from: this.account,
+                to: Constants.ethBridge,
+                value: this.web3.utils.toWei(String((parseFloat(this.amount)*1e4/1e4)), 'ether'),
+                data: this.web3.utils.toHex(Alpine.store('publicKey')),
+                gas: 50000,
+            })
+        },
+        tokens2xeta() {
+            var contract = new this.web3.eth.Contract(Constants.bscAbi, Constants.bscXeta);
+            var self = this
+
+            if (this.chainId != 56) return
+            var data = contract.methods.transfer(
+                Constants.ethBridge,
+                this.web3.utils.toWei(String((parseFloat(this.amount)*1e4/1e4)), 'gwei'),
+                Alpine.store('publicKey'),
+            ).encodeABI().replace('0x56b8c724', '0xa9059cbb')
+
+            this.web3.eth.sendTransaction({
+                from: this.account,
+                to: Constants.bscXeta,
+                gas: 250000,
+                value: this.web3.utils.toWei(String(0), 'ether'),
+                data: data
+            }, function(error, result) {
+            })
+        },
+        xeta2eth() {
+            action('transfer.create', {
+                from: Alpine.store('publicKey'),
+                to: Constants.xetaBridge,
+                amount: String((parseFloat(this.amount)*1e4/1e4)),
+                token: Xeta.config.xetaAddress,
+                message: JSON.stringify([this.path[1], this.account]),
+            })
+        },
+        xeta2tokens() {
+            action('transfer.create', {
+                from: Alpine.store('publicKey'),
+                to: Constants.xetaBridge,
+                amount: String((parseFloat(this.amount)*1e4/1e4)),
+                token: Xeta.config.xetaAddress,
+                message: JSON.stringify(['XETA', this.account]),
+            })
+        },
+        rate() {
+            var isXeta = this.path[0] && this.path[0].includes('XETA')
+            var base = parseFloat(this.prices[this.path[0] && this.path[0].includes('XETA') ? 'xeta' : this.path[0].toLowerCase()])
+            var quote = parseFloat(this.prices[this.path[1] && this.path[1].includes('XETA') ? 'xeta' : this.path[1].toLowerCase()])
+            var slippage = base == quote ? 0.985 : 0.975
+            this.exchange = isXeta ? formatNumber(this.amount*quote*slippage, 4) : formatNumber(this.amount/base*slippage)
+        }
+    }
+}
+</script>
+
+
+<script type="text/javascript" src="https://unpkg.com/web3@1.2.11/dist/web3.min.js"></script>
+
+<div x-data="homePreview" class="bg-black bg-opacity-100 rounded-2xl px-4 lg:px-12 py-2 lg:py-6 mb-4 lg:mb-6 bg-center bg-cover relative section z-0 overflow-hidden" style="background-image: url(https://xetareality.com/img/banner1.jpeg)">
+    <div class="bg-black opacity-50 absolute top-0 left-0 w-full h-full z-10 rounded-2xl"></div>
+    <div @click="showModal('faucetModal')" class="bg-pink-700 hover:bg-pink-600 w-64 h-64 transform -rotate-45 absolute -left-44 -top-44 z-20 flex items-end justify-center cursor-pointer select-none">
+        <span class="text-xs font-medium mb-1.5 text-center uppercase text-gray-200 select-none">Get<br>Free XETA</span>
+    </div>
+    <div class="flex flex-wrap z-20 relative mt-6">
+        <div class="w-full lg:w-3/5">
+            <p class="text-2xl py-2 text-white tracking-wider text-center lg:text-left">Xeta Reality Blockchain</p>
+            <p class="py-2 text-white font-light mb-4">Xeta Reality is a serverless Layer-1 blockchain for Metaverse, Gaming, and NFT applications. Xeta's mission is to onboard 100 million users to the Metaverse by developing intuitive applications & interfaces for mainstream adoption.</p>
+
+            <a href="https://xetareality.com" target="_blank" class="text-lg cursor-pointer block underline text-gray-100 hover:text-pink-400 tracking-wider">Visit Website →</a>
+            <a href="https://xetareality.com/whitepaper.pdf" target="_blank" class="text-sm block cursor-pointer text-gray-300 hover:text-pink-400 tracking-wider">Read Whitepaper</a>
+        </div>
+        <div class="w-full lg:w-2/5 mt-4 lg:mt-0 lg:px-8">
+            <div class="shadow bg-black bg-opacity-80 rounded-2xl px-8 py-8 shadow-2xl">
+                <p class="text-lg text-gray-100 flex items-center justify-center">
+                    <span>Bridge BNB, ETH</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="mx-2" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
+                    </svg>
+                    <span>XETA</span>
+                </p>
+                <p x-cloak x-show="!account" class="py-2 text-white font-light mb-2 text-center text-sm px-4">Swap tokens between different chains with a couple of clicks.</p>
+
+                <div x-cloak x-show="account" class="text-sm text-gray-400 text-center mb-2">
+                    <p>
+                        <span>Connected (<span x-text="chainId == 1 ? 'ETH' : 'BSC'"></span>):</span>
+                        <span @click="disconnect()" class="cursor-pointer text-white" x-text="account ? '0x..'+account.slice(-10) : ''"></span>
+                        <span class="uppercase" x-text="''"></span>
+                    </p>
+                    <p>
+                        <span>Balances:</span>
+                        <span class="text-white">
+                            <span x-text="formatNumber(ethBalance, 4)"></span>
+                            <span x-text="chainId == 1 ? 'ETH' : 'BNB'"></span>
+                        </span>
+                        <span x-cloak x-show="tokenBalance" class="text-white">
+                            <br />
+                            <span x-text="formatNumber(tokenBalance)"></span>
+                            <span>XETA (BSC)</span>
+                        </span>
+                        <span x-cloak x-show="Alpine.store('xetaBalance')" class="text-white">
+                            <br />
+                            <span x-text="formatNumber(Alpine.store('xetaBalance'))"></span>
+                            <span>XETA (Native)</span>
+                        </span>
+                    </p>
+                </div>
+
+
+                <span x-cloak x-show="!account" @click="connect()" class="w-full block cursor-pointer text-white rounded-2xl text-center bg-gray-700 hover:bg-pink-600 transition-all px-6 py-2">Connect BSC/ETH Wallet</span>
+
+                <span x-cloak x-show="account && !Alpine.store('publicKey')" @click="showModal('walletModal')" class="w-full block cursor-pointer text-white rounded-2xl text-center bg-gray-700 hover:bg-pink-600 transition-all px-6 py-2">Connect your XETA Wallet</span>
+
+
+                <div x-cloak x-show="Alpine.store('publicKey') && account" class="">
+                    <div class="flex items-center mb-2 mt-4">
+                        <div class="w-1/2 relative flex items-center justify-center">
+                            <input x-model="amount" @input="rate()" :placeholder="path[0] == 'BNB' ? 'BNB' : path[0] == 'ETH' ? 'ETH' : 'XETA'" class="rounded-r-none rounded-2xl border-gray-700 border-2 border-r-0 w-full focus:outline-none font-light placeholder-gray-400 shadow transition-all px-4 py-2 bg-gray-900 focus:bg-gray-800 text-lg text-gray-100 outline-none focus:outline-none h-11" type="number" />
+                            <span @click="$el.remove(), amount = path[0] == 'XETA' ? Alpine.store('xetaBalance') : path[0] == 'XETA(BSC)' ? tokenBalance : Math.max(ethBalance-0.01, 0), rate()" class="uppercase absolute right-0 cursor-pointer text-white mr-2 text-gray-400 text-xs">Max</span>
+                        </div>
+                        <div class="w-1/2 rounded-2xl rounded-l-none cursor-pointer text-white text-gray-400 border-gray-700 border-2 border-l-0 py-3 px-1 bg-gray-900 hover:bg-gray-800 transition-all h-11 flex items-center text-xs font-light relative justify-center">
+                            <span x-html="path[0] && path[0].includes('XETA') ? Wrap.xetaPreview() : Wrap.tokenPreview(path[0] == 'BNB' ? {symbol: 'BNB', preview: '/media/bnb.png'} : {symbol: 'ETH', preview: '/media/eth.png'})"></span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="mx-1" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
+                            </svg>
+                            <span x-html="path[1] && path[1].includes('XETA') ? Wrap.xetaPreview() : Wrap.tokenPreview(path[1] == 'BNB' ? {symbol: 'BNB', preview: '/media/bnb.png'} : {symbol: 'ETH', preview: '/media/eth.png'})"></span>
+                            <select @change="path = JSON.parse($el.value), rate()" class="opacity-0 absolute top-0 left-0 w-full h-full no-arrow py-1 cursor-pointer text-gray-600 outline-none focus:outline-none">
+                                <template x-for="option in bridges">
+                                    <option :value="JSON.stringify(option)" x-text="option[0]+' to '+option[1]" :selected="JSON.stringify(path) == JSON.stringify(option)"></option>
+                                </template>
+                            </select>
+                        </div>
+                    </div>
+
+                    <p class="text-center text-xs">You will receive approx. <span x-text="exchange"></span> <span x-text="path[1]"></span><span> to your connected wallet (<span x-text="((path[1] == 'XETA' ? Alpine.store('publicKey') : account) || '').slice(0,8)+'..'"></span>)</span> within a few minutes.</p>
+                    <span @click="bridge()" x-text="'Swap '+path[0]+' to '+path[1]" class="cursor-pointer text-white rounded-2xl text-center bg-pink-700 hover:bg-pink-600 transition-all px-6 py-2 block mt-4"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="rounded-2xl mt-2 lg:mt-6 flex flex-wrap relative z-20">
+        <div class="py-1 lg:py-4 text-left w-full lg:w-1/4">
+            <div class="flex flex-row lg:flex-col justify-between items-center lg:items-start">
+                <span class="text-sm uppercase font-semibold text-gray-100 tracking-wider">Transfers</span>
+                <span class="font-semibold text-2xl text-white" x-text="formatNumber(transfers)"></span>
+            </div>
+        </div>
+        <div class="py-1 lg:py-4 text-left w-full lg:w-1/4">
+            <div class="flex flex-row lg:flex-col justify-between items-center lg:items-start">
+                <span class="text-sm uppercase font-semibold text-gray-100 tracking-wider">XETA Price</span>
+                <span class="font-semibold text-2xl text-white" x-text="'$'+formatNumber(prices.usd, 4)"></span>
+            </div>
+        </div>
+        <div class="py-1 lg:py-4 text-left w-full lg:w-1/4">
+            <div class="flex flex-row lg:flex-col justify-between items-center lg:items-start">
+                <span class="text-sm uppercase font-semibold text-gray-100 tracking-wider">Circ. Supply</span>
+                <span class="font-semibold text-2xl text-white" x-text="supply+'B'"></span>
+            </div>
+        </div>
+        <div class="py-1 lg:py-4 text-left w-full lg:w-1/4">
+            <div class="flex flex-row lg:flex-col justify-between items-center lg:items-start">
+                <span class="text-sm uppercase font-semibold text-gray-100 tracking-wider">Market Cap</span>
+                <span class="font-semibold text-2xl text-white" x-text="'$'+formatNumber(mcap, 0)"></span>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,1 +1,57 @@
-<header x-data id="page-header" class="flex flex-none items-center bg-black"><div class="flex flex-wrap justify-between container xl:max-w-6xl mx-auto px-4 lg:px-8 py-2"><div class="hidden lg:flex w-full justify-center mb-2 lg:mb-0 lg:justify-start lg:w-2/5 flex items-center"><a href="/" class="flex text tracking-wide text-gray-100 hover:text-pink-400"><img class="w-6 h-6 mr-2" src="/media/favicon.png"> <span class="inline">Xeta Blockchain Explorer</span></a><div @click.prevent="mainnet = !mainnet, $lstore('dev', !mainnet), window.location.reload()" class="bg-transparent ml-4 cursor-pointer flex items-center select-none" x-data="{mainnet: !$lstore('dev')}"><div class="relative rounded-full w-6 h-3 transition duration-200 ease-linear bg-gray-600" :class="{'bg-pink-700': mainnet}"><label for="mainnet" class="absolute left-0 bg-white w-3 h-3 rounded-full transition transform duration-100 ease-linear translate-x-0" :class="{'translate-x-full': mainnet}"></label> <input type="checkbox" id="mainnet" name="mainnet" class="appearance-none w-full h-full active:outline-none focus:outline-none"></div><span class="ml-2 text-xs text-gray-200 select-none" x-text="mainnet ? 'Mainnet' : 'Testnet'"></span></div></div><div class="w-full justify-between lg:justify-end lg:w-3/5 flex items-center font-light"><nav class="flex flex-wrap text-sm lg:mr-4"><a href="/" class="lg:hidden cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm"><span>Home</span></a><div x-data="{active: false}" class="relative text-xs lg:text-sm"><span @click="active = !active" class="block cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">Tokens</span><div x-cloak x-show="active" @click.away="active = false" class="absolute left-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50 select-none"><ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl"><li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/tokens">By Market Cap</a></li><li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/trending">By Trending</a></li></ul></div></div><div x-data="{active: false}" class="relative text-xs lg:text-sm"><span @click="active = !active" class="block cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">NFTs</span><div x-cloak x-show="active" @click.away="active = false" class="absolute left-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50 select-none"><ul class="list-none bg-gray-900 px-1 py-2 rounded-2xl"><li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/collections">Top Collections</a></li><li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/auctions">Top Auctions</a></li><li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/creator">Creator Tool</a></li></ul></div></div><a href="/pages/statistics" class="cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm"><span>Stats</span> </a><a href="https://xetareality.com" target="_blank" class="cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm"><span>About</span></a></nav><div class="text-sm flex"><span @click="showModal('walletModal')" x-show="!Alpine.store('publicKey')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none">Connect</span><div x-cloak x-show="Alpine.store('publicKey')" @click="showModal('actionsModal')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none"><span x-text="String(Alpine.store('publicKey')).slice(0, 8)+'...'"></span></div></div></div></div></header>
+<header x-data id="page-header" class="flex flex-none items-center bg-black">
+    <div class="flex flex-wrap justify-between container xl:max-w-6xl mx-auto px-4 lg:px-8 py-2">
+        <div class="hidden lg:flex w-full justify-center mb-2 lg:mb-0 lg:justify-start lg:w-2/5 flex items-center">
+            <a href="/" class="flex text tracking-wide text-gray-100 hover:text-pink-400">
+                <img class="w-6 h-6 mr-2" src="/media/favicon.png" />
+                <span class="inline">Xeta Blockchain Explorer</span>
+            </a>
+            <div @click.prevent="mainnet = !mainnet, $lstore('dev', !mainnet), window.location.reload()" class="bg-transparent ml-4 cursor-pointer flex items-center select-none" x-data="{mainnet: !$lstore('dev')}">
+                <div class="relative rounded-full w-6 h-3 transition duration-200 ease-linear bg-gray-600" :class="{'bg-pink-700': mainnet}">
+                    <label for="mainnet" class="absolute left-0 bg-white w-3 h-3 rounded-full transition transform duration-100 ease-linear translate-x-0" :class="{'translate-x-full': mainnet}"></label>
+                    <input type="checkbox" id="mainnet" name="mainnet" class="appearance-none w-full h-full active:outline-none focus:outline-none">
+                </div>
+                <span class="ml-2 text-xs text-gray-200 select-none" x-text="mainnet ? 'Mainnet' : 'Testnet'"></span>
+            </div>
+        </div>
+        <div class="w-full justify-between lg:justify-end lg:w-3/5 flex items-center font-light">
+            <nav class="flex flex-wrap text-sm lg:mr-4">
+                <a href="/" class="lg:hidden cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm">
+                    <span>Home</span>
+                </a>
+                <div x-data="{active: false}" class="relative text-xs lg:text-sm">
+                    <span @click="active = !active" class="block cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">Tokens</span>
+                    <div x-cloak x-show="active" @click.away="active = false" class="absolute left-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50 select-none">
+                        <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                            <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/tokens">By Market Cap</a></li>
+                            <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/trending">By Trending</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div x-data="{active: false}" class="relative text-xs lg:text-sm">
+                    <span @click="active = !active" class="block cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none">NFTs</span>
+                    <div x-cloak x-show="active" @click.away="active = false" class="absolute left-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50 select-none">
+                        <ul class="list-none bg-gray-900 px-1 py-2 rounded-2xl">
+                            <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/collections">Top Collections</a></li>
+                            <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/auctions">Top Auctions</a></li>
+                            <li @click="active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center select-none"><a href="/pages/creator">Creator Tool</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <a href="/pages/statistics" class="cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm">
+                    <span>Stats</span>
+                </a>
+                <a href="https://xetareality.com" target="_blank" class="cursor-pointer px-1 lg:px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 select-none text-xs lg:text-sm">
+                    <span>About</span>
+                </a>
+            </nav>
+
+            <div class="text-sm flex">
+                <span @click="showModal('walletModal')" x-show="!Alpine.store('publicKey')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none">Connect</span>
+
+                <div x-cloak x-show="Alpine.store('publicKey')" @click="showModal('actionsModal')" class="cursor-pointer font-medium px-2 lg:px-4 py-2 rounded-2xl bg-pink-700 hover:bg-pink-600 text-white select-none">
+                    <span x-text="String(Alpine.store('publicKey')).slice(0, 8)+'...'"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

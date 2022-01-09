@@ -64,6 +64,9 @@ var Wrap = {
     label: function(text, color) {
         return '<span class="bg-'+color+'-500 bg-opacity-75 rounded-2xl px-3 py-1 ml-2 text-xs font-normal uppercase select-none">'+text+'</span>'
     },
+    collection: function(address) {
+        return '<a href="/collection/?address='+address+'" class="hover:text-pink-400">'+address+'</a>'
+    },
     resource: function(resource) {
         var r = {a: 'allowance', w: 'address', t: 'token', x: 'transfer', c: 'claim', p: 'pool', l: 'link'}[resource.split(':')[0]]
         if (r) return Wrap[r](resource.split(':').slice(1).join(':'))
@@ -259,7 +262,7 @@ function formatDetails(data, resource) {
             else if (resource == 'transfer') details[k] = Wrap.transfer(data[k])
             else if (resource == 'claim') details[k] = Wrap.claim(data[k])
             else if (resource == 'allowance') details[k] = Wrap.allowance(data[k])
-        } else if (['from', 'to', 'leader', 'creator', 'sender', 'owner'].includes(k)) {
+        } else if (['from', 'to', 'creator', 'sender', 'owner'].includes(k)) {
             details[k] = Wrap.address(data[k])
         } else if (['links'].includes(k)) {
             details[k] = data[k].map(function(l) {return Wrap.link(l)}).join('')
@@ -276,7 +279,7 @@ function formatDetails(data, resource) {
             details[k] = String(data[k]).toUpperCase()
         } else details[k] = String(data[k])
 
-        if (details[k].includes('[object Object]')) delete details[k]
+        if (details[k] && details[k].includes('[object Object]')) delete details[k]
     }
     return details
 }
