@@ -1,0 +1,108 @@
+{% extends "src/wrappers/main.html" %}
+
+{% block title %}Collection{% endblock %}
+{% block description %}{% endblock %}
+
+{% block content %}
+{% include "src/blocks/global/header.html" %}
+{% include "src/blocks/previews/token.html" %}
+
+<script>
+function collection() {
+    return {
+        type: 'newest',
+        pools: {
+            newest: [],
+            oldest: [],
+        },
+        tokens: [],
+        depleted: {},
+        loading: {},
+        init() {
+            this.type = 'newest'
+            this.loadAuctions()
+            this.loadTokens()
+        },
+        loadAuctions() {
+            if (this.loading[this.type] || this.depleted[this.type] || this.pools[this.type].length % 10 != 0) return
+
+            this.loading[this.type] = true
+            var last = this.pools[this.type] ? this.pools[this.type].slice(-1)[0] : null
+            var self = this
+
+            Xeta.pool.scanCreatorProgramCreated({...(last ? last : {}), ...{creator: gup('address'), program: 'auction'}}, {limit: 10, preview: true, asc: self.type == 'oldest'}).then(function(data) {
+                if (!data.length) self.depleted[self.type] = true
+                self.pools[self.type] = self.pools[self.type].concat(data)
+                self.loading[self.type] = false
+            }).catch(function(e) {
+                self.loading[self.type] = false
+            })
+        },
+        loadTokens() {
+            if (this.loading.tokens || this.depleted.tokens) return
+
+            this.loading.tokens = true
+            var last = this.tokens.slice(-1)[0]
+            var self = this
+            
+            Xeta.token.scanCreatorCreated({...(last ? last : {}), ...{creator: gup('address')}}).then(function(data) {
+                if (!data.length) self.depleted.tokens = true
+                self.tokens = self.tokens.concat(data)
+                Grid.layout(document.getElementById('grid'), document.getElementById('tokens'))
+                self.loading.tokens = false
+            }).catch(function(e) {
+                self.loading.tokens = false
+                if (e.message == 'quota:limited') window.location.href = '/pages/quota'
+                else throw e
+            })
+        },
+    }
+}
+</script>
+
+<div x-data="collection">
+    <div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12 section">
+        <div class="w-full flex flex-wrap justify-between items-center mb-4 px-6">
+            <p class="text-2xl tracking-wider py-2 text-white" x-text="type[0].toUpperCase()+type.slice(1)+' Auctions'"></p>
+            <div class="relative text-white text-sm">
+                <span @click="type = (type == 'newest' ? 'oldest' : 'newest'), loadAuctions()" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize text-xs select-none" x-text="type == 'newest' ? 'Oldest' : 'Newest'"></span>
+            </div>
+        </div>
+        <div @scroll.debounce="$el.scrollLeft > 0.35*$el.clientWidth ? loadAuctions() : null" class="flex overflow-x-scroll disable-scrollbar mb-2 px-5">
+            <div class="flex flex-nowrap">
+                <template x-for="pool in pools[type]">
+                    <div class="w-48 inline-block">
+                        <div class="mx-1">
+                            <a :href="'/pool/?address='+pool.address" class="block rounded-2xl bg-gray-900 bg-opacity-50 shadow hover:bg-opacity-100 transition-all">
+                                <div class="rounded-2xl rounded-b-none overflow-hidden">
+                                    <img class="h-32 w-full mb-2 object-center object-cover" :src="pool.tokenPreview && pool.tokenPreview.preview ? pool.tokenPreview.preview : '/media/placeholder.jpeg'" onerror="this.src = '/media/placeholder.jpeg'">
+                                </div>
+                                <div class="px-3 py-3">
+                                    <p class="text-sm text-white py-0.5 text-center tracking-wider" x-text="pool.name ? pool.name : pool.tokenPreview.name"></p>
+                                    <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-html="Wrap.xeta(pool.xetaBalance)"></p>
+                                    <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-text="formatNumber(pool.transfersCount || 0)+' Bids'"></p>
+                                    <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-text="'Expires '+formatTime(pool.expires)"></p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
+        <div class="flex justify-between items-center px-6">
+            <p class="text-2xl tracking-wider py-2 text-white mb-4">All Tokens from Collection</p>
+        </div>
+
+        {% include "src/blocks/lists/tokens.html" %}
+
+        <div x-show="!depleted.tokens && tokens.length % 25 == 0" class="pt-6 flex justify-center text-sm">
+            <span @click="loadTokens()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded select-none">Load more</span>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -245,7 +245,7 @@ function creatorPage() {
         <template x-for="error in errors"><p x-text="error" class="w-full text-sm text-gray-200"></p></template>
 
         <p class="mt-2">Your Profile (Collection):</p>
-        <p x-html="Wrap.address(Alpine.store('publicKey'))" class="w-full text-sm text-gray-200"></p>
+        <p x-html="Wrap.collection(Alpine.store('publicKey'))" class="w-full text-sm text-gray-200"></p>
 
         <p class="mt-2">Output Tokens:</p>
         <template x-for="output in tokenOutputs"><p x-html="Wrap.token(output)" class="w-full text-sm text-gray-200"></p></template>

@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Transfer</title>
+        <title>Collection</title>
         <meta name="description" content="">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
@@ -123,7 +123,7 @@
                 <div class="container xl:max-w-6xl mx-auto p-4 lg:p-8">
                     <div id="inner-width" class="block"></div>
                     
-    <script>
+<script>
 function initSearch() {
     return {
         query: '',
@@ -186,69 +186,372 @@ function initSearch() {
         </div>
     </div>
 </div>
-    <script>
-function loadDetails() {
+<script>
+function tokenPreview() {
     return {
-        details: {},
-        expanded: !['pool', 'collection'].includes(Alpine.store('resource')),
+        expanded: false,
         init() {
-            var self = this
-            document.addEventListener('resourceLoaded', function (e) {
-                if (Alpine.store('resource') == 'address' && (e.data.name || e.data.description || e.data.preview)) self.expanded = false
-                self.details = formatDetails(e.data)
-            })
+
         }
     }
 }
 </script>
 
-<div x-data="loadDetails()">
-    <div class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
-        <div @click="expanded = !expanded" class="flex justify-between items-center cursor-pointer">
-            <div class="flex justify-start items-center">
-                <p class="text-lg py-2 text-gray-100">Details</p>
+<div x-data="tokenPreview">
+    <div x-cloak x-show="$store.token.name && !$store.token.supply">
+        <div class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+            <p class="text-lg py-2 text-gray-100 capitalize" x-text="window.location.pathname.slice(1, -1)"></p>
+            <div class="flex flex-wrap">
+                <div class="w-full text-white">
+                    <div x-cloak x-show="$store.token.preview" class="text-center rounded-2xl bg-gray-900 flex justify-center bg-center bg-cover relative mb-6" style="background-image: url(/media/pattern01.jpeg)">
+                        <div class="w-full lg:w-3/5 lg:py-8 z-40">
+                            <img class="rounded-2xl w-full object-center object-cover shadow-4xl" :src="$store.token.preview ? $store.token.preview : Constants.pixel" onerror="this.remove()">
+                        </div>
+                        <div class="bg-gradient-to-r from-black via-gray-800 to-black opacity-90 w-full h-full absolute rounded-2xl z-10"></div>
+                    </div>
 
-                <div x-cloak x-show="['token', 'allowance', 'address', 'claim'].includes($store.resource)" x-data="{active: false}" class="relative text-white text-sm ml-2">
-                    <span @click.stop="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize text-xs">Action</span>
-                    <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
-                        <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
-                            <li @click.stop="action($store.resource.replace('address', 'profile')+'.update', {[$store.resource]: $store[$store.resource][Xeta.utils.key($store.resource)]}), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Update</li>
-                            <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.transfer', {claim: $store.claim.hash}), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
-                            <li x-cloak x-show="$store.resource == 'claim'" @click.stop="action('claim.resolve', {claim: $store.claim.hash}), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Resolve</li>
-                            <li x-cloak x-show="$store.resource == 'token'" @click.stop="action('transfer.create', {token: $store.token.address}), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Transfer</li>
-                            <li x-cloak x-show="$store.resource == 'token' && $store.token.reserve" @click.stop="action('token.mint', {token: $store.token.address, amount: $store.token.reserve}), active = false" class="cursor-pointer py-2 rounded-2xl text-gray-200 hover:bg-gray-800 text-center capitalize text-xs">Mint</li>
+                    <div>
+                        <p x-cloak x-show="$store.token.name" class="text-xl my-2 text-gray-200 font-normal text-white" x-text="$store.token.name"></p>
+                        <p x-cloak x-show="$store.token.description" class="font-ligh pb-2 flex text-gray-200" x-text="$store.token.description"></p>
+                        <ul x-cloak x-show="$store.token.links" class="flex justify-start font-light text-sm list-none pb-4">
+                            <template x-for="link in ($store.token.links ? $store.token.links : [])">
+                                <li><a x-text="link.split('?')[0]" rel="nofollow noopener" :href="link" class="underline hover:text-pink-400 truncate pb-1 mr-2"></a></li>
+                            </template>
                         </ul>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
+
+    <div x-cloak x-show="$store.pool.program == 'swap'" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+        <div @click="expanded = !expanded" class="flex justify-between items-center cursor-pointer select-none">
+            <div class="flex justify-start items-center">
+                <p class="text-lg py-2 text-gray-100">Swap & Chart</p>
+            </div>
             
             <span class="cursor-pointer underline text-gray-200 text-sm font-light">
-                <span x-text="expanded ? 'Close' : 'Open'">Open</span> Details
+                <span x-text="expanded ? 'Close' : 'Open'">Open</span> Swap
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="inline ml-1 -mt-0.5" viewBox="0 0 16 16">
                   <path x-cloak x-show="!expanded" fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                   <path x-cloak x-show="expanded" fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
                 </svg>
             </span>
         </div>
-        <table x-cloak x-show="expanded" class="w-full table-fixed font-light text-sm">
-            <thead>
-                <tr>
-                    <th class="text-gray-400 text-left uppercase w-1/3"></th>
-                    <th class="text-gray-400 text-left uppercase w-2/3"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <template x-for="[key, value] in Object.entries(details)">
-                    <tr class="border-b border-gray-800">
-                        <td class="py-2 text-gray-400 capitalize text-sm font-semibold py-2" x-text="key"></td>
-                        <td @click="$el.classList.toggle('truncate')" class="text-right text-white truncate break-all py-2" x-html="value"></td>
-                    </tr>
-                </template>
-            </tbody>
-        </table>
+        <div x-cloak x-show="expanded">
+            <script>
+function swapPool() {
+    return {
+        pool: {},
+        token: false,
+        exchangeValue: null,
+        priceValue: null,
+        amount: null,
+        interval: '5m',
+        candles: {},
+        depleted: {},
+        address: gup('address'),
+        chart: null,
+        series: null,
+        loading: false,
+        init() {
+            var self = this
+            document.addEventListener('resourceLoaded', function (e) {
+                self.pool = Alpine.store('pool')
+                self.load()
+                self.render()
+            })
+        },
+        exchange(fee=0.015) {
+            if (this.amount == null || this.amount == '') this.amount = 0
+            var xl = Big(this.pool.xetaBalance ? this.pool.xetaBalance : 0)
+            var tl = Big(this.pool.tokenBalance ? this.pool.tokenBalance : 0)
+            this.priceValue = xl.div(tl).round(8).toString()
+
+            var k = xl.mul(tl)
+            var a = k.div((this.token ? tl : xl).add(this.amount)).sub(this.token ? xl : tl).abs()
+            this.exchangeValue = a.sub(a.mul(fee)).toString()
+        },
+        load(refresh=false) {
+            if (this.loading) return
+            if (this.depleted[this.interval]) {
+                if (refresh) this.plot()
+                return
+            }
+
+            this.loading = true
+            var last = this.candles[this.interval] ? this.candles[this.interval][0] : null            
+            var self = this
+
+            Xeta.candle.scanIntervalTokenTime({...(last || {}), ...{interval: this.interval, token: this.pool.token}}).then(function(data) {
+                if (!data.length) self.depleted[self.interval] = true
+                data = data.sort(function(a, b) {return a.time-b.time}) // Sort asc
+                self.candles[self.interval] = data.concat(self.candles[self.interval] ? self.candles[self.interval] : [])
+                if (data.length) self.adjust(self.candles[self.interval])
+                self.plot()
+            selfself.loading = false
+            }).catch(function(e) {
+                self.loading = false
+            })
+        },
+        plot() {
+            var self = this
+            setTimeout(function() {
+                self.series.setData(self.candles[self.interval])
+            }, 0)
+        },
+        adjust(candles) {
+            var previous = null
+            candles.forEach(function(c) {
+                c.open = previous ? previous.close : c.open
+                previous = c
+            })
+        },
+        render() {
+            this.chart = LightweightCharts.createChart(document.getElementById('chart'), {
+                width: document.getElementById('inner-width').offsetWidth-48,
+                height: (document.getElementById('inner-width').offsetWidth-48)/2,
+                layout: {
+                    backgroundColor: 'rgba(0, 0, 0, 1)',
+                    textColor: 'rgba(255, 255, 255, 0.75)',
+                },
+                grid: {
+                    vertLines: {
+                        color: 'rgba(255, 255, 255, 0.2)',
+                    },
+                    horzLines: {
+                        color: 'rgba(255, 255, 255, 0.2)',
+                    },
+                },
+                crosshair: {
+                    mode: LightweightCharts.CrosshairMode.Normal,
+                },
+                rightPriceScale: {
+                    borderColor: 'rgba(255, 255, 255, 0)',
+                },
+                timeScale: {
+                    borderColor: 'rgba(255, 255, 255, 0)',
+                    timeVisible: true,
+                    secondsVisible: false,
+                    rightOffset: 75,
+                },
+            })
+
+            this.series = this.chart.addCandlestickSeries()
+        }
+    }
+}
+</script>
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+<div x-cloak x-show="$store.pool.program == 'swap'" x-data="swapPool" class="bg-black rounded-2xl px-6 py-4 mb-4 lg:mb-12 section">
+    <div class="w-full flex flex-wrap justify-between items-center mb-8">
+        <p class="text-2xl font-medium py-2 text-white w-full lg:w-1/4" x-text="$store.pool.tokenPreview && $store.pool.tokenPreview.symbol ? $store.pool.tokenPreview.symbol+'/XETA'+' Swap' : 'Swap Pool'"></p>
+        <div x-data="{active: false}" class="w-full lg:w-2/3 justify-end items-center flex flex-wrap relative">
+            <input @input="amount = $el.value, exchange(), $store.transfer.amount = $el.value" :placeholder="token ? ($store.pool.tokenPreview ? $store.pool.tokenPreview.symbol : 'Token') : 'XETA'" class="rounded-r-none rounded-2xl focus:outline-none font-light placeholder-gray-400 shadow border-gray-700 border-2 transition-all px-4 py-2 bg-gray-900 focus:bg-gray-800 text-sm lg:text-lg text-gray-100 outline-none focus:outline-none h-11 border-r-0 w-1/2 lg:w-1/3" type="number" />
+            <span @click="token = !token, exchange(), $store.transfer.token = token ? $store.pool.token : Xeta.config.xetaAddress" class="cursor-pointer text-white text-gray-400 border-gray-700 border-2 border-l-0 lg:border-r-0 py-3 px-4 rounded-2xl rounded-l-none lg:rounded-r-none text-center bg-gray-800 hover:bg-gray-700 transition-all h-11 flex items-center justify-center text-sm lg:text-lg font-light w-1/2 lg:w-1/3">
+                <span class="truncate" x-html="token ? Wrap.tokenPreview($store.pool.tokenPreview) : Wrap.xetaPreview()"></span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="mx-2" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
+                </svg>
+                <span class="truncate" x-html="token ? Wrap.xetaPreview() : Wrap.tokenPreview($store.pool.tokenPreview)"></span>
+            </span>
+            <div class="flex w-full lg:w-1/3 mt-2 lg:mt-0">
+                <span @click="action('swap.transfer', {pool: $store.pool.address, token: token ? $store.pool.token : Xeta.config.xetaAddress, amount: amount})" class="cursor-pointer text-white py-2 pl-4 text-center bg-pink-700 hover:bg-pink-900 text-lg font-medium transition-all h-11 w-5/6 rounded-2xl lg:rounded-l-none rounded-r-none">Swap</span>
+                <span @click="active = !active" class="w-10 cursor-pointer text-white py-2 rounded-2xl rounded-l-none text-center bg-pink-800 hover:bg-pink-900 text-lg font-medium transition-all h-11 w-1/6">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="mx-auto mt-1" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </span>
+            </div>
+            <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-40 shadow-xl rounded z-50">
+                <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                    <li @click="action('swap.deposit', {pool: $store.pool.address}), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Deposit</li>
+                    <li @click="action('swap.withdraw', {pool: $store.pool.address}), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">Withdraw</li>
+                </ul>
+            </div>
+            <p class="absolute right-0 bottom-0 text-xs text-gray-500 -mb-5">You will receive approximately <span x-html="token ? Wrap.xeta(exchangeValue) : Wrap.amount(exchangeValue, $store.pool.token, $store.pool.tokenPreview)"></span></p>
+        </div>
+    </div>
+    <div class="flex flex-wrap">
+        <div class="w-full mb-4 text-white">
+            <p x-cloak x-show="$store.pool.name && $store.pool.tokenPreview && $store.pool.tokenPreview.name" x-text="$store.pool.tokenPreview ? $store.pool.tokenPreview.name : ''" class="text-xl mb-4 text-gray-400 font-normal text-white"></p>
+            
+            <div class="flex flex-wrap justify-between items-center mb-4">
+                <p class="text-xl text-gray-400 font-normal">
+                    <span x-html="Wrap.tokenPreview($store.pool.tokenPreview, $store.pool.token)+' Price - '"></span>
+                    <span x-html="$store.pool.xetaBalance && $store.pool.tokenBalance ? Wrap.xeta(parseFloat($store.pool.xetaBalance)/parseFloat($store.pool.tokenBalance), 8) : 0"></span>
+                </p>
+                <div x-data="{active: false}" class="relative text-white text-sm mt-2">
+                    <span @click="active = !active" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900">Interval: <span x-text="interval"></span></span>
+                    <div x-cloak x-show="active" @click.away="active = false" class="absolute right-0 origin-top-right mt-2 w-32 shadow-xl rounded z-50">
+                        <ul class="list-none bg-gray-900 px-2 py-2 rounded-2xl">
+                            <li @click="interval = '5m', load(true), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">5 minutes</li>
+                            <li @click="interval = '1h', load(true), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">1 hour</li>
+                            <li @click="interval = '4h', load(true), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">4 hours</li>
+                            <li @click="interval = '1d', load(true), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">1 day</li>
+                            <li @click="interval = '1w', load(true), active = false" class="cursor-pointer py-1 rounded-2xl text-gray-200 hover:bg-gray-800 text-center">1 week</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-8 rounded-2xl">
+                <div id="chart"></div>
+            </div>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Trades</span>
+                <span x-text="formatNumber($store.pool.transfersCount || 0)"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Price</span>
+                <span x-html="$store.pool.xetaBalance && $store.pool.tokenBalance ? Wrap.xeta(parseFloat($store.pool.xetaBalance)/parseFloat($store.pool.tokenBalance), 8) : 0"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Token Liquidity</span>
+                <span x-html="Wrap.amount($store.pool.tokenBalance, $store.pool.token, $store.pool.tokenPreview)"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Token Volume</span>
+                <span x-html="Wrap.amount($store.pool.tokenTurnover, $store.pool.token, $store.pool.tokenPreview)"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Xeta Liquidity</span>
+                <span x-html="Wrap.xeta($store.pool.xetaBalance)"></span>
+            </p>
+            <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
+                <span class="text-gray-400 font-normal mr-4">Xeta Turnover</span>
+                <span x-html="Wrap.xeta($store.pool.xetaTurnover)"></span>
+            </p>
+        </div>
     </div>
 </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function collection() {
+    return {
+        type: 'newest',
+        pools: {
+            newest: [],
+            oldest: [],
+        },
+        tokens: [],
+        depleted: {},
+        loading: {},
+        init() {
+            this.type = 'newest'
+            this.loadAuctions()
+            this.loadTokens()
+        },
+        loadAuctions() {
+            if (this.loading[this.type] || this.depleted[this.type] || this.pools[this.type].length % 10 != 0) return
+
+            this.loading[this.type] = true
+            var last = this.pools[this.type] ? this.pools[this.type].slice(-1)[0] : null
+            var self = this
+
+            Xeta.pool.scanCreatorProgramCreated({...(last ? last : {}), ...{creator: gup('address'), program: 'auction'}}, {limit: 10, preview: true, asc: self.type == 'oldest'}).then(function(data) {
+                if (!data.length) self.depleted[self.type] = true
+                self.pools[self.type] = self.pools[self.type].concat(data)
+                self.loading[self.type] = false
+            }).catch(function(e) {
+                self.loading[self.type] = false
+            })
+        },
+        loadTokens() {
+            if (this.loading.tokens || this.depleted.tokens) return
+
+            this.loading.tokens = true
+            var last = this.tokens.slice(-1)[0]
+            var self = this
+            
+            Xeta.token.scanCreatorCreated({...(last ? last : {}), ...{creator: gup('address')}}).then(function(data) {
+                if (!data.length) self.depleted.tokens = true
+                self.tokens = self.tokens.concat(data)
+                Grid.layout(document.getElementById('grid'), document.getElementById('tokens'))
+                self.loading.tokens = false
+            }).catch(function(e) {
+                self.loading.tokens = false
+                if (e.message == 'quota:limited') window.location.href = '/pages/quota'
+                else throw e
+            })
+        },
+    }
+}
+</script>
+
+<div x-data="collection">
+    <div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12 section">
+        <div class="w-full flex flex-wrap justify-between items-center mb-4 px-6">
+            <p class="text-2xl tracking-wider py-2 text-white" x-text="type[0].toUpperCase()+type.slice(1)+' Auctions'"></p>
+            <div class="relative text-white text-sm">
+                <span @click="type = (type == 'newest' ? 'oldest' : 'newest'), loadAuctions()" class="select-none cursor-pointer px-3 py-2 rounded-2xl text-gray-200 hover:bg-gray-800 bg-gray-900 capitalize text-xs select-none" x-text="type == 'newest' ? 'Oldest' : 'Newest'"></span>
+            </div>
+        </div>
+        <div @scroll.debounce="$el.scrollLeft > 0.35*$el.clientWidth ? loadAuctions() : null" class="flex overflow-x-scroll disable-scrollbar mb-2 px-5">
+            <div class="flex flex-nowrap">
+                <template x-for="pool in pools[type]">
+                    <div class="w-48 inline-block">
+                        <div class="mx-1">
+                            <a :href="'/pool/?address='+pool.address" class="block rounded-2xl bg-gray-900 bg-opacity-50 shadow hover:bg-opacity-100 transition-all">
+                                <div class="rounded-2xl rounded-b-none overflow-hidden">
+                                    <img class="h-32 w-full mb-2 object-center object-cover" :src="pool.tokenPreview && pool.tokenPreview.preview ? pool.tokenPreview.preview : '/media/placeholder.jpeg'" onerror="this.src = '/media/placeholder.jpeg'">
+                                </div>
+                                <div class="px-3 py-3">
+                                    <p class="text-sm text-white py-0.5 text-center tracking-wider" x-text="pool.name ? pool.name : pool.tokenPreview.name"></p>
+                                    <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-html="Wrap.xeta(pool.xetaBalance)"></p>
+                                    <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-text="formatNumber(pool.transfersCount || 0)+' Bids'"></p>
+                                    <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-text="'Expires '+formatTime(pool.expires)"></p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="bg-black rounded-2xl py-4 mb-4 lg:mb-12">
+        <div class="flex justify-between items-center px-6">
+            <p class="text-2xl tracking-wider py-2 text-white mb-4">All Tokens from Collection</p>
+        </div>
+
+        <div id="tokens" class="hidden">
+    <template x-for="token in tokens">
+        <div class="mx-1.5 mb-4 token">
+            <a :href="'/token/?address='+token.address" class="block rounded-2xl bg-gray-900 bg-opacity-80 shadow transform-gpu hover:-translate-y-2 transition-transform duration-300">
+                <div class="rounded-2xl rounded-b-none overflow-hidden">
+                    <img x-cloak x-show="token.preview" class="h-32 w-full mb-2 object-center object-cover" :src="token.preview ? token.preview : Constants.pixel" onerror="this.remove()">
+                </div>
+                <div class="px-3 py-3">
+                    <p class="text-sm text-white py-0.5 text-center tracking-wider" x-text="token.name"></p>
+                    <p class="text-xs text-gray-200 py-0.5 text-center truncate" x-text="token.address"></p>
+                </div>
+            </a>
+        </div>
+    </template>
+</div>
+
+<div id="grid" class="w-full">
+    <div class="columns flex mx-5">
+        <div class="column w-1/2 md:w-1/3 lg:w-1/5 block"></div>
+        <div class="column w-1/2 md:w-1/3 lg:w-1/5 block"></div>
+        <div class="column w-1/2 md:w-1/3 lg:w-1/5 hidden md:block"></div>
+        <div class="column w-1/2 md:w-1/3 lg:w-1/5 hidden lg:block"></div>
+        <div class="column w-1/2 md:w-1/3 lg:w-1/5 hidden lg:block"></div>
+    </div>
+</div>
+
+        <div x-show="!depleted.tokens && tokens.length % 25 == 0" class="pt-6 flex justify-center text-sm">
+            <span @click="loadTokens()" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded select-none">Load more</span>
+        </div>
+    </div>
+</div>
+
 
                 </div>
             </main>   

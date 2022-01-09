@@ -2,7 +2,7 @@
 function loadDetails() {
     return {
         details: {},
-        expanded: !['pool'].includes(Alpine.store('resource')),
+        expanded: !['pool', 'collection'].includes(Alpine.store('resource')),
         init() {
             var self = this
             document.addEventListener('resourceLoaded', function (e) {

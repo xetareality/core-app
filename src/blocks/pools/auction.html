@@ -47,8 +47,8 @@
             </p>
             <p class="text-xl font-light mb-2 pb-2 border-b border-gray-800 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Highest Bidder</span>
-                <span x-cloak x-show="$store.pool.leader" x-html="Wrap.address($store.pool.leader)" class="truncate"></span>
-                <span x-cloak x-show="!$store.pool.leader">None</span>
+                <span x-cloak x-show="$store.pool.meta && $store.pool.meta.leader" x-html="Wrap.address($store.pool.meta.leader)" class="truncate"></span>
+                <span x-cloak x-show="!$store.pool.meta || !$store.pool.meta.leader">None</span>
             </p>
             <p class="text-xl font-light mb-2 flex justify-between">
                 <span class="text-gray-400 font-normal mr-4">Expires</span>

@@ -48,7 +48,7 @@ document.addEventListener('alpine:init', function () {
     Xeta.config.init({dev: Alpine.lstore('dev')}) 
 
     // Load resource
-    var resource = window.location.pathname.slice(1, -1)
+    var resource = window.location.pathname.slice(1, -1).replace('collection', 'address')
     if (['pool', 'address', 'transaction', 'token', 'transfer', 'claim', 'allowance'].includes(resource)) {
         Xeta[resource].read({[Xeta.utils.key(resource)]: gup(Xeta.utils.key(resource))}, {preview: true}).then(function(data) {
             if (!data) return

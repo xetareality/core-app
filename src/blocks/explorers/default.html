@@ -50,8 +50,9 @@ function addressExplorer() {
         init() {
             var self = this
             document.addEventListener('resourceLoaded', function (e) {
-                if (e.data.program == 'loot') self.resource = 'tokens'
-                if (Alpine.store('resource') == 'address' && Alpine.store('token').name) self.resource = 'tokens'
+                var isLoot = e.data.program == 'loot'
+                var isProfile = Alpine.store('resource') == 'address' && Alpine.store('token').name
+                if (isLoot || isProfile) self.resource = 'tokens'
                 self.change(self.resource)
             })
         },
@@ -137,5 +138,5 @@ function addressExplorer() {
         <div x-show="!depleted[resourceFilter] && $data[resourceFilter].length % 25 == 0" class="pt-6 flex justify-center text-sm">
             <span @click="load(resource)" class="cursor-pointer underline w-full text-center text-sm text-gray-100 py-2 hover:bg-gray-900 rounded select-none">Load more</span>
         </div>
-    </div>    
+    </div>
 </div>
