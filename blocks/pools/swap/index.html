@@ -17,10 +17,9 @@ function swapPool() {
             var self = this
             document.addEventListener('resourceLoaded', function (e) {
                 self.pool = Alpine.store('pool')
+                self.load()
+                self.render()
             })
-
-            this.load()
-            this.render()
         },
         exchange(fee=0.015) {
             if (this.amount == null || this.amount == '') this.amount = 0
@@ -43,7 +42,7 @@ function swapPool() {
             var last = this.candles[this.interval] ? this.candles[this.interval][0] : null            
             var self = this
 
-            Xeta.candle.scanIntervalTokenTime({...(last || {}), ...{interval: this.interval, token: this.address}}).then(function(data) {
+            Xeta.candle.scanIntervalTokenTime({...(last || {}), ...{interval: this.interval, token: this.pool.token}}).then(function(data) {
                 if (!data.length) self.depleted[self.interval] = true
                 data = data.sort(function(a, b) {return a.time-b.time}) // Sort asc
                 self.candles[self.interval] = data.concat(self.candles[self.interval] ? self.candles[self.interval] : [])
