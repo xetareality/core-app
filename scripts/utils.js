@@ -246,7 +246,7 @@ function formatDetails(data, resource) {
             if (Date.now()-data[k] > 30*24*60*60*1000) details[k] = new Date(data[k]).toLocaleString()
             else details[k] = formatTime(new Date(data[k]))+' ('+new Date(data[k]).toLocaleString()+')'
         } else if (['minTime', 'maxTime'].includes(k)) {
-            details[k] = formatTime(new Date(Date.now()-parseInt(data[k])), false)
+            details[k] = formatTime(new Date(Date.now()-parseInt(data[k])*1000), false)
         } else if (['origin'].includes(k)) {
             details[k] = Wrap.transaction(data[k])
         } else if (['pool'].includes(k)) {
