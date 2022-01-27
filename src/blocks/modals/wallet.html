@@ -150,13 +150,13 @@ function walletModal() {
 
                     <div class="mb-6 w-full">
                         <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Email or username</label>
-                        <input x-model="account" data-rules='["required", "minLength:6"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-300 border-opacity-50 focus:border-pink-400 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
+                        <input x-model="account" data-rules='["required", "minLength:6", "maxLength:40"]' @input="validate($el)" @blur="validate($el)" type="text" class="rounded-2xl shadow border-pink-300 border-opacity-50 focus:border-pink-400 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
                     </div>
 
                     <div class="mb-6 w-full">
                         <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your secret password</label>
-                        <input x-model="secret" data-rules='["required", "minLength:6"]' @input="validate($el)" @blur="validate($el)" type="password" class="rounded-2xl shadow border-pink-300 border-opacity-50 focus:border-pink-400 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
+                        <input x-model="secret" data-rules='["required", "minLength:6", "maxLength:80"]' @input="validate($el)" @blur="validate($el)" type="password" class="rounded-2xl shadow border-pink-300 border-opacity-50 focus:border-pink-400 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
                     </div>
 
@@ -207,7 +207,7 @@ function walletModal() {
 
                     <div class="mb-6 w-full">
                         <label for="" class="text-gray-200 text-xs font-semibold uppercase mb-2 block">Your secret</label>
-                        <input x-model="secret" data-rules='["required", "minLength:6", "maxLength:40"]' @input="validate($el)" @blur="validate($el)" type="password" class="rounded-2xl shadow border-pink-300 border-opacity-50 focus:border-pink-400 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
+                        <input x-model="secret" data-rules='["required", "minLength:6", "maxLength:80"]' @input="validate($el)" @blur="validate($el)" type="password" class="rounded-2xl shadow border-pink-300 border-opacity-50 focus:border-pink-400 border-2 transition-all px-4 py-2 bg-transparent text-gray-100 outline-none focus:outline-none overflow-hidden w-full focus:ring focus:ring-purple-500" />
                         <p class="text-gray-200 text-xs mt-2 hidden"></p>
                     </div>
 
