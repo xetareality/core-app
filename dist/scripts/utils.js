@@ -197,8 +197,10 @@ function formatCurrency(val, decimals=0) {
 }
 
 function formatTime(date, prep=true) {
-    var future = (Date.now() - new Date(date).getTime()) < 0
+    date = new Date(date).getTime()
+    var future = (Date.now() - date) < 0
     var seconds = Math.abs(Math.floor((Date.now() - date) / 1000))
+    
     var interval = seconds / 31536000;
     var i = null
     var format = function(val) {
