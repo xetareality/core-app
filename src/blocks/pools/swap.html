@@ -48,7 +48,7 @@ function swapPool() {
                 self.candles[self.interval] = data.concat(self.candles[self.interval] ? self.candles[self.interval] : [])
                 if (data.length) self.adjust(self.candles[self.interval])
                 self.plot()
-            selfself.loading = false
+                self.loading = false
             }).catch(function(e) {
                 self.loading = false
             })
