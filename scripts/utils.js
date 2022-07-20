@@ -189,11 +189,11 @@ function validForm(form) {
 }
 
 function formatNumber(val, decimals=0) {
-    return (Math.floor(parseFloat(val)*(10**decimals))/(10**decimals)).toLocaleString('en', {maximumFractionDigits: decimals})
+    return (Math.round(parseFloat(val)*(10**decimals))/(10**decimals)).toLocaleString('en', {maximumFractionDigits: decimals})
 }
 
 function formatCurrency(val, decimals=0) {
-    return (Math.floor(parseFloat(val)*(10**decimals))/(10**decimals)).toLocaleString('en', {style: 'currency', currency: 'USD', maximumFractionDigits: decimals})
+    return (Math.round(parseFloat(val)*(10**decimals))/(10**decimals)).toLocaleString('en', {style: 'currency', currency: 'USD', maximumFractionDigits: decimals})
 }
 
 function formatTime(date, prep=true) {
